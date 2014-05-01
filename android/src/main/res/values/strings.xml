@@ -45,12 +45,18 @@
 
     <!-- Override CardsLib defaults -->
     <string name="list_card_undo_title">Cofnij</string>
-    <string name="no_internet_connection">Brak połączenia z internetem</string>
-    <plurals name="list_card_undo_items">
+        <plurals name="list_card_undo_items">
         <item quantity="one">Usunięto suchar z ulubionych</item>
         <item quantity="few">Usunięto %d suchary z ulubionych</item>
         <item quantity="other">Usunięto %d sucharów z ulubionych</item>
     </plurals>
+
+    <!-- All -->
+    <string name="no_internet_connection">Brak połączenia z internetem</string>
+
+    <!-- Starred -->
+    <string name="no_starred">Nie masz żadnych ulubionych sucharów. Wróć i zaznacz te, które ci się podobają.</string>
+    <string name="no_starred_image">Brak ulubionych sucharów</string>
 
 
 

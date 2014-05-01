@@ -1,10 +1,13 @@
 package pl.jakubchmura.suchary.android;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -14,6 +17,7 @@ import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.util.FontCache;
 
 
 public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
@@ -40,9 +44,13 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         if (!saved) {
             JokeDbHelper helper = new JokeDbHelper(mActivity);
             List<Joke> jokes = helper.getStarred();
-            mFetcher.setJokes(jokes);
             mFetcher.setFetchGetOlder(false);
-            mFetcher.fetchNext();
+            if (jokes.size() == 0) {
+                showPlaceholder();
+            } else {
+                mFetcher.setJokes(jokes);
+                mFetcher.fetchNext();
+            }
         }
         if (mAdapter != null){
             mAdapter.setEnableUndo(true);
@@ -75,6 +83,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 joke.setStar(false);
                 JokeDbHelper helper = new JokeDbHelper(mActivity);
                 helper.updateJoke(joke);
+                if (mAdapter.getCount() == 0) showPlaceholder();
             }
         };
         Card.OnUndoSwipeListListener undoSwipeListListener = new Card.OnUndoSwipeListListener(){
@@ -83,8 +92,28 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 joke.setStar(true);
                 JokeDbHelper helper = new JokeDbHelper(mActivity);
                 helper.updateJoke(joke);
+                if (mAdapter.getCount() > 0) hidePlaceholder();
+
             }
         };
         return cardFactory.getCard(joke, swipeListener, undoSwipeListListener);
     }
+
+    protected void showPlaceholder() {
+        LinearLayout placeholder = (LinearLayout) mRootView.findViewById(R.id.placeholder);
+        placeholder.setVisibility(View.VISIBLE);
+
+        TextView placeholderText = (TextView) placeholder.findViewById(R.id.placeholder_text);
+        String typefaceName = "fonts/RobotoCondensed-Light.ttf";
+        Typeface typeface = FontCache.get(typefaceName, mActivity);
+        placeholderText.setTypeface(typeface);
+        mCardListView.setVisibility(View.GONE);
+    }
+
+    protected void hidePlaceholder() {
+        LinearLayout placeholder = (LinearLayout) mRootView.findViewById(R.id.placeholder);
+        placeholder.setVisibility(View.GONE);
+        mCardListView.setVisibility(View.VISIBLE);
+    }
+
 }
