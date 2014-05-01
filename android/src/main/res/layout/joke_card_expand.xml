@@ -23,13 +23,16 @@
     <ImageView
         android:layout_width="@dimen/card_expand_button_width"
         android:layout_height="@dimen/card_expand_button_height"
-        android:id="@+id/star"
-        android:layout_toLeftOf="@+id/source"
-        android:layout_alignParentEnd="false"
-        android:src="@drawable/dark_star_button"
-        android:contentDescription="@string/joke_star"
+        android:id="@+id/share"
+        android:src="@drawable/dark_share_button"
+        android:layout_gravity="right"
         android:clickable="true"
-        android:layout_centerVertical="true" />
+        android:contentDescription="@string/joke_share"
+        android:layout_alignParentEnd="false"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true" />
 
     <ImageView
         android:layout_width="@dimen/card_expand_button_width"
@@ -45,14 +48,12 @@
     <ImageView
         android:layout_width="@dimen/card_expand_button_width"
         android:layout_height="@dimen/card_expand_button_height"
-        android:id="@+id/share"
-        android:src="@drawable/dark_share_button"
-        android:layout_gravity="right"
+        android:id="@+id/star"
+        android:layout_toLeftOf="@+id/source"
+        android:layout_alignParentEnd="false"
+        android:src="@drawable/dark_star_button"
+        android:contentDescription="@string/joke_star"
         android:clickable="true"
-        android:contentDescription="@string/joke_share"
-        android:layout_alignParentEnd="true"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
         android:layout_centerVertical="true" />
 
 </RelativeLayout>
