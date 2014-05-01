@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="card_pressed">@color/card_pressed_kitkat</color>
+    <color name="card_activated">@color/card_activated_kitkat</color>
+
+    <color name="holo_blue">#0099cc</color>
+    <color name="holo_red">#cc0000</color>
+    <color name="holo_green">#669900</color>
+    <color name="holo_orange">#ff8000</color>
+    <color name="action_bar_title">#90000000</color>
+    <color name="action_bar_subtitle">@android:color/secondary_text_light</color>
+    <color name="date_expand">#e1e1e1</color>
+    <color name="card_list_view_background">#e5e5e5</color>
+
+</resources>

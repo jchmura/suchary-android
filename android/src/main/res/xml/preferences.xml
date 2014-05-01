@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_notif"
+        android:title="@string/pref_notif"
+        android:summary="@string/pref_notif_summ"
+        android:defaultValue="true" />
+
+    <RingtonePreference
+        android:key="pref_ringtone"
+        android:title="@string/pref_ringtone"
+        android:ringtoneType="notification"
+        android:showDefault="true"
+        android:showSilent="true"
+        android:dependency="pref_notif"
+        android:defaultValue="content://settings/system/notification_sound" />
+
+    <CheckBoxPreference
+        android:key="pref_vibration"
+        android:title="@string/pref_vibration"
+        android:dependency="pref_notif"
+        android:defaultValue="true" />
+</PreferenceScreen>

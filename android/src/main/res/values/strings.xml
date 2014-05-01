@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Suchary</string>
+
+    <!-- Activities -->
+    <string name="title_activity_main">Suchary</string>
+    <string name="title_activity_search">Szukaj</string>
+    <string name="in_favorites">w ulubionych</string>
+    <string name="title_activity_settings">Ustawienia</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">Otwórz boczny panel</string>
+    <string name="navigation_drawer_close">Zamknij boczny panel</string>
+    <string name="section_all">Wszystkie</string>
+    <string name="section_starred">Ulubione</string>
+    <string name="section_random">Losowe</string>
+
+    <!-- Action Bar -->
+    <string name="action_settings">Ustawienia</string>
+    <string name="search_title">Szukaj</string>
+    <string name="search_hint">Szukaj suchara</string>
+
+    <!-- Preferences -->
+    <string name="pref_notif">Powiadomienia</string>
+    <string name="pref_notif_summ">Powiadamiaj o nowych sucharach</string>
+    <string name="pref_ringtone">Dźwięk powiadomienia</string>
+    <string name="pref_vibration">Wibracje</string>
+
+    <!-- Card expand -->
+    <string name="joke_star">Ulubiony</string>
+    <string name="joke_share">Udostępnij</string>
+    <string name="joke_source">Źródło</string>
+
+    <!-- Notification -->
+    <plurals name="new_joke_notification">
+        <item quantity="one">Nowy suchar</item>
+        <item quantity="few">%d nowe suchary</item>
+        <item quantity="other">%d nowych sucharów</item>
+    </plurals>
+    <string name="new_joke_notification_summary">Oraz %1$d więcej</string>
+
+    <!-- Main activity -->
+    <string name="download_jokes_progress_title">Pobieranie sucharów</string>
+
+    <!-- Override CardsLib defaults -->
+    <string name="list_card_undo_title">Cofnij</string>
+    <string name="no_internet_connection">Brak połączenia z internetem</string>
+    <plurals name="list_card_undo_items">
+        <item quantity="one">Usunięto suchar z ulubionych</item>
+        <item quantity="few">Usunięto %d suchary z ulubionych</item>
+        <item quantity="other">Usunięto %d sucharów z ulubionych</item>
+    </plurals>
+
+
+
+</resources>

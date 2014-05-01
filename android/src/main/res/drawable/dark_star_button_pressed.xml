@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle" >
+            <solid android:color="#404143" />
+        </shape>
+    </item>
+    <item
+        android:top="@dimen/card_expand_button_padding_top"
+        android:bottom="@dimen/card_expand_button_padding_bottom"
+        android:right="@dimen/card_expand_button_padding_right"
+        android:left="@dimen/card_expand_button_padding_left" >
+
+        <bitmap android:src="@drawable/ic_action_dark_star" />
+
+    </item>
+</layer-list>

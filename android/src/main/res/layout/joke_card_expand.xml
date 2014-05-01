@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/date_expand"
+            android:textSize="12sp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="@dimen/card_expand_button_width"
+        android:layout_height="@dimen/card_expand_button_height"
+        android:id="@+id/star"
+        android:layout_toLeftOf="@+id/source"
+        android:layout_alignParentEnd="false"
+        android:src="@drawable/dark_star_button"
+        android:contentDescription="@string/joke_star"
+        android:clickable="true"
+        android:layout_centerVertical="true" />
+
+    <ImageView
+        android:layout_width="@dimen/card_expand_button_width"
+        android:layout_height="@dimen/card_expand_button_height"
+        android:id="@+id/source"
+        android:layout_toLeftOf="@+id/share"
+        android:layout_alignParentEnd="false"
+        android:src="@drawable/dark_site_button"
+        android:contentDescription="@string/joke_source"
+        android:clickable="true"
+        android:layout_centerVertical="true" />
+
+    <ImageView
+        android:layout_width="@dimen/card_expand_button_width"
+        android:layout_height="@dimen/card_expand_button_height"
+        android:id="@+id/share"
+        android:src="@drawable/dark_share_button"
+        android:layout_gravity="right"
+        android:clickable="true"
+        android:contentDescription="@string/joke_share"
+        android:layout_alignParentEnd="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>
