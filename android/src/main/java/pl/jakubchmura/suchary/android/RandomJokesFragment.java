@@ -67,4 +67,10 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
             })
             .setup(mPullToRefresh);
     }
+
+    @Override
+    protected void hideProgress() {
+        mProgress.setVisibility(View.GONE);
+        mPullToRefresh.setVisibility(View.VISIBLE);
+    }
 }

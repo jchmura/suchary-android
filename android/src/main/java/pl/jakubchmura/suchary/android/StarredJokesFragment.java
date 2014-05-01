@@ -2,6 +2,7 @@ package pl.jakubchmura.suchary.android;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,15 +43,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         }
         View createdView = createView(saved);
         if (!saved) {
-            JokeDbHelper helper = new JokeDbHelper(mActivity);
-            List<Joke> jokes = helper.getStarred();
-            mFetcher.setFetchGetOlder(false);
-            if (jokes.size() == 0) {
-                showPlaceholder();
-            } else {
-                mFetcher.setJokes(jokes);
-                mFetcher.fetchNext();
-            }
+            getJokes();
         }
         if (mAdapter != null){
             mAdapter.setEnableUndo(true);
@@ -68,10 +61,26 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         setRetainInstance(true);
     }
 
-    @Override
-    public void addJokesToBottom(List<Joke> jokes) {
-        super.addJokesToBottom(jokes);
-        mAdapter.setEnableUndo(true);
+    protected void getJokes() {
+        new AsyncTask<Void, Void, List<Joke>>() {
+            @Override
+            protected List<Joke> doInBackground(Void... params) {
+                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                List<Joke> jokes = helper.getStarred();
+                mFetcher.setFetchGetOlder(false);
+                return jokes;
+            }
+            @Override
+            protected void onPostExecute(List<Joke> jokes) {
+                hideProgress();
+                if (jokes.size() == 0) {
+                    showPlaceholder();
+                } else {
+                    mFetcher.setJokes(jokes);
+                    mFetcher.fetchNext();
+                }
+            }
+        }.execute((Void)null);
     }
 
     @Override
@@ -116,4 +125,8 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         mCardListView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    protected void hideProgress() {
+        mProgress.setVisibility(View.GONE);
+    }
 }

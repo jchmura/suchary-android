@@ -7,11 +7,21 @@
     tools:context="pl.jakubchmura.suchary.android.MainJokeFragment"
     style="@style/card_list_view">
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress"
+        android:indeterminate="true"
+        style="@android:style/Widget.Holo.ProgressBar.Large"
+        android:layout_gravity="center"
+        android:layout_weight="1" />
+
     <uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ptr_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <it.gmariotti.cardslib.library.view.CardListView
             android:id="@+id/cardList"

@@ -3,6 +3,7 @@ package pl.jakubchmura.suchary.android;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,10 +54,8 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
 
         View createdView = createView(saved);
 
-        JokeDbHelper helper = new JokeDbHelper(mActivity);
-        if (helper.getCount() == 0) downloadJokesFromServer();
-        else if (!saved) mFetcher.fetchNext();
         setPullable();
+        getJokes(saved);
 
         return createdView;
     }
@@ -76,6 +75,27 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
         checkDeletedJoke();
     }
 
+    @Override
+    public void addJokesToBottom(List<Joke> jokes) {
+        super.addJokesToBottom(jokes);
+        hideProgress();
+    }
+
+    protected void getJokes(final boolean saved) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... params) {
+                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                return helper.getCount();
+            }
+            @Override
+            protected void onPostExecute(Long count) {
+                if (count == 0) downloadJokesFromServer();
+                else if (!saved) mFetcher.fetchNext();
+            }
+        }.execute((Void)null);
+    }
+
     private void downloadJokesFromServer() {
         final DownloadAllJokes downloadAll = new DownloadAllJokes(mActivity, this);
         mProgressDialog = new ProgressDialog(mActivity);
@@ -92,6 +112,12 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
         mProgressDialog.show();
 
         downloadAll.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+    }
+
+    @Override
+    protected void hideProgress() {
+        mProgress.setVisibility(View.GONE);
+        mPullToRefresh.setVisibility(View.VISIBLE);
     }
 
     @Override

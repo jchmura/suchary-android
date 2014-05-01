@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
-import android.widget.Space;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +62,6 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     protected int mPreviousTotal;
 
     /**
-     * Progress bar in the CardListView footer
-     */
-    protected ProgressBar mFooterProgressBar;
-
-    /**
      * Fetcher used to get new jokes
      */
     protected JokeFetcher mFetcher;
@@ -76,6 +70,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Pull to refresh
      */
     protected PullToRefreshLayout mPullToRefresh;
+
+    /**
+     * Progress Bar
+     */
+    protected ProgressBar mProgress;
 
     public JokesBaseFragment() {
     }
@@ -98,16 +97,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     public View createView(boolean saved) {
         if (!saved) {
             mCardListView = (CardListView) mRootView.findViewById(R.id.cardList);
-
-            mFooterProgressBar = new ProgressBar(mActivity);
-//            mCardListView.addFooterView(mFooterProgressBar);
-
-            Space space = new Space(mActivity);
-            space.setMinimumHeight(10);
-//            mCardListView.addHeaderView(space);
-
+            mProgress = (ProgressBar) mRootView.findViewById(R.id.progress);
             mPullToRefresh = (PullToRefreshLayout) mRootView.findViewById(R.id.ptr_layout);
-
             mFetcher = new JokeFetcher(mActivity, this);
 
             setScrollListener();
@@ -125,18 +116,14 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         List<Card> cards = makeCardArray(jokes);
 
         if (mCardListView != null) {
-//            HeaderViewListAdapter adapterWrapper = (HeaderViewListAdapter) mCardListView.getAdapter();
             mAdapter = (JokeCardArrayAdapter) mCardListView.getAdapter();
-//            if (adapterWrapper != null) {
             if (mAdapter != null) {
-//                mAdapter = (CardArrayAdapter) adapterWrapper.getWrappedAdapter();
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
                 mAdapter = new JokeCardArrayAdapter(mActivity, cards);
-//                adapterWrapper = new HeaderViewListAdapter(null, null, mAdapter);
-//                mCardListView.setExternalAdapter(adapterWrapper, mAdapter);
                 mCardListView.setAdapter(mAdapter);
+                hideProgress();
             }
         }
     }
@@ -226,11 +213,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Call when there is no more older jokes to show.
      */
     public void endOfData() {
-        if (mFooterProgressBar != null) {
-            mCardListView.removeFooterView(mFooterProgressBar);
-            mCardListView.setOnScrollListener(null);
-            mFooterProgressBar = null;
-        }
+        mCardListView.setOnScrollListener(null);
     }
 
     /**
@@ -339,4 +322,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             })
             .setup(mPullToRefresh);
     }
+
+    protected abstract void hideProgress();
+
 }
