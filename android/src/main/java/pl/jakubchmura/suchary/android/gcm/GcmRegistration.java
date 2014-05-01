@@ -1,6 +1,5 @@
 package pl.jakubchmura.suchary.android.gcm;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -28,30 +27,34 @@ public class GcmRegistration {
     private final String SENDER_ID = "375845694760";
     private GoogleCloudMessaging gcm;
     private String regId;
-    private Activity mActivity;
+    private Context mContext;
 
-    public GcmRegistration(Activity activity) {
-        mActivity = activity;
+    public GcmRegistration(Context context) {
+        mContext = context;
     }
 
-    public void register() {
-        if (checkPlayServices() && NetworkHelper.isOnline(mActivity)) {
-            gcm = GoogleCloudMessaging.getInstance(mActivity);
-            regId = getRegistrationId(mActivity);
+    public boolean register() {
+        if (checkPlayServices()) {
+            if (NetworkHelper.isOnline(mContext)) {
+                gcm = GoogleCloudMessaging.getInstance(mContext);
+                regId = getRegistrationId(mContext);
 
-            if (regId.isEmpty()) {
-                registerInBackground();
-            } else {
-                sendIdToBackend(regId, "register");
+                if (regId.isEmpty()) {
+                    registerInBackground();
+                } else {
+                    sendIdToBackend(regId, "register");
+                }
             }
+            return true;
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
+            return false;
         }
     }
 
     public void unregister() {
-        if (checkPlayServices() && NetworkHelper.isOnline(mActivity)) {
-            regId = getRegistrationId(mActivity);
+        if (checkPlayServices() && NetworkHelper.isOnline(mContext)) {
+            regId = getRegistrationId(mContext);
             if (!regId.isEmpty()) {
                 sendIdToBackend(regId, "unregister");
             }
@@ -107,7 +110,7 @@ public class GcmRegistration {
                 String msg;
                 try {
                     if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(mActivity);
+                        gcm = GoogleCloudMessaging.getInstance(mContext);
                     }
                     regId = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regId;
@@ -115,7 +118,7 @@ public class GcmRegistration {
 
                     sendIdToBackend(regId, "register");
 
-                    storeRegistrationId(mActivity, regId);
+                    storeRegistrationId(mContext, regId);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                     // If there is an error, don't just keep trying to register.
@@ -187,17 +190,8 @@ public class GcmRegistration {
 
 
     private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mActivity);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, mActivity,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-            }
-            return false;
-        }
-        return true;
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
+        return resultCode == ConnectionResult.SUCCESS;
     }
 
 }

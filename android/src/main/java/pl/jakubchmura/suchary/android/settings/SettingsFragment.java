@@ -53,7 +53,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             boolean notification = sharedPreferences.getBoolean(KEY_PREF_NOTIF, false);
             GcmRegistration gcm = new GcmRegistration(mActivity);
             if (notification) {
-                gcm.register();
+                if (!gcm.register()) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("pref_notif", false);
+                    editor.commit();
+                }
             } else {
                 gcm.unregister();
             }

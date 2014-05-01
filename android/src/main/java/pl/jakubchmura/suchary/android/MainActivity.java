@@ -98,7 +98,11 @@ public class MainActivity extends Activity
         boolean notification = sharedPref.getBoolean("pref_notif", false);
         GcmRegistration gcm = new GcmRegistration(this);
         if (notification) {
-            gcm.register();
+            if (!gcm.register()) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("pref_notif", false);
+                editor.commit();
+            }
         } else {
             gcm.unregister();
         }
