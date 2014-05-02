@@ -58,8 +58,6 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        LinearLayout undoLayout = (LinearLayout) getActivity().findViewById(R.id.list_card_undobar);
-//        undoLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -82,9 +80,11 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 mProgress.setVisibility(View.GONE);
                 if (jokes.size() == 0) {
                     showPlaceholder();
+                    setRetainInstance(false);
                 } else {
                     mFetcher.setJokes(jokes);
                     mFetcher.fetchNext();
+                    setRetainInstance(true);
                 }
             }
         }.execute((Void)null);
@@ -99,7 +99,10 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 joke.setStar(false);
                 JokeDbHelper helper = new JokeDbHelper(mActivity);
                 helper.updateJoke(joke);
-                if (mAdapter.getCount() == 0) showPlaceholder();
+                if (mAdapter.getCount() == 0) {
+                    showPlaceholder();
+                    setRetainInstance(false);
+                }
             }
         };
         Card.OnUndoSwipeListListener undoSwipeListListener = new Card.OnUndoSwipeListListener(){
@@ -108,7 +111,10 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 joke.setStar(true);
                 JokeDbHelper helper = new JokeDbHelper(mActivity);
                 helper.updateJoke(joke);
-                if (mAdapter.getCount() > 0) hidePlaceholder();
+                if (mAdapter.getCount() > 0) {
+                    hidePlaceholder();
+                    setRetainInstance(true);
+                }
 
             }
         };
