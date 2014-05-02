@@ -9,4 +9,18 @@
         <item name="android:background">@color/card_list_view_background</item>
     </style>
 
+    <style name="placeholder_image">
+        <item name="android:layout_marginTop">@dimen/placeholder_image_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/placeholder_image_margin_bottom</item>
+        <item name="android:layout_height">@dimen/placeholder_image_height</item>
+    </style>
+
+    <style name="placeholder_text">
+        <item name="android:textSize">@dimen/placeholder_text_text_size</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_marginLeft">@dimen/placeholder_text_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/placeholder_text_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/placeholder_text_margin_top</item>
+    </style>
+
 </resources>

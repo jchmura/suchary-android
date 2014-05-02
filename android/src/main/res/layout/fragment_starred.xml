@@ -1,5 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_starred"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,7 +17,8 @@
             android:indeterminate="true"
             style="@android:style/Widget.Holo.ProgressBar.Large"
             android:layout_gravity="center"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            tools:visibility="gone"/>
 
         <it.gmariotti.cardslib.library.view.CardListView
             android:id="@+id/cardList"
@@ -24,22 +26,22 @@
             android:layout_height="match_parent"
             card:list_card_layout_resourceID="@layout/list_card_layout"
             android:visibility="gone"
-            android:layout_gravity="top" />
+            android:layout_gravity="top"
+            tools:visibility="visible" />
 
-        <LinearLayout
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:id="@+id/placeholder"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
                 android:id="@+id/placeholder_image"
                 android:src="@drawable/star_light"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="20dp"
+                style="@style/placeholder_image"
                 android:contentDescription="@string/no_starred_image" />
 
             <TextView
@@ -47,12 +49,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/placeholder_text"
                 android:text="@string/no_starred"
-                android:layout_gravity="center_horizontal"
-                android:textSize="24sp"
-                android:gravity="center"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_marginTop="40dp" />
+                style="@style/placeholder_text"/>
         </LinearLayout>
     </RelativeLayout>
 

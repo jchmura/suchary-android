@@ -15,4 +15,18 @@
     <dimen name="card_expand_button_padding_right">9dp</dimen>
     <dimen name="card_expand_button_width">50dp</dimen>
     <dimen name="card_expand_button_height">40dp</dimen>
+
+
+    <!-- Starred placeholder image -->
+    <dimen name="placeholder_image_margin_top">40dp</dimen>
+    <dimen name="placeholder_image_margin_bottom">20dp</dimen>
+    <dimen name="placeholder_image_height">150dp</dimen>
+
+    <!-- Starred placeholder text -->
+    <dimen name="placeholder_text_text_size">24sp</dimen>
+    <dimen name="placeholder_text_margin_left">10dp</dimen>
+    <dimen name="placeholder_text_margin_right">10dp</dimen>
+    <dimen name="placeholder_text_margin_top">40dp</dimen>
+    <dimen name="placeholder_text_margin_bottom">20dp</dimen>
+
 </resources>

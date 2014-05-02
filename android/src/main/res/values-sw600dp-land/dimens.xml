@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Starred placeholder image -->
+    <dimen name="placeholder_image_margin_top">20dp</dimen>
+
+    <!-- Starred placeholder text -->
+    <dimen name="placeholder_text_margin_top">20dp</dimen>
+</resources>
