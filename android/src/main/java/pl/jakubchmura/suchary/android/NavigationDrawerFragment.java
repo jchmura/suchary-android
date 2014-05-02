@@ -4,11 +4,13 @@ package pl.jakubchmura.suchary.android;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 /**
@@ -95,6 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
         ));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        setUpFooter();
         return mDrawerListView;
     }
 
@@ -159,6 +165,48 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void setUpFooter() {
+        // Settings
+        View settings = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        if (settings != null) {
+            ImageView imageSettings = (ImageView) settings.findViewById(R.id.image);
+            imageSettings.setImageResource(R.drawable.ic_action_settings);
+            TextView textSettings = (TextView) settings.findViewById(R.id.text);
+            textSettings.setText(R.string.navigation_drawer_settings);
+            settings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), Settings.class);
+                    startActivity(intent);
+                }
+            });
+            mDrawerListView.addFooterView(settings);
+        }
+
+        // Info
+        View info = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        if (info != null) {
+            ImageView imageInfo = (ImageView) info.findViewById(R.id.image);
+            imageInfo.setImageResource(R.drawable.ic_action_about);
+            TextView textInfo = (TextView) info.findViewById(R.id.text);
+            textInfo.setText(R.string.navigation_drawer_about);
+            info.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "about clicked");
+                }
+            });
+            mDrawerListView.addFooterView(info);
+        }
+
+        // Last divider
+        ImageView divide = new ImageView(getActivity());
+        divide.setImageResource(R.color.drawer_footer_divider);
+        divide.setMinimumHeight(2);
+
+        mDrawerListView.addFooterView(divide);
     }
 
     private void selectItem(int position) {

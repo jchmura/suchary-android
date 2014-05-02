@@ -20,7 +20,6 @@ import com.crashlytics.android.Crashlytics;
 
 import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
 import pl.jakubchmura.suchary.android.search.SearchActivity;
-import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 
@@ -209,12 +208,7 @@ public class MainActivity extends Activity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, Settings.class);
-            startActivity(intent);
-            return true;
-        }
+        // int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 

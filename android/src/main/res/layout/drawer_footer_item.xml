@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/drawer_footer_item_background">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:src="@color/drawer_footer_divider"
+        android:layout_alignParentTop="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/drawer_footer_item_image_height"
+        android:id="@+id/image"
+        android:layout_marginLeft="@dimen/drawer_footer_item_margin_left"
+        tools:src="@drawable/ic_action_settings"
+        android:layout_marginTop="@dimen/drawer_footer_item_margin_top"
+        android:layout_marginBottom="@dimen/drawer_footer_item_margin_bottom"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/navigation_drawer_settings"
+        android:fontFamily="sans-serif-light"
+        android:id="@+id/text"
+        android:layout_marginLeft="@dimen/drawer_footer_item_text_margin_left"
+        android:layout_toRightOf="@+id/image"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/drawer_footer_item_margin_top"
+        android:layout_marginBottom="@dimen/drawer_footer_item_margin_bottom"
+        android:textSize="@dimen/drawer_footer_item_text_size" />
+</RelativeLayout>

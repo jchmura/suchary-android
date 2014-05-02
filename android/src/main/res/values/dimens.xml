@@ -32,7 +32,13 @@
     <dimen name="drawer_item_text_size">22sp</dimen>
     <dimen name="drawer_item_padding_top">20dp</dimen>
     <dimen name="drawer_item_padding_bottom">20dp</dimen>
-    <dimen name="drawer_item_padding_right">3dp</dimen>
-    <dimen name="drawer_item_padding_left">3dp</dimen>
     <dimen name="drawer_item_margin_left">20dp</dimen>
+
+    <!-- Drawer footer view -->
+    <dimen name="drawer_footer_item_margin_left">10dp</dimen>
+    <dimen name="drawer_footer_item_text_margin_left">0dp</dimen>
+    <dimen name="drawer_footer_item_text_size">14sp</dimen>
+    <dimen name="drawer_footer_item_margin_top">10dp</dimen>
+    <dimen name="drawer_footer_item_margin_bottom">10dp</dimen>
+    <dimen name="drawer_footer_item_image_height">25dp</dimen>
 </resources>

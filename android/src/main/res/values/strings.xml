@@ -15,6 +15,8 @@
     <string name="section_new">Najnowsze</string>
     <string name="section_starred">Ulubione</string>
     <string name="section_random">Losowe</string>
+    <string name="navigation_drawer_settings">USTAWIENIA</string>
+    <string name="navigation_drawer_about">O APLIKACJI</string>
 
     <!-- Action Bar -->
     <string name="action_settings">Ustawienia</string>
@@ -57,7 +59,5 @@
     <!-- Starred -->
     <string name="no_starred">Nie masz żadnych ulubionych sucharów. Wróć i zaznacz te, które ci się podobają.</string>
     <string name="no_starred_image">Brak ulubionych sucharów</string>
-
-
 
 </resources>
