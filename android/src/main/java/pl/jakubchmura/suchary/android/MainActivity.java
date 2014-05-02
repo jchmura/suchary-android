@@ -47,7 +47,7 @@ public class MainActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action != null) {
+            if (action != null && mFragment != null) {
                 switch (action) {
                     case ACTION_NEW_JOKE:
                         mFragment.checkNewJokes();
