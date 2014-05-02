@@ -2,12 +2,10 @@ package pl.jakubchmura.suchary.android;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 
 public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
@@ -50,23 +48,23 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
     }
 
     protected void setPullable() {
-        ActionBarPullToRefresh.from(mActivity)
-            .allChildrenArePullable()
-            .listener(new OnRefreshListener() {
-                @Override
-                public void onRefreshStarted(View view) {
-                    mPreviousTotal = 0;
-                    mFetcher.clear();
-                    mAdapter.clear();
-                    mPullToRefresh.setRefreshComplete();
-                }
-            })
-            .setup(mPullToRefresh);
+        mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
+        mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
+                                     R.color.holo_orange, R.color.holo_blue);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPreviousTotal = 0;
+                mFetcher.clear();
+                mAdapter.clear();
+                mSwipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
-        mPullToRefresh.setVisibility(View.VISIBLE);
+        mSwipeRefresh.setVisibility(View.VISIBLE);
     }
 }

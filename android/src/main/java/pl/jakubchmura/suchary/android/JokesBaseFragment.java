@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
@@ -25,9 +26,6 @@ import pl.jakubchmura.suchary.android.joke.JokeFetcher;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 public abstract class JokesBaseFragment<ActivityClass extends Activity> extends Fragment {
 
@@ -67,9 +65,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     protected JokeFetcher mFetcher;
 
     /**
-     * Pull to refresh
+     * Swipe to refresh
      */
-    protected PullToRefreshLayout mPullToRefresh;
+    protected SwipeRefreshLayout mSwipeRefresh;
 
     /**
      * Progress Bar
@@ -98,7 +96,6 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         if (!saved) {
             mCardListView = (CardListView) mRootView.findViewById(R.id.cardList);
             mProgress = (ProgressBar) mRootView.findViewById(R.id.progress);
-            mPullToRefresh = (PullToRefreshLayout) mRootView.findViewById(R.id.ptr_layout);
             mFetcher = new JokeFetcher(mActivity, this);
 
             setScrollListener();
@@ -135,8 +132,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * @param silent don't move to top after adding
      */
     public void addJokesToTop(List<Joke> jokes, boolean silent) {
-        if (mPullToRefresh != null) {
-            mPullToRefresh.setRefreshComplete();
+        if (mSwipeRefresh != null) {
+            mSwipeRefresh.setRefreshing(false);
         }
         if (mCardListView != null && mAdapter != null) {
             int size = jokes.size();
@@ -220,8 +217,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Fetching new jokes is completed.
      */
     public void setRefreshComplete() {
-        if (mPullToRefresh != null) {
-            mPullToRefresh.setRefreshComplete();
+        if (mSwipeRefresh != null) {
+            mSwipeRefresh.setRefreshing(false);
         }
     }
 
@@ -307,15 +304,15 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     }
 
     protected void setPullable() {
-        ActionBarPullToRefresh.from(mActivity)
-            .allChildrenArePullable()
-            .listener(new OnRefreshListener() {
-                @Override
-                public void onRefreshStarted(View view) {
-                    mFetcher.getNewer();
-                }
-            })
-            .setup(mPullToRefresh);
+        mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
+        mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
+                                     R.color.holo_orange, R.color.holo_blue);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mFetcher.getNewer();
+            }
+        });
     }
 
     protected abstract void hideProgress();
