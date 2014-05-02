@@ -4,5 +4,6 @@
     android:layout_height="match_parent"
     android:choiceMode="singleChoice"
     android:dividerHeight="0dp"
-    android:background="#ccc"
-    tools:context="pl.jakubchmura.suchary.android.NavigationDrawerFragment" />
+    android:divider="@null"
+    android:background="@color/drawer_background"
+    tools:context="pl.jakubchmura.suchary.android.NavigationDrawerFragment"/>

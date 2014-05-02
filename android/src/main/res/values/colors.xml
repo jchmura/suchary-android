@@ -12,4 +12,9 @@
     <color name="date_expand">#e1e1e1</color>
     <color name="card_list_view_background">#e5e5e5</color>
 
+    <color name="drawer_background">#dadada</color>
+    <color name="drawer_item_background">#ffffff</color>
+    <color name="drawer_item_background_pressed">#cacaca</color>
+    <color name="drawer_item_background_activated">#fff0f0f0</color>
+
 </resources>

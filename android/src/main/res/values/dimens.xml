@@ -16,7 +16,6 @@
     <dimen name="card_expand_button_width">50dp</dimen>
     <dimen name="card_expand_button_height">40dp</dimen>
 
-
     <!-- Starred placeholder image -->
     <dimen name="placeholder_image_margin_top">40dp</dimen>
     <dimen name="placeholder_image_margin_bottom">20dp</dimen>
@@ -29,4 +28,11 @@
     <dimen name="placeholder_text_margin_top">40dp</dimen>
     <dimen name="placeholder_text_margin_bottom">20dp</dimen>
 
+    <!-- Drawer list item -->
+    <dimen name="drawer_item_text_size">22sp</dimen>
+    <dimen name="drawer_item_padding_top">20dp</dimen>
+    <dimen name="drawer_item_padding_bottom">20dp</dimen>
+    <dimen name="drawer_item_padding_right">3dp</dimen>
+    <dimen name="drawer_item_padding_left">3dp</dimen>
+    <dimen name="drawer_item_margin_left">20dp</dimen>
 </resources>
