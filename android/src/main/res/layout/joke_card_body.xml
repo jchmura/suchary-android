@@ -26,5 +26,5 @@
         android:paddingBottom="15dp"
         android:paddingTop="10dp"
         android:textAppearance="@android:style/TextAppearance.Holo.Large"
-        android:textSize="15sp" />
+        android:textSize="14sp" />
 </LinearLayout>
