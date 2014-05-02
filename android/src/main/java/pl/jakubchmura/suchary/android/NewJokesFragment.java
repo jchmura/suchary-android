@@ -18,13 +18,14 @@ import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements DownloadAllJokes.DownloadAllJokesCallback {
+public class NewJokesFragment extends JokesBaseFragment<MainActivity>
+        implements DownloadAllJokes.DownloadAllJokesCallback {
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final String TAG = "MainJokeFragment";
+    private static final String TAG = "NewJokesFragment";
 
     private ProgressDialog mProgressDialog;
 
@@ -32,8 +33,8 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static MainJokeFragment newInstance(int sectionNumber) {
-        MainJokeFragment fragment = new MainJokeFragment();
+    public static NewJokesFragment newInstance(int sectionNumber) {
+        NewJokesFragment fragment = new NewJokesFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -45,7 +46,7 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
             Bundle savedInstanceState) {
         boolean saved = true;
         if (mRootView == null) {
-            mRootView = inflater.inflate(R.layout.fragment_all, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_new, container, false);
             saved = false;
         }
 

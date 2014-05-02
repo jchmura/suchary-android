@@ -27,7 +27,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
                              Bundle savedInstanceState) {
         boolean saved = true;
         if (mRootView == null) {
-            mRootView = inflater.inflate(R.layout.fragment_all, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_new, container, false);
             saved = false;
         }
 

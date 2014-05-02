@@ -12,7 +12,7 @@
     <!-- Drawer -->
     <string name="navigation_drawer_open">Otwórz boczny panel</string>
     <string name="navigation_drawer_close">Zamknij boczny panel</string>
-    <string name="section_all">Wszystkie</string>
+    <string name="section_new">Najnowsze</string>
     <string name="section_starred">Ulubione</string>
     <string name="section_random">Losowe</string>
 

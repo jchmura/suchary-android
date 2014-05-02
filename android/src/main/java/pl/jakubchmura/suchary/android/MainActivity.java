@@ -124,7 +124,7 @@ public class MainActivity extends Activity
         switch (position) {
             default:
             case 0:
-                mFragment = MainJokeFragment.newInstance(position+1);
+                mFragment = NewJokesFragment.newInstance(position + 1);
                 break;
             case 1:
                 mFragment = StarredJokesFragment.newInstance(position+1);
@@ -142,7 +142,7 @@ public class MainActivity extends Activity
         mFragmentNumber = number;
         switch (number) {
             case 1:
-                mTitle = getString(R.string.section_all);
+                mTitle = getString(R.string.section_new);
                 break;
             case 2:
                 mTitle = getString(R.string.section_starred);
