@@ -2,8 +2,10 @@ package pl.jakubchmura.suchary.android;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,7 +27,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
                              Bundle savedInstanceState) {
         boolean saved = true;
         if (mRootView == null) {
-            mRootView = inflater.inflate(R.layout.fragment_new, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_random, container, false);
             saved = false;
         }
 
@@ -35,7 +37,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
             mFetcher.fetchNext();
         }
 
-        setPullable();
+        setHasOptionsMenu(true);
 
         return createdView;
     }
@@ -47,24 +49,26 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
         setRetainInstance(true);
     }
 
-    protected void setPullable() {
-        mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
-        mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
-                                     R.color.holo_orange, R.color.holo_blue);
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.random, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.shuffle:
                 mPreviousTotal = 0;
                 mFetcher.clear();
                 mAdapter.clear();
-                mSwipeRefresh.setRefreshing(false);
-            }
-        });
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
-        mSwipeRefresh.setVisibility(View.VISIBLE);
+        mCardListView.setVisibility(View.VISIBLE);
     }
 }
