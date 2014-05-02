@@ -12,7 +12,7 @@
         android:right="@dimen/card_expand_button_padding_right"
         android:left="@dimen/card_expand_button_padding_left" >
 
-        <bitmap android:src="@drawable/ic_action_dark_web_site" />
+        <bitmap android:src="@drawable/action_yellow_star" />
 
     </item>
 </layer-list>

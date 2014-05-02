@@ -261,11 +261,6 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             private boolean loading = true;
 
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                super.onScrollStateChanged(view, scrollState);
-            }
-
-            @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
                 if (loading) {

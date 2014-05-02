@@ -119,10 +119,10 @@ public class JokeExpand extends CardExpand {
 
     private void colorStar(ImageView view) {
         if (mJoke.isStar()) {
-            view.setImageResource(R.drawable.yellow_star_button);
+            view.setImageResource(R.drawable.star_button_yellow);
         }
         else {
-            view.setImageResource(R.drawable.dark_star_button);
+            view.setImageResource(R.drawable.star_button_dark);
         }
     }
 }
