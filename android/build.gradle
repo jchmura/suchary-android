@@ -1,3 +1,5 @@
+import groovy.swing.SwingBuilder
+
 buildscript {
     repositories {
         maven { url 'http://download.crashlytics.com/maven' }
@@ -25,10 +27,29 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    signingConfigs {
+        release {
+            storeFile file("/home/kuba/.android/suchary.jks")
+            keyAlias "Suchary"
+
+            // These two lines make gradle believe that the signingConfigs
+            // section is complete. Without them, tasks like installRelease
+            // will not be available!
+            storePassword "notYourRealPassword"
+            keyPassword "notYourRealPassword"
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
         }
     }
     packagingOptions {
@@ -63,4 +84,63 @@ dependencies {
     }
 //    compile "com.bugsense.trace:bugsense:3.5"
 
+}
+
+task askForPasswords << {
+    // Must create String because System.readPassword() returns char[]
+    // (and assigning that below fails silently)
+    def storePw = ''
+    def keyPw = ''
+    if (System.console()==null) {
+        new SwingBuilder().edt {
+            dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
+                    title: 'Enter password', // Dialog title
+                    alwaysOnTop: true, // pretty much what the name says
+                    resizable: false, // Don't allow the user to resize the dialog
+                    locationRelativeTo: null, // Place dialog in center of the screen
+                    pack: true, // We need to pack the dialog (so it will take the size of it's children)
+                    show: true // Let's show it
+            ) {
+                vbox { // Put everything below each other
+                    label(text: "Please enter keystore password:")
+                    input = passwordField()
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        storePw = new String(input.password); // Set pass variable to value of input field
+                        dispose(); // Close dialog
+                    })
+                }
+            }
+        }
+        new SwingBuilder().edt {
+            dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
+                    title: 'Enter password', // Dialog title
+                    alwaysOnTop: true, // pretty much what the name says
+                    resizable: false, // Don't allow the user to resize the dialog
+                    locationRelativeTo: null, // Place dialog in center of the screen
+                    pack: true, // We need to pack the dialog (so it will take the size of it's children)
+                    show: true // Let's show it
+            ) {
+                vbox { // Put everything below each other
+                    label(text: "Please enter key password:")
+                    input = passwordField()
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        keyPw = new String(input.password); // Set pass variable to value of input field
+                        dispose(); // Close dialog
+                    })
+                }
+            }
+        }
+    } else {
+        storePw = new String(System.console().readPassword("\nKeystore password: "))
+        keyPw  = new String(System.console().readPassword("\nKey password: "))
+    }
+
+    android.signingConfigs.release.storePassword = storePw
+    android.signingConfigs.release.keyPassword = keyPw
+}
+
+tasks.whenTaskAdded { theTask ->
+    if (theTask.name.equals("packageRelease")) {
+        theTask.dependsOn "askForPasswords"
+    }
 }

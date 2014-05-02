@@ -47,7 +47,7 @@ public class GcmRegistration {
             }
             return true;
         } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
+            Log.v(TAG, "No valid Google Play Services APK found.");
             return false;
         }
     }
@@ -59,7 +59,7 @@ public class GcmRegistration {
                 sendIdToBackend(regId, "unregister");
             }
         } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
+            Log.v(TAG, "No valid Google Play Services APK found.");
         }
     }
 
@@ -67,7 +67,7 @@ public class GcmRegistration {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
-            Log.i(TAG, "Registration not found.");
+            Log.v(TAG, "Registration not found.");
             return "";
         }
         // Check if app was updated; if so, it must clear the registration ID
@@ -76,7 +76,7 @@ public class GcmRegistration {
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
+            Log.v(TAG, "App version changed.");
             return "";
         }
         return registrationId;
@@ -155,7 +155,7 @@ public class GcmRegistration {
                     //noinspection ConstantConditions
                     if ((connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) |
                             (connection.getResponseCode() != HttpURLConnection.HTTP_OK)) {
-                        Log.v(TAG, "Server returned HTTP " + connection.getResponseCode()
+                        Log.d(TAG, "Server returned HTTP " + connection.getResponseCode()
                                 + " " + connection.getResponseMessage());
                     }
                 } catch (IOException e) {

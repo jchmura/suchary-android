@@ -15,3 +15,12 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#To remove debug and error logs:
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** e(...);
+}
+
+-dontwarn it.gmariotti.cardslib.library.view.CardGridView
