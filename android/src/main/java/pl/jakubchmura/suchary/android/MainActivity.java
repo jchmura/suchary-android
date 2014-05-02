@@ -14,8 +14,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 import com.crashlytics.android.Crashlytics;
@@ -86,8 +84,6 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        LinearLayout undoLayout = (LinearLayout) findViewById(R.id.list_card_undobar);
-            undoLayout.setVisibility(View.GONE);
     }
 
     @Override

@@ -4,52 +4,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     style="@style/card_list_view">
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progress"
-        android:indeterminate="true"
-        style="@android:style/Widget.Holo.ProgressBar.Large"
-        android:layout_gravity="center" />
-
-    <it.gmariotti.cardslib.library.view.CardListView
-        android:id="@+id/cardList"
+    
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        card:list_card_layout_resourceID="@layout/list_card_layout"
-        android:visibility="gone"
-        android:layout_gravity="top" />
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/placeholder"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:id="@+id/placeholder_image"
-            android:src="@drawable/star_light"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="20dp"
-            android:contentDescription="@string/no_starred_image" />
-
-        <TextView
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/placeholder_text"
-            android:text="@string/no_starred"
-            android:layout_gravity="center_horizontal"
-            android:textSize="24sp"
-            android:gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginTop="40dp" />
-    </LinearLayout>
+            android:id="@+id/progress"
+            android:indeterminate="true"
+            style="@android:style/Widget.Holo.ProgressBar.Large"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true" />
 
+        <it.gmariotti.cardslib.library.view.CardListView
+            android:id="@+id/cardList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            card:list_card_layout_resourceID="@layout/list_card_layout"
+            android:visibility="gone"
+            android:layout_gravity="top" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/placeholder"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/placeholder_image"
+                android:src="@drawable/star_light"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp"
+                android:contentDescription="@string/no_starred_image" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeholder_text"
+                android:text="@string/no_starred"
+                android:layout_gravity="center_horizontal"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="40dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/joke_card_undo_layout"/>
 
 </FrameLayout>

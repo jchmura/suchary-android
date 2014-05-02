@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -31,9 +30,6 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
             mRootView = inflater.inflate(R.layout.fragment_all, container, false);
             saved = false;
         }
-
-        LinearLayout undoLayout = (LinearLayout) mActivity.findViewById(R.id.list_card_undobar);
-        undoLayout.setVisibility(View.GONE);
 
         View createdView = createView(saved);
         if (!saved) {

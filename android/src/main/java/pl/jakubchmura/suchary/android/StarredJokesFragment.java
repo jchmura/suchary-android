@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.view.listener.UndoBarController;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
@@ -45,11 +44,6 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         if (!saved) {
             getJokes();
         }
-        if (mAdapter != null){
-            mAdapter.setEnableUndo(true);
-            UndoBarController mUndoBarController = mAdapter.getUndoBarController();
-            mUndoBarController.hideUndoBar(true);
-        }
 
         return createdView;
     }
@@ -59,6 +53,19 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         super.onAttach(activity);
         mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
         setRetainInstance(true);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        LinearLayout undoLayout = (LinearLayout) getActivity().findViewById(R.id.list_card_undobar);
+//        undoLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void addJokesToBottom(List<Joke> jokes) {
+        super.addJokesToBottom(jokes);
+        mAdapter.setEnableUndo(true);
     }
 
     protected void getJokes() {
@@ -72,7 +79,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
             }
             @Override
             protected void onPostExecute(List<Joke> jokes) {
-                hideProgress();
+                mProgress.setVisibility(View.GONE);
                 if (jokes.size() == 0) {
                     showPlaceholder();
                 } else {
@@ -128,5 +135,6 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
     @Override
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
+        mCardListView.setVisibility(View.VISIBLE);
     }
 }

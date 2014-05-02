@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -49,8 +48,6 @@ public class MainJokeFragment extends JokesBaseFragment<MainActivity> implements
             mRootView = inflater.inflate(R.layout.fragment_all, container, false);
             saved = false;
         }
-        LinearLayout undoLayout = (LinearLayout) mActivity.findViewById(R.id.list_card_undobar);
-        undoLayout.setVisibility(View.GONE);
 
         View createdView = createView(saved);
 
