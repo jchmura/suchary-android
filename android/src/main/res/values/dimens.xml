@@ -5,8 +5,9 @@
 
     <!-- Override default cardslib values -->
     <dimen name="card_base_empty_height">42dp</dimen>
-    <dimen name="list_card_padding_bottom">2dp</dimen>
+    <dimen name="list_card_padding_bottom">0dp</dimen>
     <dimen name="list_card_padding_top">5dp</dimen>
+    <dimen name="card_expand_layout_padding">0dp</dimen>
 
     <!-- Card expand -->
     <dimen name="card_expand_button_padding_top">4dp</dimen>

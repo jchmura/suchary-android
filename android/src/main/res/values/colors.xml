@@ -10,7 +10,7 @@
     <color name="action_bar_title">#90000000</color>
     <color name="action_bar_subtitle">@android:color/secondary_text_light</color>
     <color name="date_expand">#e1e1e1</color>
-    <color name="card_list_view_background">#e5e5e5</color>
+    <color name="card_list_view_background">#f0f0f0</color>
 
     <color name="drawer_background">#f4f4f4</color>
     <color name="drawer_item_background">#ffffff</color>
