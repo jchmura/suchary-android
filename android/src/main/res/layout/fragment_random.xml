@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:id="@+id/fragment_all"
+    android:id="@+id/fragment_random"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="pl.jakubchmura.suchary.android.NewJokesFragment"
@@ -16,18 +16,11 @@
         android:layout_gravity="center"
         android:layout_weight="1" />
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <it.gmariotti.cardslib.library.view.CardListView
+        android:id="@+id/cardList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/swipe"
-        android:visibility="gone">
-
-        <it.gmariotti.cardslib.library.view.CardListView
-            android:id="@+id/cardList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:smoothScrollbar="true" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:smoothScrollbar="true"
+        android:visibility="gone"/>
 
 </LinearLayout>

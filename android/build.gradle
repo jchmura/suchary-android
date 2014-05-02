@@ -72,7 +72,6 @@ repositories {
 
 dependencies {
     compile 'com.github.gabrielemariotti.cards:library:+'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:+'
     compile 'com.google.android.gms:play-services:4.3.23'
     compile 'com.android.support:support-v4:+'
     compile 'com.intellij:annotations:+@jar'

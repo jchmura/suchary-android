@@ -3,11 +3,11 @@ package pl.jakubchmura.suchary.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 
 public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
@@ -27,7 +27,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
                              Bundle savedInstanceState) {
         boolean saved = true;
         if (mRootView == null) {
-            mRootView = inflater.inflate(R.layout.fragment_new, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_random, container, false);
             saved = false;
         }
 
@@ -37,7 +37,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
             mFetcher.fetchNext();
         }
 
-        setPullable();
+        setHasOptionsMenu(true);
 
         return createdView;
     }
@@ -49,24 +49,26 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
         setRetainInstance(true);
     }
 
-    protected void setPullable() {
-        ActionBarPullToRefresh.from(mActivity)
-            .allChildrenArePullable()
-            .listener(new OnRefreshListener() {
-                @Override
-                public void onRefreshStarted(View view) {
-                    mPreviousTotal = 0;
-                    mFetcher.clear();
-                    mAdapter.clear();
-                    mPullToRefresh.setRefreshComplete();
-                }
-            })
-            .setup(mPullToRefresh);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.random, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.shuffle:
+                mPreviousTotal = 0;
+                mFetcher.clear();
+                mAdapter.clear();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
-        mPullToRefresh.setVisibility(View.VISIBLE);
+        mCardListView.setVisibility(View.VISIBLE);
     }
 }

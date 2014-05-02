@@ -59,5 +59,6 @@
     <!-- Starred -->
     <string name="no_starred">Nie masz żadnych ulubionych sucharów. Wróć i zaznacz te, które ci się podobają.</string>
     <string name="no_starred_image">Brak ulubionych sucharów</string>
+    <string name="action_shuffle">Mieszaj</string>
 
 </resources>

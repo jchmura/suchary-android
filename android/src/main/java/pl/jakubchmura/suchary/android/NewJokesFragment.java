@@ -115,7 +115,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     @Override
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
-        mPullToRefresh.setVisibility(View.VISIBLE);
+        mSwipeRefresh.setVisibility(View.VISIBLE);
     }
 
     @Override
