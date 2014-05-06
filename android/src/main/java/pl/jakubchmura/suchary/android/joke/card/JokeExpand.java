@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 
 import it.gmariotti.cardslib.library.internal.CardExpand;
+import it.gmariotti.cardslib.library.internal.dismissanimation.SwipeDismissAnimation;
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
@@ -23,6 +24,7 @@ public class JokeExpand extends CardExpand {
 
     private Joke mJoke;
     private Context mContext;
+    private SwipeDismissAnimation mDismissAnimation;
 
     public JokeExpand(Context context, Joke joke) {
         super(context, R.layout.joke_card_expand);
@@ -50,14 +52,17 @@ public class JokeExpand extends CardExpand {
                 public void onClick(View v) {
                     mJoke.setStar(!mJoke.isStar());
                     colorStar((ImageView) v);
-                    new AsyncTask<Void, Void, Void>(){
+                    new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
                             JokeDbHelper helper = new JokeDbHelper(mContext);
                             helper.updateJoke(mJoke);
                             return null;
                         }
-                    }.execute((Void)null);
+                    }.execute((Void) null);
+                    if (mDismissAnimation != null && mParentCard != null) {
+                        mDismissAnimation.animateDismiss(mParentCard);
+                    }
                 }
             });
             ivStar.setOnLongClickListener(new View.OnLongClickListener() {
@@ -115,6 +120,10 @@ public class JokeExpand extends CardExpand {
                 }
             });
         }
+    }
+
+    public void setDismissAnimation(final SwipeDismissAnimation dismissAnimation) {
+        mDismissAnimation = dismissAnimation;
     }
 
     private void colorStar(ImageView view) {

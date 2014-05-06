@@ -13,9 +13,11 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.dismissanimation.SwipeDismissAnimation;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
+import pl.jakubchmura.suchary.android.joke.card.JokeExpand;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.FontCache;
 
@@ -23,6 +25,8 @@ import pl.jakubchmura.suchary.android.util.FontCache;
 public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
     private static final String TAG = "StarredJokesFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    protected SwipeDismissAnimation mDismissAnimation;
 
     public static StarredJokesFragment newInstance(int sectionNumber) {
         StarredJokesFragment fragment = new StarredJokesFragment();
@@ -42,6 +46,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         }
         View createdView = createView(saved);
         if (!saved) {
+            mDismissAnimation = new SwipeDismissAnimation(mActivity);
             getJokes();
         }
 
@@ -64,6 +69,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
     public void addJokesToBottom(List<Joke> jokes) {
         super.addJokesToBottom(jokes);
         mAdapter.setEnableUndo(true);
+        mDismissAnimation.setup(mAdapter);
     }
 
     protected void getJokes() {
@@ -118,7 +124,10 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
 
             }
         };
-        return cardFactory.getCard(joke, swipeListener, undoSwipeListListener);
+        JokeCard card =  cardFactory.getCard(joke, swipeListener, undoSwipeListListener);
+        JokeExpand expand = (JokeExpand) card.getCardExpand();
+        expand.setDismissAnimation(mDismissAnimation);
+        return card;
     }
 
     protected void showPlaceholder() {
