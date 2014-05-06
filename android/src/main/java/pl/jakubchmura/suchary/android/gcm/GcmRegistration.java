@@ -22,11 +22,10 @@ import pl.jakubchmura.suchary.android.util.NetworkHelper;
 public class GcmRegistration {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String TAG = "GcmRegistration";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String PROPERTY_APP_VERSION = "0.1";
     private final String SENDER_ID = "375845694760";
-    private GoogleCloudMessaging gcm;
-    private String regId;
+    private GoogleCloudMessaging mGcm;
+    private String mRegId;
     private Context mContext;
 
     public GcmRegistration(Context context) {
@@ -36,13 +35,13 @@ public class GcmRegistration {
     public boolean register() {
         if (checkPlayServices()) {
             if (NetworkHelper.isOnline(mContext)) {
-                gcm = GoogleCloudMessaging.getInstance(mContext);
-                regId = getRegistrationId(mContext);
+                mGcm = GoogleCloudMessaging.getInstance(mContext);
+                mRegId = getRegistrationId();
 
-                if (regId.isEmpty()) {
+                if (mRegId.isEmpty()) {
                     registerInBackground();
                 } else {
-                    sendIdToBackend(regId, "register");
+                    sendIdToBackend("register");
                 }
             }
             return true;
@@ -54,17 +53,17 @@ public class GcmRegistration {
 
     public void unregister() {
         if (checkPlayServices() && NetworkHelper.isOnline(mContext)) {
-            regId = getRegistrationId(mContext);
-            if (!regId.isEmpty()) {
-                sendIdToBackend(regId, "unregister");
+            mRegId = getRegistrationId();
+            if (!mRegId.isEmpty()) {
+                sendIdToBackend("unregister");
             }
         } else {
             Log.v(TAG, "No valid Google Play Services APK found.");
         }
     }
 
-    private String getRegistrationId(Context context) {
-        final SharedPreferences prefs = getGCMPreferences(context);
+    private String getRegistrationId() {
+        final SharedPreferences prefs = getGCMPreferences();
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
             Log.v(TAG, "Registration not found.");
@@ -74,7 +73,7 @@ public class GcmRegistration {
         // since the existing regID is not guaranteed to work with the new
         // app version.
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
-        int currentVersion = getAppVersion(context);
+        int currentVersion = getAppVersion();
         if (registeredVersion != currentVersion) {
             Log.v(TAG, "App version changed.");
             return "";
@@ -82,16 +81,16 @@ public class GcmRegistration {
         return registrationId;
     }
 
-    private SharedPreferences getGCMPreferences(Context context) {
-        return context.getSharedPreferences(Settings.class.getSimpleName(),
+    private SharedPreferences getGCMPreferences() {
+        return mContext.getSharedPreferences(Settings.class.getSimpleName(),
                 Context.MODE_PRIVATE);
     }
 
-    private int getAppVersion(Context context) {
+    private int getAppVersion() {
         try {
-            PackageManager packageManager = context.getPackageManager();
+            PackageManager packageManager = mContext.getPackageManager();
             if (packageManager != null) {
-                PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+                PackageInfo packageInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
                 return packageInfo.versionCode;
             }
             return -1;
@@ -109,16 +108,16 @@ public class GcmRegistration {
             protected String doInBackground(Object[] params) {
                 String msg;
                 try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(mContext);
+                    if (mGcm == null) {
+                        mGcm = GoogleCloudMessaging.getInstance(mContext);
                     }
-                    regId = gcm.register(SENDER_ID);
-                    msg = "Device registered, registration ID=" + regId;
+                    mRegId = mGcm.register(SENDER_ID);
+                    msg = "Device registered, registration ID=" + mRegId;
                     Log.i(TAG, msg);
 
-                    sendIdToBackend(regId, "register");
+                    sendIdToBackend("register");
 
-                    storeRegistrationId(mContext, regId);
+                    storeRegistrationId();
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                     // If there is an error, don't just keep trying to register.
@@ -130,11 +129,11 @@ public class GcmRegistration {
         }.execute(null, null, null);
     }
 
-    private void sendIdToBackend(final String regId, final String action) {
+    private void sendIdToBackend(final String action) {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                String data = "registration_id=" + regId;
+                String data = "registration_id=" + mRegId;
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
@@ -178,12 +177,12 @@ public class GcmRegistration {
         }.execute(null, null, null);
     }
 
-    private void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        int appVersion = getAppVersion(context);
+    private void storeRegistrationId() {
+        final SharedPreferences prefs = getGCMPreferences();
+        int appVersion = getAppVersion();
         Log.i(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putString(PROPERTY_REG_ID, mRegId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
     }
