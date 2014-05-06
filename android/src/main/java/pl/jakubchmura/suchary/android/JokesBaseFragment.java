@@ -176,6 +176,10 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * @param jokes list of jokes with modification
      */
     public void replaceJokes(List<Joke> jokes) {
+        if (mAdapter == null) {
+            return;
+        }
+
         for (Joke joke : jokes) {
             JokeCard card = mAdapter.getCard(joke.getKey());
             if (card != null) {
@@ -196,12 +200,14 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * @param keys keys of jokes to delete
      */
     public void deleteJokes(String[] keys) {
-        if (mAdapter != null) {
-            for (String key : keys) {
-                JokeCard card = mAdapter.getCard(key);
-                if (card != null) {
-                    mAdapter.remove(card);
-                }
+        if (mAdapter == null) {
+            return;
+        }
+
+        for (String key : keys) {
+            JokeCard card = mAdapter.getCard(key);
+            if (card != null) {
+                mAdapter.remove(card);
             }
         }
     }
