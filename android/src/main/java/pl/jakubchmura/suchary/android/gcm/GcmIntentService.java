@@ -31,6 +31,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
     private static final String TAG = "IntentService";
     private Intent mIntent;
+    private static boolean mHandling = false;
 
     public static final String PREFS_NAME = "gcm_jokes";
     public static final String EDIT_JOKE = "edit_joke";
@@ -82,6 +83,11 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     }
 
     private void handleNewJokes() {
+        if (mHandling) {
+            GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+            return;
+        }
+        mHandling = true;
         getNewer();
     }
 
@@ -131,7 +137,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                 if (joke != null) {
                     downloadNewer(joke.getDate());
                 } else {
-                    GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+                    finish();
                 }
             }
         }.execute((Void)null);
@@ -147,20 +153,22 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
             download.execute(url);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+            finish();
         }
     }
 
 
     @Override
     public void getAPIAllResult(List<Joke> jokes) {
-        jokes.remove(jokes.size()-1);
+        if (jokes.size() > 0) {
+            jokes.remove(jokes.size() - 1);
+        }
         if (!jokes.isEmpty()) {
             Joke last = jokes.get(jokes.size()-1);
             NewJokeNotification.notify(this, last.getBody(), jokes.size());
             addJokesToDatabase(jokes);
         } else {
-            GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+            finish();
         }
     }
 
@@ -179,7 +187,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                 Intent intent = new Intent();
                 intent.setAction(MainActivity.ACTION_NEW_JOKE);
                 sendBroadcast(intent);
-                GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+                finish();
             }
         }.execute(jokes);
     }
@@ -262,9 +270,14 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         editor.commit();
     }
 
+    private void finish() {
+        mHandling = false;
+        GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+    }
+
     @Override
     public void errorDownloadingAll() {
-        GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+        finish();
     }
 
     @Override

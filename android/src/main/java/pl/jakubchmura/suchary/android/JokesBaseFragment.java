@@ -74,6 +74,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     protected ProgressBar mProgress;
 
+    /**
+     * Crouton informing about new jokes
+     */
+    private Crouton mCroutonNew;
+
     public JokesBaseFragment() {
     }
 
@@ -156,18 +161,19 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     private void showCroutonNew(int size) {
         @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.holo_blue).build();
-        new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE);
+        Configuration configuration = new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE).build();
         String croutonText = getResources().getQuantityString(R.plurals.new_joke_notification, size);
-        final Crouton crouton = Crouton.makeText(mActivity, croutonText, style);
-        crouton.setOnClickListener(new View.OnClickListener() {
+        mCroutonNew = Crouton.makeText(mActivity, croutonText, style);
+        mCroutonNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCardListView.smoothScrollToPosition(0);
-                crouton.cancel();
+                mCroutonNew.hide();
             }
         });
+        mCroutonNew.setConfiguration(configuration);
         Crouton.cancelAllCroutons();
-        crouton.show();
+        mCroutonNew.show();
     }
 
     /**
@@ -266,6 +272,10 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
+                if (firstVisibleItem == 1 && mCroutonNew != null) {
+                    mCroutonNew.hide();
+                }
+
                 if (loading) {
                     if (totalItemCount > mPreviousTotal) {
                         loading = false;
