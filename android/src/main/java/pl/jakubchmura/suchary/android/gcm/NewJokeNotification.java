@@ -64,7 +64,7 @@ public class NewJokeNotification {
         builder.setLights(0xff00ff00, 800, 1000);
 
         // Small icon, the notification title and text.
-        builder.setSmallIcon(R.drawable.ic_logo)
+        builder.setSmallIcon(R.drawable.ic_launcher)
                .setContentTitle(res.getQuantityString(
                         R.plurals.new_joke_notification, number, number))
                .setContentText(text);
