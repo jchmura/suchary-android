@@ -47,7 +47,7 @@
 
     <!-- Override CardsLib defaults -->
     <string name="list_card_undo_title">Cofnij</string>
-        <plurals name="list_card_undo_items">
+    <plurals name="list_card_undo_items">
         <item quantity="one">Usunięto suchar z ulubionych</item>
         <item quantity="few">Usunięto %d suchary z ulubionych</item>
         <item quantity="other">Usunięto %d sucharów z ulubionych</item>

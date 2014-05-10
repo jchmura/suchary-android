@@ -162,7 +162,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     private void showCroutonNew(int size) {
         @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.holo_blue).build();
         Configuration configuration = new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE).build();
-        String croutonText = getResources().getQuantityString(R.plurals.new_joke_notification, size);
+        String croutonText = mActivity.getResources().getQuantityString(R.plurals.new_joke_notification, size, size);
         mCroutonNew = Crouton.makeText(mActivity, croutonText, style);
         mCroutonNew.setOnClickListener(new View.OnClickListener() {
             @Override
