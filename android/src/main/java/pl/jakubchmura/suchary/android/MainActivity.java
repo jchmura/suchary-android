@@ -19,6 +19,7 @@ import android.widget.SearchView;
 import com.crashlytics.android.Crashlytics;
 
 import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
+import pl.jakubchmura.suchary.android.gcm.NewJokeNotification;
 import pl.jakubchmura.suchary.android.search.SearchActivity;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
@@ -89,6 +90,7 @@ public class MainActivity extends Activity
     protected void onResume() {
         super.onResume();
 
+        // Register the device in GCM
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean notification = sharedPref.getBoolean("pref_notif", false);
         GcmRegistration gcm = new GcmRegistration(this);
@@ -102,11 +104,16 @@ public class MainActivity extends Activity
             gcm.unregister();
         }
 
+        // Register the broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_NEW_JOKE);
         filter.addAction(ACTION_EDIT_JOKE);
         filter.addAction(ACTION_DELETE_JOKE);
         registerReceiver(mReceiver, filter);
+        
+        // Cancel the notification about new jokes
+        NewJokeNotification.cancel(this);
+
     }
 
     @Override
