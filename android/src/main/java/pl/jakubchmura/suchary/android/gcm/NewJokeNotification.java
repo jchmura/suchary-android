@@ -61,12 +61,11 @@ public class NewJokeNotification {
         builder.setVibrate(vibrationPattern);
 
         // Light
-        builder.setLights(0xff00ff00, 800, 1000);
-
+        builder.setLights(context.getResources().getColor(R.color.notification_lights), 800, 1000);
         // Small icon, the notification title and text.
-        builder.setSmallIcon(R.drawable.ic_launcher)
+        builder.setSmallIcon(R.drawable.ic_stat_notify)
                .setContentTitle(res.getQuantityString(
-                        R.plurals.new_joke_notification, number, number))
+                       R.plurals.new_joke_notification, number, number))
                .setContentText(text);
 
         // All fields below this line are optional.

@@ -18,4 +18,6 @@
     <color name="drawer_item_background_activated">#f0f0f0</color>
     <color name="drawer_footer_divider">#e5e5e5</color>
 
+    <color name="notification_lights">#ffff7f00</color>
+
 </resources>
