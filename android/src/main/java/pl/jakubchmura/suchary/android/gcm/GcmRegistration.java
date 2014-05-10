@@ -22,7 +22,7 @@ import pl.jakubchmura.suchary.android.util.NetworkHelper;
 public class GcmRegistration {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String TAG = "GcmRegistration";
-    private static final String PROPERTY_APP_VERSION = "0.1";
+    private static final String PROPERTY_APP_VERSION = "app_version";
     private final String SENDER_ID = "375845694760";
     private GoogleCloudMessaging mGcm;
     private String mRegId;
