@@ -133,7 +133,9 @@ public class GcmRegistration {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                String data = "registration_id=" + mRegId;
+                String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+                String data = "registration_id=" + mRegId + "&android_id=" + androidID;
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {

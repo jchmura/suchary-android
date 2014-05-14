@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -66,6 +67,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                     break;
                 case GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE:
                     String type = extras.getString("type");
+                    Log.i(TAG, "Received GCM message: " + type);
                     switch (type) {
                         case "new":
                             handleNewJokes();
@@ -77,7 +79,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                             handleDeleteJoke(extras);
                             break;
                         default:
-                            GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+                            finish();
                     }
                     break;
             }
