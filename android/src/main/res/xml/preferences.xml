@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="pref_notif"
-        android:title="@string/pref_notif"
-        android:summary="@string/pref_notif_summ"
-        android:defaultValue="true" />
+    <PreferenceCategory
+        android:title="@string/pref_notif_title"
+        android:key="pref_notif_title">
+        <CheckBoxPreference
+            android:key="pref_notif"
+            android:title="@string/pref_notif"
+            android:summary="@string/pref_notif_summ"
+            android:defaultValue="true" />
 
-    <RingtonePreference
-        android:key="pref_ringtone"
-        android:title="@string/pref_ringtone"
-        android:ringtoneType="notification"
-        android:showDefault="true"
-        android:showSilent="true"
-        android:dependency="pref_notif"
-        android:defaultValue="content://settings/system/notification_sound" />
+        <RingtonePreference
+            android:key="pref_ringtone"
+            android:title="@string/pref_ringtone"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="pref_notif"
+            android:defaultValue="content://settings/system/notification_sound" />
 
-    <CheckBoxPreference
-        android:key="pref_vibration"
-        android:title="@string/pref_vibration"
-        android:dependency="pref_notif"
-        android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_vibration"
+            android:title="@string/pref_vibration"
+            android:dependency="pref_notif"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_admin_title"
+        android:key="pref_admin_title">
+
+        <Preference
+            android:key="pref_reset"
+            android:title="@string/pref_reset"
+            android:summary="@string/pref_reset_summ"/>
+    </PreferenceCategory>
 </PreferenceScreen>

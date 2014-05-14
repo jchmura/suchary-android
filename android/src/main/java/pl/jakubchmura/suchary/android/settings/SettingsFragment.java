@@ -3,6 +3,7 @@ package pl.jakubchmura.suchary.android.settings;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import pl.jakubchmura.suchary.android.R;
@@ -27,6 +28,18 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
+
+        Preference resetPreference = findPreference("pref_reset");
+        if (resetPreference != null) {
+            resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    ResetJokes resetJokes = new ResetJokes(mActivity);
+                    resetJokes.reset();
+                    return true;
+                }
+            });
+        }
     }
 
     @Override

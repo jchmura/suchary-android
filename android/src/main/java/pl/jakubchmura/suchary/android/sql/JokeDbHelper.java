@@ -244,6 +244,15 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME_KEY + " = ?", new String[]{key});
+            db.close();
+        }
+    }
+
+    public void deleteAllJokes() {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.delete(TABLE_NAME, null, null);
+            db.close();
         }
     }
 }

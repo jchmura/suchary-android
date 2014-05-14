@@ -13,6 +13,7 @@ import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
+import pl.jakubchmura.suchary.android.settings.ResetJokes;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 
 /**
@@ -80,18 +81,23 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     }
 
     protected void getJokes(final boolean saved) {
-        new AsyncTask<Void, Void, Long>() {
-            @Override
-            protected Long doInBackground(Void... params) {
-                JokeDbHelper helper = new JokeDbHelper(mActivity);
-                return helper.getCount();
-            }
-            @Override
-            protected void onPostExecute(Long count) {
-                if (count == 0) downloadJokesFromServer();
-                else if (!saved) mFetcher.fetchNext();
-            }
-        }.execute((Void)null);
+        if (ResetJokes.mJokes != null) {
+            mFetcher.setJokes(ResetJokes.mJokes);
+            mFetcher.fetchNext();
+        } else {
+            new AsyncTask<Void, Void, Long>() {
+                @Override
+                protected Long doInBackground(Void... params) {
+                    JokeDbHelper helper = new JokeDbHelper(mActivity);
+                    return helper.getCount();
+                }
+                @Override
+                protected void onPostExecute(Long count) {
+                    if (count == 0) downloadJokesFromServer();
+                    else if (!saved) mFetcher.fetchNext();
+                }
+            }.execute((Void)null);
+        }
     }
 
     private void downloadJokesFromServer() {

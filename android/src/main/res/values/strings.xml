@@ -60,5 +60,10 @@
     <string name="no_starred">Nie masz żadnych ulubionych sucharów. Wróć i zaznacz te, które ci się podobają.</string>
     <string name="no_starred_image">Brak ulubionych sucharów</string>
     <string name="action_shuffle">Mieszaj</string>
+    <string name="pref_notif_title">Powiadomienia</string>
+    <string name="pref_admin_title">Zarządzanie danymi</string>
+    <string name="pref_reset">Ściągnij ponownie wszystkie suchary</string>
+    <string name="pref_reset_summ">Informacja o ulubionych sucharach zostanie zachowana</string>
+    <string name="add_jokes_to_db">Zapisywanie sucharów</string>
 
 </resources>
