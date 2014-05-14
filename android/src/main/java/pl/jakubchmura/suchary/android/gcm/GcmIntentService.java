@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -20,6 +21,7 @@ import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
 import pl.jakubchmura.suchary.android.joke.api.DownloadJoke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadJokes;
+import pl.jakubchmura.suchary.android.settings.SettingsFragment;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 
 /**
@@ -165,8 +167,12 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         }
         if (!jokes.isEmpty()) {
             Joke last = jokes.get(jokes.size()-1);
-            NewJokeNotification.notify(this, last.getBody(), jokes.size());
             addJokesToDatabase(jokes);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
+            if (notification) {
+                NewJokeNotification.notify(this, last.getBody(), jokes.size());
+            }
         } else {
             finish();
         }

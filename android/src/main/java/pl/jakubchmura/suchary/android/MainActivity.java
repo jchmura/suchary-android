@@ -8,9 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -91,18 +89,8 @@ public class MainActivity extends Activity
         super.onResume();
 
         // Register the device in GCM
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean notification = sharedPref.getBoolean("pref_notif", false);
         GcmRegistration gcm = new GcmRegistration(this);
-        if (notification) {
-            if (!gcm.register()) {
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("pref_notif", false);
-                editor.commit();
-            }
-        } else {
-            gcm.unregister();
-        }
+        gcm.register();
 
         // Register the broadcast receiver
         IntentFilter filter = new IntentFilter();
