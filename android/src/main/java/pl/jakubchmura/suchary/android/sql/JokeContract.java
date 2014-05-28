@@ -33,6 +33,7 @@ public class JokeContract {
     private static final String INT_TYPE = " INTEGER";
     private static final String DATETIME_TYPE = " DATETIME";
     private static final String COMMA_SEP = ",";
+
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FeedEntry.TABLE_NAME + " (" +
                     FeedEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -48,4 +49,15 @@ public class JokeContract {
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + FeedEntry.TABLE_NAME;
+
+    public static final String SQL_INSERT_ENTRIES =
+            "INSERT INTO " + FeedEntry.TABLE_NAME + " (" +
+                FeedEntry.COLUMN_NAME_KEY + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_VOTES + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_DATE + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_URL + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_BODY + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_SITE + COMMA_SEP +
+                FeedEntry.COLUMN_NAME_STAR +
+            ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 }

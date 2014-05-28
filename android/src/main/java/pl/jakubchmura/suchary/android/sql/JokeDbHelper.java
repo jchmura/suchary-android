@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -70,8 +71,29 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     public void createJokes(List<Joke> list) {
-        for (Joke joke: list) {
-            createJoke(joke);
+        String sql = JokeContract.SQL_INSERT_ENTRIES;
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (db != null) {
+            db.beginTransaction();
+            SQLiteStatement statement = db.compileStatement(sql);
+
+            for (Joke joke: list) {
+                statement.bindString(1, joke.getKey());
+                statement.bindString(2, String.valueOf(joke.getVotes()));
+                statement.bindString(3, joke.getDateAsString());
+                statement.bindString(4, joke.getUrl());
+                statement.bindString(5, joke.getBody());
+                statement.bindString(6, joke.getSite());
+                statement.bindString(7, String.valueOf(joke.getStar()));
+                statement.executeInsert();
+                statement.clearBindings();
+            }
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+
+            db.close();
         }
     }
 
