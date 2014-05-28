@@ -5,8 +5,5 @@
         android:state_pressed="true"
         android:drawable="@color/drawer_item_background_pressed"/>
     <item
-        android:state_activated="true"
-        android:drawable="@color/drawer_item_background_activated"/>
-    <item
         android:drawable="@color/drawer_item_background" />
 </selector>
