@@ -50,7 +50,6 @@ public class DrawerAdapter<T> extends ArrayAdapter<T> {
         Typeface typeface;
         if (position == mSelectedItem) {
             typeface = Typeface.DEFAULT_BOLD;
-//            typeface = FontCache.get("fonts/RobotoCondensed-Bold.ttf", mContext);
         } else {
             typeface = FontCache.get("fonts/Roboto-Light.ttf", mContext);
         }
