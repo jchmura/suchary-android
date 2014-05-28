@@ -14,7 +14,6 @@
         android:layout_marginLeft="@dimen/drawer_item_margin_left"
         android:paddingTop="@dimen/drawer_item_padding_top"
         android:paddingBottom="@dimen/drawer_item_padding_bottom"
-        android:fontFamily="sans-serif-light"
         tools:text="New Text"
         android:layout_centerVertical="true" />
 </RelativeLayout>
