@@ -153,9 +153,7 @@ public class GcmRegistration {
                     wr = new DataOutputStream(connection.getOutputStream());
                     wr.writeBytes(data);
 
-                    //noinspection ConstantConditions
-                    if ((connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) |
-                            (connection.getResponseCode() != HttpURLConnection.HTTP_OK)) {
+                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         Log.d(TAG, "Server returned HTTP " + connection.getResponseCode()
                                 + " " + connection.getResponseMessage());
                     }
