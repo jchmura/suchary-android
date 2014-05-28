@@ -100,6 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
         );
         mDrawerListView.setAdapter(mDrawerAdapter);
+        mDrawerAdapter.setItemChecked(mCurrentSelectedPosition);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         setUpFooter();
         return mDrawerListView;
