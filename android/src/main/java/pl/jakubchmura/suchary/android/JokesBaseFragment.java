@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
+import android.widget.Space;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,16 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Card list view
      */
     protected CardListView mCardListView;
+
+    /**
+     * ListView footer
+     */
+    protected ProgressBar mFooterView;
+
+    /**
+     * ListView header
+     */
+    protected Space mHeaderView;
 
     /**
      * Adapter for the {@link #mCardListView}
@@ -118,13 +129,19 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         List<Card> cards = makeCardArray(jokes);
 
         if (mCardListView != null) {
-            mAdapter = (JokeCardArrayAdapter) mCardListView.getAdapter();
             if (mAdapter != null) {
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
                 mAdapter = new JokeCardArrayAdapter(mActivity, cards);
                 mCardListView.setAdapter(mAdapter);
+
+                mHeaderView = new Space(mActivity);
+                mHeaderView.setMinimumHeight(10);
+                mCardListView.addHeaderView(mHeaderView);
+
+                mFooterView = new ProgressBar(mActivity);
+                mCardListView.addFooterView(mFooterView);
                 hideProgress();
             }
         }
@@ -223,6 +240,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void endOfData() {
         mCardListView.setOnScrollListener(null);
+        mCardListView.removeFooterView(mFooterView);
     }
 
     /**
