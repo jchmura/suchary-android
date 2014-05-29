@@ -30,9 +30,9 @@
     <dimen name="placeholder_text_margin_bottom">20dp</dimen>
 
     <!-- Drawer list item -->
-    <dimen name="drawer_item_text_size">22sp</dimen>
-    <dimen name="drawer_item_padding_top">20dp</dimen>
-    <dimen name="drawer_item_padding_bottom">20dp</dimen>
+    <dimen name="drawer_item_text_size">20sp</dimen>
+    <dimen name="drawer_item_padding_top">18dp</dimen>
+    <dimen name="drawer_item_padding_bottom">18dp</dimen>
     <dimen name="drawer_item_margin_left">20dp</dimen>
 
     <!-- Drawer footer view -->

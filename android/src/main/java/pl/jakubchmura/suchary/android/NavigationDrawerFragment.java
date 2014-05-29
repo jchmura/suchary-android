@@ -179,6 +179,9 @@ public class NavigationDrawerFragment extends Fragment {
             settings.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(mFragmentContainerView);
+                    }
                     Intent intent = new Intent(getActivity(), Settings.class);
                     startActivity(intent);
                 }
