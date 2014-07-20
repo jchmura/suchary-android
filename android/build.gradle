@@ -1,5 +1,3 @@
-import groovy.swing.SwingBuilder
-
 buildscript {
     repositories {
         maven { url 'http://download.crashlytics.com/maven' }
@@ -9,12 +7,12 @@ buildscript {
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    buildToolsVersion '20'
 
     defaultConfig {
         minSdkVersion 14
@@ -32,12 +30,6 @@ android {
         release {
             storeFile file("/home/kuba/.android/suchary.jks")
             keyAlias "Suchary"
-
-            // These two lines make gradle believe that the signingConfigs
-            // section is complete. Without them, tasks like installRelease
-            // will not be available!
-            storePassword "notYourRealPassword"
-            keyPassword "notYourRealPassword"
         }
     }
 
@@ -48,7 +40,7 @@ android {
     buildTypes {
         release {
             runProguard true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.release
         }
     }
@@ -61,85 +53,15 @@ android {
 }
 
 repositories {
-//    maven {
-//        url "http://www.bugsense.com/gradle/"
-//    }
-    maven {
-        url 'http://download.crashlytics.com/maven'
-    }
-
+    maven { url 'http://download.crashlytics.com/maven' }
 }
 
 dependencies {
     compile 'com.github.gabrielemariotti.cards:library:+'
-    compile 'com.google.android.gms:play-services:4.3.23'
-    compile 'com.android.support:support-v4:+'
+    compile 'com.google.android.gms:play-services:+'
+    compile 'com.android.support:support-v4:19.+'
     compile 'com.intellij:annotations:+@jar'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.crashlytics.android:crashlytics:1.+'
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.4') {
-        // exclusion is not neccessary, but generally a good idea.
-        exclude group: 'com.google.android', module: 'support-v4'
-    }
-//    compile "com.bugsense.trace:bugsense:3.5"
-
-}
-
-task askForPasswords << {
-    // Must create String because System.readPassword() returns char[]
-    // (and assigning that below fails silently)
-    def storePw = ''
-    def keyPw = ''
-    if (System.console()==null) {
-        new SwingBuilder().edt {
-            dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
-                    title: 'Enter password', // Dialog title
-                    alwaysOnTop: true, // pretty much what the name says
-                    resizable: false, // Don't allow the user to resize the dialog
-                    locationRelativeTo: null, // Place dialog in center of the screen
-                    pack: true, // We need to pack the dialog (so it will take the size of it's children)
-                    show: true // Let's show it
-            ) {
-                vbox { // Put everything below each other
-                    label(text: "Please enter keystore password:")
-                    input = passwordField()
-                    button(defaultButton: true, text: 'OK', actionPerformed: {
-                        storePw = new String(input.password); // Set pass variable to value of input field
-                        dispose(); // Close dialog
-                    })
-                }
-            }
-        }
-        new SwingBuilder().edt {
-            dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
-                    title: 'Enter password', // Dialog title
-                    alwaysOnTop: true, // pretty much what the name says
-                    resizable: false, // Don't allow the user to resize the dialog
-                    locationRelativeTo: null, // Place dialog in center of the screen
-                    pack: true, // We need to pack the dialog (so it will take the size of it's children)
-                    show: true // Let's show it
-            ) {
-                vbox { // Put everything below each other
-                    label(text: "Please enter key password:")
-                    input = passwordField()
-                    button(defaultButton: true, text: 'OK', actionPerformed: {
-                        keyPw = new String(input.password); // Set pass variable to value of input field
-                        dispose(); // Close dialog
-                    })
-                }
-            }
-        }
-    } else {
-        storePw = new String(System.console().readPassword("\nKeystore password: "))
-        keyPw  = new String(System.console().readPassword("\nKey password: "))
-    }
-
-    android.signingConfigs.release.storePassword = storePw
-    android.signingConfigs.release.keyPassword = keyPw
-}
-
-tasks.whenTaskAdded { theTask ->
-    if (theTask.name.equals("packageRelease")) {
-        theTask.dependsOn "askForPasswords"
-    }
+    compile 'de.keyboardsurfer.android.widget:crouton:+@aar'
 }

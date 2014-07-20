@@ -24,3 +24,5 @@
 }
 
 -dontwarn it.gmariotti.cardslib.library.view.CardGridView
+
+-keepattributes SourceFile,LineNumberTable
