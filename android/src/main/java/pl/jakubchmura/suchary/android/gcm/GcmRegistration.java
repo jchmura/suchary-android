@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -120,6 +121,7 @@ public class GcmRegistration {
                     storeRegistrationId();
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
+                    Crashlytics.logException(ex);
                     // If there is an error, don't just keep trying to register.
                     // Require the user to click a button again, or perform
                     // exponential back-off.
@@ -133,6 +135,7 @@ public class GcmRegistration {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
+                Crashlytics.setUserIdentifier(mRegId);
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
                 String data = "registration_id=" + mRegId + "&android_id=" + androidID;
