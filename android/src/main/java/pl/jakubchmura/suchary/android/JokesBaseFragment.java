@@ -133,9 +133,6 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
-                mAdapter = new JokeCardArrayAdapter(mActivity, cards);
-                mCardListView.setAdapter(mAdapter);
-
                 mHeaderView = new Space(mActivity);
                 mHeaderView.setMinimumHeight(10);
                 mCardListView.addHeaderView(mHeaderView);
@@ -143,6 +140,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mFooterView = new ProgressBar(mActivity);
                 mCardListView.addFooterView(mFooterView);
                 hideProgress();
+
+                mAdapter = new JokeCardArrayAdapter(mActivity, cards);
+                mCardListView.setAdapter(mAdapter);
             }
         }
     }

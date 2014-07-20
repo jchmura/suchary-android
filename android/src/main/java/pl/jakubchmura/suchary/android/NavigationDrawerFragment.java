@@ -89,6 +89,7 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        setUpFooter();
         mDrawerAdapter = new DrawerAdapter<>(
                 getActionBar().getThemedContext(),
                 R.layout.drawer_list_item,
@@ -102,7 +103,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setAdapter(mDrawerAdapter);
         mDrawerAdapter.setItemChecked(mCurrentSelectedPosition);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        setUpFooter();
         return mDrawerListView;
     }
 
