@@ -48,7 +48,13 @@ public class SearchActivity extends Activity {
             boolean star = false;
             if (mFragment == null) {
                 star = intent.getIntExtra(FRAGMENT_NUMBER, 0) == 2;
-                mFragment = new SearchFragment(query, star);
+
+                Bundle args = new Bundle();
+                args.putString("query", query);
+                args.putBoolean("star", star);
+
+                mFragment = new SearchFragment();
+                mFragment.setArguments(args);
             }
 
             ActionBarTitle actionBarTitle = new ActionBarTitle(this);

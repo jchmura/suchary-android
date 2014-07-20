@@ -17,26 +17,20 @@ import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 public class SearchFragment extends JokesBaseFragment<SearchActivity> {
 
     private static final String TAG = "SearchFragment";
-    private final String mQuery;
-    private final boolean mStar;
-
-    public SearchFragment() {
-        mQuery = "";
-        mStar = false;
-    }
-
-    public SearchFragment(String query, boolean star) {
-        mQuery = query;
-        mStar = star;
-    }
+    private String mQuery;
+    private boolean mStar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_search, container, false);
 
+        Bundle arguments = getArguments();
+        mQuery = arguments.getString("query");
+        mStar = arguments.getBoolean("key");
+
         View createdView = createView(false);
-       getJokes();
+        getJokes();
 
         return createdView;
     }
