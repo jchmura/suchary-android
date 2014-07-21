@@ -114,12 +114,15 @@ public class JokeDbHelper extends SQLiteOpenHelper {
             );
 
 
-            cursor.moveToFirst();
+            if (!cursor.moveToFirst()) {
+                Joke joke = new Joke(cursor);
+                cursor.close();
+                db.close();
+                return joke;
+            } else {
+                return null;
+            }
 
-            Joke joke = new Joke(cursor);
-            cursor.close();
-            db.close();
-            return joke;
         }
         return null;
     }
@@ -127,7 +130,10 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     public List<Joke> getJokes(String[] keys) {
         List<Joke> jokes = new ArrayList<>();
         for (String key: keys) {
-            jokes.add(getJoke(key));
+            Joke joke = getJoke(key);
+            if (joke != null) {
+                jokes.add(joke);
+            }
         }
         return jokes;
     }
