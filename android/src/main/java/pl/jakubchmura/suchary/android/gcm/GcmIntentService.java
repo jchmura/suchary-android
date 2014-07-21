@@ -1,11 +1,15 @@
 package pl.jakubchmura.suchary.android.gcm;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -18,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.MainActivity;
+import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
 import pl.jakubchmura.suchary.android.joke.api.DownloadJoke;
@@ -78,6 +83,9 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                         case "delete":
                             handleDeleteJoke(extras);
                             break;
+                        case "message":
+                            handleMessage(extras);
+                            break;
                         default:
                             finish();
                     }
@@ -111,6 +119,21 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
             removeJokeInDatabase(key);
             addDeletedJokeToPrefs(key);
         }
+    }
+
+    private void handleMessage(Bundle extras) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        builder.setVibrate(new long[]{0, 300, 400, 300});
+        builder.setSmallIcon(R.drawable.ic_stat_notify);
+        builder.setContentTitle(extras.getString("title"));
+        builder.setContentText(extras.getString("text"));
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(extras.getString("text"))
+                .setBigContentTitle(extras.getString("title")));
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.notify("Suchary message", 0, builder.build());
     }
 
     @Override
@@ -265,7 +288,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(EDIT_JOKE, edited);
-        editor.commit();
+        editor.apply();
     }
 
     private void addDeletedJokeToPrefs(String key) {
@@ -275,7 +298,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(DELETE_JOKE, deleted);
-        editor.commit();
+        editor.apply();
     }
 
     private void finish() {
