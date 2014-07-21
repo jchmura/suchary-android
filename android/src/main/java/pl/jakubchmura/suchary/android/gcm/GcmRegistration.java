@@ -1,5 +1,6 @@
 package pl.jakubchmura.suchary.android.gcm;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -24,6 +25,7 @@ public class GcmRegistration {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String TAG = "GcmRegistration";
     private static final String PROPERTY_APP_VERSION = "app_version";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String SENDER_ID = "375845694760";
     private GoogleCloudMessaging mGcm;
     private String mRegId;
@@ -135,7 +137,7 @@ public class GcmRegistration {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                Crashlytics.setUserIdentifier(mRegId);
+                Crashlytics.setUserIdentifier(mRegId.substring(0, 10));
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
                 String data = "registration_id=" + mRegId + "&android_id=" + androidID;
@@ -159,9 +161,10 @@ public class GcmRegistration {
                     if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         Log.d(TAG, "Server returned HTTP " + connection.getResponseCode()
                                 + " " + connection.getResponseMessage());
+                        Crashlytics.logException(new RuntimeException("GCM backend returned something else than HTTP OK"));
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 } finally {
                     if (wr != null) {
                         try {
@@ -187,13 +190,22 @@ public class GcmRegistration {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, mRegId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
-        editor.commit();
+        editor.apply();
     }
 
 
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
-        return resultCode == ConnectionResult.SUCCESS;
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, (Activity) mContext,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
     }
 
 }
