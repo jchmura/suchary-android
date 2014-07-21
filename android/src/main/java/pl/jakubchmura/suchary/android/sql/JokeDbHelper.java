@@ -113,29 +113,31 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     null
             );
 
-
-            if (!cursor.moveToFirst()) {
-                Joke joke = new Joke(cursor);
-                cursor.close();
-                db.close();
-                return joke;
-            } else {
-                return null;
+            Joke joke = null;
+            if (cursor.moveToFirst()) {
+                joke = new Joke(cursor);
             }
+            cursor.close();
+            db.close();
+            return joke;
 
         }
         return null;
     }
 
-    public List<Joke> getJokes(String[] keys) {
+    public List<Joke> getJokes(String[] keys, boolean sameLength) {
         List<Joke> jokes = new ArrayList<>();
         for (String key: keys) {
             Joke joke = getJoke(key);
-            if (joke != null) {
+            if (joke != null || sameLength) {
                 jokes.add(joke);
             }
         }
         return jokes;
+    }
+
+    public List<Joke> getJokes(String[] keys) {
+        return getJokes(keys, false);
     }
 
     public List<Joke> getJokes(String selection, String[] selectionArgs, String order, String limit) {

@@ -237,10 +237,11 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                 for (int i = 0; i < size; i++) {
                     keys[i] = newJokes.get(i).getKey();
                 }
-                List<Joke> oldJokes = helper.getJokes(keys);
+                List<Joke> oldJokes = helper.getJokes(keys, true);
 
                 for (int i = 0; i < size; i++) {
-                    newJokes.get(i).setStar(oldJokes.get(i).isStar());
+                    Joke oldJoke = oldJokes.get(i);
+                    if (oldJoke != null) newJokes.get(i).setStar(oldJoke.isStar());
                 }
                 helper.updateJokes(newJokes);
                 return null;

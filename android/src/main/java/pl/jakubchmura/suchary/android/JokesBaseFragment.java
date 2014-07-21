@@ -321,7 +321,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             mFetcher.updateJokes(editedKeys);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(EDIT_JOKE, "");
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -333,7 +333,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             mFetcher.deleteJokes(deletedKeys);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(DELETE_JOKE, "");
-            editor.commit();
+            editor.apply();
         }
     }
 
