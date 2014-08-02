@@ -163,12 +163,12 @@ public class Joke implements Parcelable {
         return mStar;
     }
 
-    public void setStar(boolean star) {
-        this.mStar = star;
+    public int getStar() {
+        return mStar ? 1 : 0;
     }
 
-    public int getStar() {
-        return mStar ? 1: 0;
+    public void setStar(boolean star) {
+        this.mStar = star;
     }
 
     @Override

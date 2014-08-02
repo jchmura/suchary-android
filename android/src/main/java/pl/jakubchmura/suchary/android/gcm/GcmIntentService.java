@@ -37,13 +37,12 @@ import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 public class GcmIntentService extends IntentService implements DownloadJokes.DownloadJokesCallback,
         DownloadJoke.DownloadJokeCallback, DownloadAllJokes.DownloadAllJokesCallback {
 
-    private static final String TAG = "IntentService";
-    private Intent mIntent;
-    private static boolean mHandling = false;
-
     public static final String PREFS_NAME = "gcm_jokes";
     public static final String EDIT_JOKE = "edit_joke";
     public static final String DELETE_JOKE = "delete_joke";
+    private static final String TAG = "IntentService";
+    private static boolean mHandling = false;
+    private Intent mIntent;
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -167,7 +166,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                     finish();
                 }
             }
-        }.execute((Void)null);
+        }.execute((Void) null);
     }
 
     private void downloadNewer(Date date) {
@@ -191,7 +190,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
             jokes.remove(jokes.size() - 1);
         }
         if (!jokes.isEmpty()) {
-            Joke last = jokes.get(jokes.size()-1);
+            Joke last = jokes.get(jokes.size() - 1);
             addJokesToDatabase(jokes);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
@@ -233,7 +232,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                 List<Joke> newJokes = params[0];
                 int size = newJokes.size();
                 String[] keys = new String[size];
-                
+
                 for (int i = 0; i < size; i++) {
                     keys[i] = newJokes.get(i).getKey();
                 }
@@ -313,8 +312,10 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     }
 
     @Override
-    public void setMaxProgress(int i) {}
+    public void setMaxProgress(int i) {
+    }
 
     @Override
-    public void incrementProgress(int i) {}
+    public void incrementProgress(int i) {
+    }
 }

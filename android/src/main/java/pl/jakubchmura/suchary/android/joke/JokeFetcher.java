@@ -52,7 +52,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     public void fetchNext() {
         if (mGettingFromDB) return;
 
-        if (mCanGetOlder && (mEnd || mServed == mJokes.size())){
+        if (mCanGetOlder && (mEnd || mServed == mJokes.size())) {
             if (mRandom) {
                 getRandom();
             } else {
@@ -85,7 +85,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     private void getOlder() {
         Date last_date = null;
         if (!mJokes.isEmpty()) {
-            Joke last = mJokes.get(mJokes.size()-1);
+            Joke last = mJokes.get(mJokes.size() - 1);
             last_date = last.getDate();
         }
         getJokesFromDatabaseBefore(last_date, 15);
@@ -106,7 +106,8 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
         downloadNewerThan(first.getDate());
     }
 
-    /** Get next random jokes from database
+    /**
+     * Get next random jokes from database
      */
     public void getRandom() {
         new AsyncTask<Void, Integer, List<Joke>>() {
@@ -149,7 +150,8 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
             mCroutonOffline = Crouton.makeText((Activity) mContext, R.string.no_internet_connection, style);
             mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
                 @Override
-                public void onDisplayed() {}
+                public void onDisplayed() {
+                }
 
                 @Override
                 public void onRemoved() {
@@ -174,7 +176,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     public void getAPIAllResult(List<Joke> jokes) {
         List<Joke> newJokes = new ArrayList<>();
         Collections.reverse(jokes);
-        for (Joke joke: jokes) {
+        for (Joke joke : jokes) {
             if (!mJokes.contains(joke)) {
                 newJokes.add(joke);
                 mJokes.add(0, joke);
@@ -189,7 +191,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     /**
      * Get jokes from the database that are older than indicated.
      *
-     * @param date get older jokes than this date
+     * @param date  get older jokes than this date
      * @param limit how many jokes to get
      */
     public void getJokesFromDatabaseBefore(final Date date, final Integer limit) {
@@ -216,7 +218,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     /**
      * Get jokes from database and add them to the top.
      *
-     * @param date get newer jokes than this date
+     * @param date  get newer jokes than this date
      * @param limit how many jokes to get
      */
     public void getJokesFromDatabaseAfter(final Date date, final Integer limit) {
@@ -241,7 +243,8 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
         }.execute((Void[]) null);
     }
 
-    /** Add new jokes to the database.
+    /**
+     * Add new jokes to the database.
      *
      * @param jokes List of jokes to add
      */
@@ -299,7 +302,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      * @param keys keys of jokes to delete
      */
     public void deleteJokes(String[] keys) {
-        for (String key: keys) {
+        for (String key : keys) {
             deleteJoke(key);
         }
         mCallback.deleteJokes(keys);
@@ -344,7 +347,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      */
     @Nullable
     public Joke getJoke(String key) {
-        for (Joke joke: mJokes) {
+        for (Joke joke : mJokes) {
             if (key.equals(joke.getKey())) return joke;
         }
         return null;
@@ -369,13 +372,16 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     }
 
     @Override
-    public void setMaxProgress(int i) {}
+    public void setMaxProgress(int i) {
+    }
 
     @Override
-    public void incrementProgress(int i) {}
+    public void incrementProgress(int i) {
+    }
 
     @Override
-    public void errorDownloadingAll() {}
+    public void errorDownloadingAll() {
+    }
 
     public void setRandom(boolean random) {
         mRandom = random;

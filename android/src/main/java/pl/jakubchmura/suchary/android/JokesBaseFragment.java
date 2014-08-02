@@ -340,7 +340,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     protected void setPullable() {
         mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
         mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
-                                     R.color.holo_orange, R.color.holo_blue);
+                R.color.holo_orange, R.color.holo_blue);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

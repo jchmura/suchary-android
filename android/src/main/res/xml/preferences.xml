@@ -2,37 +2,37 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/pref_notif_title"
-        android:key="pref_notif_title">
+        android:key="pref_notif_title"
+        android:title="@string/pref_notif_title">
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_notif"
-            android:title="@string/pref_notif"
             android:summary="@string/pref_notif_summ"
-            android:defaultValue="true" />
+            android:title="@string/pref_notif" />
 
         <RingtonePreference
+            android:defaultValue="content://settings/system/notification_sound"
+            android:dependency="pref_notif"
             android:key="pref_ringtone"
-            android:title="@string/pref_ringtone"
             android:ringtoneType="notification"
             android:showDefault="true"
             android:showSilent="true"
-            android:dependency="pref_notif"
-            android:defaultValue="content://settings/system/notification_sound" />
+            android:title="@string/pref_ringtone" />
 
         <CheckBoxPreference
-            android:key="pref_vibration"
-            android:title="@string/pref_vibration"
+            android:defaultValue="true"
             android:dependency="pref_notif"
-            android:defaultValue="true" />
+            android:key="pref_vibration"
+            android:title="@string/pref_vibration" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_admin_title"
-        android:key="pref_admin_title">
+        android:key="pref_admin_title"
+        android:title="@string/pref_admin_title">
 
         <Preference
             android:key="pref_reset"
-            android:title="@string/pref_reset"
-            android:summary="@string/pref_reset_summ"/>
+            android:summary="@string/pref_reset_summ"
+            android:title="@string/pref_reset" />
     </PreferenceCategory>
 </PreferenceScreen>

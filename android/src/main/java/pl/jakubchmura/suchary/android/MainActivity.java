@@ -28,20 +28,17 @@ public class MainActivity extends Activity
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
     public static final String ACTION_DELETE_JOKE = "action_delete_joke";
-
+    private static final String TAG = "MainActivity";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private String mTitle;
     private int mFragmentNumber;
     private JokesBaseFragment<MainActivity> mFragment;
-
-    private static final String TAG = "MainActivity";
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -98,7 +95,7 @@ public class MainActivity extends Activity
         filter.addAction(ACTION_EDIT_JOKE);
         filter.addAction(ACTION_DELETE_JOKE);
         registerReceiver(mReceiver, filter);
-        
+
         // Cancel the notification about new jokes
         NewJokeNotification.cancel(this);
 
@@ -121,15 +118,15 @@ public class MainActivity extends Activity
                 mFragment = NewJokesFragment.newInstance(position + 1);
                 break;
             case 1:
-                mFragment = StarredJokesFragment.newInstance(position+1);
+                mFragment = StarredJokesFragment.newInstance(position + 1);
                 break;
             case 2:
-                mFragment = RandomJokesFragment.newInstance(position+1);
+                mFragment = RandomJokesFragment.newInstance(position + 1);
                 break;
         }
         fragmentManager.beginTransaction()
-            .replace(R.id.container, mFragment)
-            .commit();
+                .replace(R.id.container, mFragment)
+                .commit();
     }
 
     public void onSectionAttached(int number) {

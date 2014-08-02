@@ -2,57 +2,57 @@
     xmlns:card="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_starred"
+    style="@style/card_list_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/card_list_view">
-    
+    android:layout_height="match_parent">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ProgressBar
+            android:id="@+id/progress"
+            style="@android:style/Widget.Holo.ProgressBar.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progress"
-            android:indeterminate="true"
-            style="@android:style/Widget.Holo.ProgressBar.Large"
-            android:layout_gravity="center"
             android:layout_centerInParent="true"
-            tools:visibility="gone"/>
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            tools:visibility="gone" />
 
         <it.gmariotti.cardslib.library.view.CardListView
             android:id="@+id/cardList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            card:list_card_layout_resourceID="@layout/list_card_layout"
-            android:visibility="gone"
             android:layout_gravity="top"
+            android:visibility="gone"
+            card:list_card_layout_resourceID="@layout/list_card_layout"
             tools:visibility="visible" />
 
-            <LinearLayout
+        <LinearLayout
+            android:id="@+id/placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:id="@+id/placeholder"
             android:visibility="gone"
             tools:visibility="visible">
 
             <ImageView
-                android:layout_width="match_parent"
                 android:id="@+id/placeholder_image"
-                android:src="@drawable/star_light"
                 style="@style/placeholder_image"
-                android:contentDescription="@string/no_starred_image" />
+                android:layout_width="match_parent"
+                android:contentDescription="@string/no_starred_image"
+                android:src="@drawable/star_light" />
 
             <TextView
+                android:id="@+id/placeholder_text"
+                style="@style/placeholder_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/placeholder_text"
-                android:text="@string/no_starred"
-                style="@style/placeholder_text"/>
+                android:text="@string/no_starred" />
         </LinearLayout>
     </RelativeLayout>
 
-    <include layout="@layout/joke_card_undo_layout"/>
+    <include layout="@layout/joke_card_undo_layout" />
 
 </FrameLayout>

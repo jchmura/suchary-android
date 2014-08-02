@@ -3,9 +3,14 @@ package pl.jakubchmura.suchary.android.sql;
 import android.provider.BaseColumns;
 
 public class JokeContract {
+    private static final String TEXT_TYPE = " TEXT";
+    private static final String INT_TYPE = " INTEGER";
+    private static final String DATETIME_TYPE = " DATETIME";
+    private static final String COMMA_SEP = ",";
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
-    public JokeContract() {}
+    public JokeContract() {
+    }
 
     /* Inner class that defines the table contents */
     public static abstract class FeedEntry implements BaseColumns {
@@ -29,11 +34,6 @@ public class JokeContract {
         };
     }
 
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String INT_TYPE = " INTEGER";
-    private static final String DATETIME_TYPE = " DATETIME";
-    private static final String COMMA_SEP = ",";
-
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FeedEntry.TABLE_NAME + " (" +
                     FeedEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -45,19 +45,19 @@ public class JokeContract {
                     FeedEntry.COLUMN_NAME_SITE + TEXT_TYPE + COMMA_SEP +
                     FeedEntry.COLUMN_NAME_STAR + INT_TYPE +
 
-            " )";
+                    " )";
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + FeedEntry.TABLE_NAME;
 
     public static final String SQL_INSERT_ENTRIES =
             "INSERT INTO " + FeedEntry.TABLE_NAME + " (" +
-                FeedEntry.COLUMN_NAME_KEY + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_VOTES + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_DATE + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_URL + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_BODY + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_SITE + COMMA_SEP +
-                FeedEntry.COLUMN_NAME_STAR +
-            ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    FeedEntry.COLUMN_NAME_KEY + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_VOTES + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_DATE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_URL + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_BODY + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_SITE + COMMA_SEP +
+                    FeedEntry.COLUMN_NAME_STAR +
+                    ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 }

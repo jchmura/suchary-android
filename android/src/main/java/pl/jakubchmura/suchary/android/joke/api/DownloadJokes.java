@@ -34,7 +34,7 @@ public class DownloadJokes extends AsyncTask<String, Integer, List<Joke>> {
                 getClass().getName());
         wl.acquire();
         ArrayList<Joke> results = new ArrayList<>();
-        for(String url: params) {
+        for (String url : params) {
             try {
                 results.add(download(url));
             } catch (IOException e) {

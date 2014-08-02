@@ -22,7 +22,7 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_search, container, false);
 
         Bundle arguments = getArguments();
@@ -56,10 +56,11 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
                 mFetcher.setFetchGetOlder(false);
                 return null;
             }
+
             @Override
             protected void onPostExecute(Void aVoid) {
                 mFetcher.fetchNext();
             }
-        }.execute((Void)null);
+        }.execute((Void) null);
     }
 }

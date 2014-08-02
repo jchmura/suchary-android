@@ -19,7 +19,7 @@ public class JokeCard extends Card {
         init();
     }
 
-    protected void init(){
+    protected void init() {
         ViewToClickToExpand viewToClickToExpand =
                 ViewToClickToExpand.builder()
                         .highlightView(false)

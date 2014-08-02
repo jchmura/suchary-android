@@ -49,7 +49,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void createJoke(Joke joke){
+    public void createJoke(Joke joke) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -63,9 +63,9 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
         if (db != null) {
             db.insert(
-                TABLE_NAME,
-                null,
-                values);
+                    TABLE_NAME,
+                    null,
+                    values);
             db.close();
         }
     }
@@ -78,7 +78,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
             db.beginTransaction();
             SQLiteStatement statement = db.compileStatement(sql);
 
-            for (Joke joke: list) {
+            for (Joke joke : list) {
                 statement.bindString(1, joke.getKey());
                 statement.bindString(2, String.valueOf(joke.getVotes()));
                 statement.bindString(3, joke.getDateAsString());
@@ -127,7 +127,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
     public List<Joke> getJokes(String[] keys, boolean sameLength) {
         List<Joke> jokes = new ArrayList<>();
-        for (String key: keys) {
+        for (String key : keys) {
             Joke joke = getJoke(key);
             if (joke != null || sameLength) {
                 jokes.add(joke);
@@ -221,7 +221,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         if (star) {
             selection += "AND ( " + COLUMN_NAME_STAR + " = 1)";
         }
-        String[] selectionArgs = new String[] {query + "%", "% " + query + "%"};
+        String[] selectionArgs = new String[]{query + "%", "% " + query + "%"};
         return getJokes(selection, selectionArgs, null, null);
     }
 
@@ -249,7 +249,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     public void updateJokes(List<Joke> jokes) {
-        for (Joke joke: jokes) {
+        for (Joke joke : jokes) {
             updateJoke(joke);
         }
     }

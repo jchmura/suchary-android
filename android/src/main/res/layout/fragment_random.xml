@@ -1,26 +1,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:id="@+id/fragment_random"
+    style="@style/card_list_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pl.jakubchmura.suchary.android.NewJokesFragment"
-    style="@style/card_list_view">
+    android:orientation="vertical"
+    tools:context="pl.jakubchmura.suchary.android.NewJokesFragment">
 
     <ProgressBar
+        android:id="@+id/progress"
+        style="@android:style/Widget.Holo.ProgressBar.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress"
-        android:indeterminate="true"
-        style="@android:style/Widget.Holo.ProgressBar.Large"
         android:layout_gravity="center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:indeterminate="true" />
 
     <it.gmariotti.cardslib.library.view.CardListView
         android:id="@+id/cardList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </LinearLayout>

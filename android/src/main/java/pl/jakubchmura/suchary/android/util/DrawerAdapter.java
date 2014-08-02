@@ -12,16 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class DrawerAdapter<T> extends ArrayAdapter<T> {
 
+    private final Context mContext;
     /**
      * If the inflated resource is not a TextView, {@link #mFieldId} is used to find
      * a TextView inside the inflated views hierarchy. This field must contain the
      * identifier that matches the one defined in the resource file.
      */
     private int mFieldId;
-
     private int mSelectedItem = 0;
-
-    private final Context mContext;
 
     public DrawerAdapter(Context context, int resource, int textViewResourceId, T[] objects) {
         super(context, resource, textViewResourceId, objects);

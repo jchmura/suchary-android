@@ -6,15 +6,15 @@
     android:orientation="horizontal">
 
     <!--<RelativeLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="fill_parent">-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="fill_parent">-->
 
-        <!--<ImageView-->
-            <!--android:id="@+id/obcy_joke_source"-->
-            <!--android:layout_width="3dp"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:contentDescription="@string/joke_source" />-->
+    <!--<ImageView-->
+    <!--android:id="@+id/obcy_joke_source"-->
+    <!--android:layout_width="3dp"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:contentDescription="@string/joke_source" />-->
     <!--</RelativeLayout>-->
 
     <TextView
