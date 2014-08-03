@@ -184,7 +184,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
         }
         mServed += newJokes.size();
 
-        mCallback.addJokesToTop(newJokes, false);
+        mCallback.addJokesToTop(newJokes, true);
         addJokesToDatabase(newJokes);
     }
 
@@ -235,7 +235,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
             @Override
             protected void onPostExecute(List<Joke> jokes) {
                 mGettingFromDB = false;
-                mCallback.addJokesToTop(jokes, true);
+                mCallback.addJokesToTop(jokes, false);
                 mServed += jokes.size();
                 jokes.addAll(mJokes);
                 mJokes = jokes;

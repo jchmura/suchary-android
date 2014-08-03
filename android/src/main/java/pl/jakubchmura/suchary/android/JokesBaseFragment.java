@@ -34,6 +34,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     private static final String PREFS_NAME = GcmIntentService.PREFS_NAME;
     private static final String EDIT_JOKE = GcmIntentService.EDIT_JOKE;
     private static final String DELETE_JOKE = GcmIntentService.DELETE_JOKE;
+    private boolean showCrouton = false;
 
     /**
      * Activity which attached this fragment
@@ -149,11 +150,10 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
 
     /**
      * Add jokes to the beginning of the card list.
-     *
-     * @param jokes  list of jokes to add
-     * @param silent don't move to top after adding
+     * @param jokes list of jokes to add
+     * @param move  move to top after adding
      */
-    public void addJokesToTop(List<Joke> jokes, boolean silent) {
+    public void addJokesToTop(List<Joke> jokes, boolean move) {
         if (mSwipeRefresh != null) {
             mSwipeRefresh.setRefreshing(false);
         }
@@ -164,9 +164,12 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 JokeCard card = makeCard(jokes.get(i));
                 mAdapter.insert(card, 0);
             }
-            if (silent && size > 0) {
+            if (move && size > 0) {
                 mCardListView.setSelection(start + size);
-                showCroutonNew(size);
+                if (showCrouton) {
+                    showCroutonNew(size);
+                    showCrouton = false;
+                }
             }
         }
     }
@@ -306,13 +309,25 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                     loading = true;
                 }
             }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                super.onScrollStateChanged(view, scrollState);
+            }
         });
     }
 
+    /**
+     * Check for newer jokes in DB.
+     */
     public void checkNewJokes() {
+        showCrouton = true;
         mFetcher.getNewerFromDB();
     }
 
+    /**
+     * Check if jokes were edited and update then.
+     */
     public void checkEditedJokes() {
         SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);
         String edited = sharedPreferences.getString(EDIT_JOKE, "").trim();
@@ -325,6 +340,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         }
     }
 
+    /**
+     * Check if jokes were set to be deleted and perform the removal.
+     */
     public void checkDeletedJoke() {
         SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);
         String edited = sharedPreferences.getString(DELETE_JOKE, "").trim();
@@ -337,6 +355,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         }
     }
 
+    /**
+     * Enable the pull to refresh swipe. When performed, it fetches to server.
+     */
     protected void setPullable() {
         mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
         mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
@@ -349,6 +370,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         });
     }
 
+    /**
+     * Hide the progress dialog and show the jokes.
+     */
     protected abstract void hideProgress();
 
 }
