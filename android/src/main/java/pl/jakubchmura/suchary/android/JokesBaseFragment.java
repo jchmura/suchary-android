@@ -133,10 +133,10 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
-                mHeaderView = new Space(mActivity);
-                mHeaderView.setMinimumHeight(10);
-                mCardListView.addHeaderView(mHeaderView);
-
+//                mHeaderView = new Space(mActivity);
+//                mHeaderView.setMinimumHeight(10);
+//                mCardListView.addHeaderView(mHeaderView);
+//
                 mFooterView = new ProgressBar(mActivity);
                 mCardListView.addFooterView(mFooterView);
                 hideProgress();
