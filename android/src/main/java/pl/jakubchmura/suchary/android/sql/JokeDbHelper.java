@@ -4,9 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
 
@@ -72,13 +78,14 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
     public void createJokes(List<Joke> list) {
         String sql = JokeContract.SQL_INSERT_ENTRIES;
+        Set<Joke> jokes = new TreeSet<>(list);
         SQLiteDatabase db = getWritableDatabase();
 
         if (db != null) {
             db.beginTransaction();
             SQLiteStatement statement = db.compileStatement(sql);
 
-            for (Joke joke : list) {
+            for (Joke joke : jokes) {
                 statement.bindString(1, joke.getKey());
                 statement.bindString(2, String.valueOf(joke.getVotes()));
                 statement.bindString(3, joke.getDateAsString());
@@ -86,8 +93,15 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                 statement.bindString(5, joke.getBody());
                 statement.bindString(6, joke.getSite());
                 statement.bindString(7, String.valueOf(joke.getStar()));
-                statement.executeInsert();
-                statement.clearBindings();
+                try {
+                    statement.executeInsert();
+                } catch (SQLiteConstraintException e) {
+                    Crashlytics.setString("Joke key", joke.getKey());
+                    Crashlytics.logException(e);
+                    Log.e(TAG, "Error inserting joke " + joke, e);
+                } finally {
+                    statement.clearBindings();
+                }
             }
 
             db.setTransactionSuccessful();
