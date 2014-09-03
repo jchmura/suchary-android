@@ -71,7 +71,7 @@
 
     <!-- About -->
     <string name="about_application_title">Aplikacja</string>
-    <string name="about_application">Aplikacja wyświetlająca suchary pobrane z różnych miejsc w internecie. Wersja przeglądarkowa znajduje się na: <a href="http://suchary.jakubchmura.pl">http://suchary.jakubchmura.pl</a></string>
+    <string name="about_application">Aplikacja wyświetla suchary pobrane z różnych miejsc w internecie, z każdego można przejść do oryginalnego linku. Baza sucharów jest aktualizowana automatycznie, wystarczy aktywne połączenie z internetem. Wersja przeglądarkowa znajduje się na: <a href="http://suchary.jakubchmura.pl">http://suchary.jakubchmura.pl</a></string>
     <string name="about_author_title">Autor</string>
     <string name="about_author"><a href="mailto:android@jakubchmura.pl?subject=Suchary">Jakub Chmura</a></string>
     <string name="about_libraries_title">Biblioteki opensource</string>
