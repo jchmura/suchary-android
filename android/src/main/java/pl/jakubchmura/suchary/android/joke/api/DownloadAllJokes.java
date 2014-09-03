@@ -88,8 +88,11 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
 
     public interface DownloadAllJokesCallback {
         void setMaxProgress(int i);
+
         void incrementProgress(int i);
+
         void getAPIAllResult(List<Joke> result);
+
         void errorDownloadingAll();
     }
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 
 import pl.jakubchmura.suchary.android.sql.JokeContract;
 
-public class Joke implements Parcelable {
+public class Joke implements Parcelable, Comparable<Joke> {
     public static final Creator<Joke> CREATOR = new Creator<Joke>() {
         @Override
         public Joke createFromParcel(Parcel source) {
@@ -108,7 +108,7 @@ public class Joke implements Parcelable {
 
     @Override
     public String toString() {
-        return "joke: " + mBody;
+        return "joke id " + mKey + ":\n" + mBody;
     }
 
     public String getKey() {
@@ -163,12 +163,12 @@ public class Joke implements Parcelable {
         return mStar;
     }
 
-    public void setStar(boolean star) {
-        this.mStar = star;
+    public int getStar() {
+        return mStar ? 1 : 0;
     }
 
-    public int getStar() {
-        return mStar ? 1: 0;
+    public void setStar(boolean star) {
+        this.mStar = star;
     }
 
     @Override
@@ -183,5 +183,10 @@ public class Joke implements Parcelable {
     public int hashCode() {
         final int prime = 19937;
         return prime * mKey.hashCode();
+    }
+
+    @Override
+    public int compareTo(Joke another) {
+        return mDate.compareTo(another.getDate());
     }
 }

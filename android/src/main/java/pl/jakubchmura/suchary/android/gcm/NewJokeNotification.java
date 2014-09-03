@@ -64,9 +64,9 @@ public class NewJokeNotification {
         builder.setLights(context.getResources().getColor(R.color.notification_lights), 800, 1000);
         // Small icon, the notification title and text.
         builder.setSmallIcon(R.drawable.ic_stat_notify)
-               .setContentTitle(res.getQuantityString(
-                       R.plurals.new_joke_notification, number, number))
-               .setContentText(text);
+                .setContentTitle(res.getQuantityString(
+                        R.plurals.new_joke_notification, number, number))
+                .setContentText(text);
 
         // All fields below this line are optional.
 
@@ -97,7 +97,7 @@ public class NewJokeNotification {
                 R.plurals.new_joke_notification, number, number));
         if (number > 2) {
             String summary_format = res.getString(R.string.new_joke_notification_summary);
-            String summary = String.format(summary_format, number-1);
+            String summary = String.format(summary_format, number - 1);
             bigTextStyle.setSummaryText(summary);
         }
         builder.setStyle(bigTextStyle);

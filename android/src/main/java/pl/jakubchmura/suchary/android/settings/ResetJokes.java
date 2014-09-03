@@ -45,7 +45,7 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
     private void saveStarred() {
         JokeDbHelper helper = new JokeDbHelper(mContext);
         List<Joke> starred = helper.getStarred();
-        for (Joke joke: starred) {
+        for (Joke joke : starred) {
             mStarred.add(joke.getKey());
         }
         helper.deleteAllJokes();
@@ -85,7 +85,7 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
     @Override
     public void getAPIAllResult(List<Joke> jokes) {
         mProgressDialog.dismiss();
-        for (Joke joke: jokes) {
+        for (Joke joke : jokes) {
             if (mStarred.contains(joke.getKey())) {
                 joke.setStar(true);
             }

@@ -17,13 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
+import pl.jakubchmura.suchary.android.util.DrawerAdapter;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -51,6 +52,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
+    private DrawerAdapter<String> mDrawerAdapter;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -70,7 +72,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
@@ -79,7 +81,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -88,7 +90,8 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<>(
+        setUpFooter();
+        mDrawerAdapter = new DrawerAdapter<>(
                 getActionBar().getThemedContext(),
                 R.layout.drawer_list_item,
                 R.id.text,
@@ -97,9 +100,10 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.section_starred),
                         getString(R.string.section_random)
                 }
-        ));
+        );
+        mDrawerListView.setAdapter(mDrawerAdapter);
+        mDrawerAdapter.setItemChecked(mCurrentSelectedPosition);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        setUpFooter();
         return mDrawerListView;
     }
 
@@ -176,11 +180,35 @@ public class NavigationDrawerFragment extends Fragment {
             settings.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(mFragmentContainerView);
+                    }
                     Intent intent = new Intent(getActivity(), Settings.class);
                     startActivity(intent);
                 }
             });
             mDrawerListView.addFooterView(settings);
+        }
+
+        View about = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        if (about != null) {
+            ImageView topBar = (ImageView) about.findViewById(R.id.top_bar);
+            topBar.setVisibility(View.GONE);
+            ImageView imageSettings = (ImageView) about.findViewById(R.id.image);
+            imageSettings.setImageResource(R.drawable.ic_action_about);
+            TextView textSettings = (TextView) about.findViewById(R.id.text);
+            textSettings.setText(R.string.navigation_drawer_about);
+            about.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(mFragmentContainerView);
+                    }
+                    Intent intent = new Intent(getActivity(), AboutActivity.class);
+                    startActivity(intent);
+                }
+            });
+            mDrawerListView.addFooterView(about);
         }
     }
 
@@ -188,6 +216,7 @@ public class NavigationDrawerFragment extends Fragment {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
+            mDrawerAdapter.setItemChecked(position);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);

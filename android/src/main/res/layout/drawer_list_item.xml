@@ -4,17 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/drawer_item_background" >
+    android:background="@drawable/drawer_item_background">
 
     <TextView
+        android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/drawer_item_text_size"
-        android:id="@+id/text"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/drawer_item_margin_left"
-        android:paddingTop="@dimen/drawer_item_padding_top"
         android:paddingBottom="@dimen/drawer_item_padding_bottom"
-        android:fontFamily="sans-serif-light"
-        tools:text="New Text"
-        android:layout_centerVertical="true" />
+        android:paddingTop="@dimen/drawer_item_padding_top"
+        android:textSize="@dimen/drawer_item_text_size"
+        tools:text="New Text" />
 </RelativeLayout>

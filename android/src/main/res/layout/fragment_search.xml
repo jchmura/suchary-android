@@ -1,23 +1,23 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_search"
+    style="@style/card_list_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/card_list_view">
+    android:layout_height="match_parent">
 
     <ProgressBar
+        android:id="@+id/progress"
+        style="@android:style/Widget.Holo.ProgressBar.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress"
-        android:indeterminate="true"
-        style="@android:style/Widget.Holo.ProgressBar.Large"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:indeterminate="true" />
 
     <it.gmariotti.cardslib.library.view.CardListView
         android:id="@+id/cardList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        card:list_card_layout_resourceID="@layout/list_card_layout"/>
+        card:list_card_layout_resourceID="@layout/list_card_layout" />
 
 </FrameLayout>

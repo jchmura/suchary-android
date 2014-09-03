@@ -4,8 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
 
@@ -48,7 +55,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void createJoke(Joke joke){
+    public void createJoke(Joke joke) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -62,16 +69,45 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
         if (db != null) {
             db.insert(
-                TABLE_NAME,
-                null,
-                values);
+                    TABLE_NAME,
+                    null,
+                    values);
             db.close();
         }
     }
 
     public void createJokes(List<Joke> list) {
-        for (Joke joke: list) {
-            createJoke(joke);
+        String sql = JokeContract.SQL_INSERT_ENTRIES;
+        Set<Joke> jokes = new TreeSet<>(list);
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (db != null) {
+            db.beginTransaction();
+            SQLiteStatement statement = db.compileStatement(sql);
+
+            for (Joke joke : jokes) {
+                statement.bindString(1, joke.getKey());
+                statement.bindString(2, String.valueOf(joke.getVotes()));
+                statement.bindString(3, joke.getDateAsString());
+                statement.bindString(4, joke.getUrl());
+                statement.bindString(5, joke.getBody());
+                statement.bindString(6, joke.getSite());
+                statement.bindString(7, String.valueOf(joke.getStar()));
+                try {
+                    statement.executeInsert();
+                } catch (SQLiteConstraintException e) {
+                    Crashlytics.setString("Joke key", joke.getKey());
+                    Crashlytics.logException(e);
+                    Log.e(TAG, "Error inserting joke " + joke, e);
+                } finally {
+                    statement.clearBindings();
+                }
+            }
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+
+            db.close();
         }
     }
 
@@ -91,23 +127,31 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     null
             );
 
-
-            cursor.moveToFirst();
-
-            Joke joke = new Joke(cursor);
+            Joke joke = null;
+            if (cursor.moveToFirst()) {
+                joke = new Joke(cursor);
+            }
             cursor.close();
             db.close();
             return joke;
+
         }
         return null;
     }
 
-    public List<Joke> getJokes(String[] keys) {
+    public List<Joke> getJokes(String[] keys, boolean sameLength) {
         List<Joke> jokes = new ArrayList<>();
-        for (String key: keys) {
-            jokes.add(getJoke(key));
+        for (String key : keys) {
+            Joke joke = getJoke(key);
+            if (joke != null || sameLength) {
+                jokes.add(joke);
+            }
         }
         return jokes;
+    }
+
+    public List<Joke> getJokes(String[] keys) {
+        return getJokes(keys, false);
     }
 
     public List<Joke> getJokes(String selection, String[] selectionArgs, String order, String limit) {
@@ -191,7 +235,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         if (star) {
             selection += "AND ( " + COLUMN_NAME_STAR + " = 1)";
         }
-        String[] selectionArgs = new String[] {query + "%", "% " + query + "%"};
+        String[] selectionArgs = new String[]{query + "%", "% " + query + "%"};
         return getJokes(selection, selectionArgs, null, null);
     }
 
@@ -219,7 +263,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     public void updateJokes(List<Joke> jokes) {
-        for (Joke joke: jokes) {
+        for (Joke joke : jokes) {
             updateJoke(joke);
         }
     }

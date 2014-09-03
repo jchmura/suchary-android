@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
+import android.widget.Space;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     private static final String PREFS_NAME = GcmIntentService.PREFS_NAME;
     private static final String EDIT_JOKE = GcmIntentService.EDIT_JOKE;
     private static final String DELETE_JOKE = GcmIntentService.DELETE_JOKE;
+    private boolean showCrouton = false;
 
     /**
      * Activity which attached this fragment
@@ -48,6 +50,16 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Card list view
      */
     protected CardListView mCardListView;
+
+    /**
+     * ListView footer
+     */
+    protected ProgressBar mFooterView;
+
+    /**
+     * ListView header
+     */
+    protected Space mHeaderView;
 
     /**
      * Adapter for the {@link #mCardListView}
@@ -118,25 +130,30 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         List<Card> cards = makeCardArray(jokes);
 
         if (mCardListView != null) {
-            mAdapter = (JokeCardArrayAdapter) mCardListView.getAdapter();
             if (mAdapter != null) {
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
+//                mHeaderView = new Space(mActivity);
+//                mHeaderView.setMinimumHeight(10);
+//                mCardListView.addHeaderView(mHeaderView);
+//
+                mFooterView = new ProgressBar(mActivity);
+                mCardListView.addFooterView(mFooterView);
+                hideProgress();
+
                 mAdapter = new JokeCardArrayAdapter(mActivity, cards);
                 mCardListView.setAdapter(mAdapter);
-                hideProgress();
             }
         }
     }
 
     /**
      * Add jokes to the beginning of the card list.
-     *
-     * @param jokes  list of jokes to add
-     * @param silent don't move to top after adding
+     * @param jokes list of jokes to add
+     * @param move  move to top after adding
      */
-    public void addJokesToTop(List<Joke> jokes, boolean silent) {
+    public void addJokesToTop(List<Joke> jokes, boolean move) {
         if (mSwipeRefresh != null) {
             mSwipeRefresh.setRefreshing(false);
         }
@@ -147,9 +164,12 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 JokeCard card = makeCard(jokes.get(i));
                 mAdapter.insert(card, 0);
             }
-            if (silent && size > 0) {
+            if (move && size > 0) {
                 mCardListView.setSelection(start + size);
-                showCroutonNew(size);
+                if (showCrouton) {
+                    showCroutonNew(size);
+                    showCrouton = false;
+                }
             }
         }
     }
@@ -223,6 +243,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void endOfData() {
         mCardListView.setOnScrollListener(null);
+        mCardListView.removeFooterView(mFooterView);
     }
 
     /**
@@ -288,13 +309,25 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                     loading = true;
                 }
             }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                super.onScrollStateChanged(view, scrollState);
+            }
         });
     }
 
+    /**
+     * Check for newer jokes in DB.
+     */
     public void checkNewJokes() {
+        showCrouton = true;
         mFetcher.getNewerFromDB();
     }
 
+    /**
+     * Check if jokes were edited and update then.
+     */
     public void checkEditedJokes() {
         SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);
         String edited = sharedPreferences.getString(EDIT_JOKE, "").trim();
@@ -303,10 +336,13 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             mFetcher.updateJokes(editedKeys);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(EDIT_JOKE, "");
-            editor.commit();
+            editor.apply();
         }
     }
 
+    /**
+     * Check if jokes were set to be deleted and perform the removal.
+     */
     public void checkDeletedJoke() {
         SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);
         String edited = sharedPreferences.getString(DELETE_JOKE, "").trim();
@@ -315,14 +351,17 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             mFetcher.deleteJokes(deletedKeys);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(DELETE_JOKE, "");
-            editor.commit();
+            editor.apply();
         }
     }
 
+    /**
+     * Enable the pull to refresh swipe. When performed, it fetches to server.
+     */
     protected void setPullable() {
         mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
         mSwipeRefresh.setColorScheme(R.color.holo_orange, R.color.holo_blue,
-                                     R.color.holo_orange, R.color.holo_blue);
+                R.color.holo_orange, R.color.holo_blue);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -331,6 +370,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         });
     }
 
+    /**
+     * Hide the progress dialog and show the jokes.
+     */
     protected abstract void hideProgress();
 
 }

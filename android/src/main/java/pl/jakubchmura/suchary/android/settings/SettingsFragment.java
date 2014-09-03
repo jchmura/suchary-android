@@ -1,17 +1,18 @@
 package pl.jakubchmura.suchary.android.settings;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import pl.jakubchmura.suchary.android.R;
-import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
 
-public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragment {
 
-    private static final String KEY_PREF_NOTIF = "pref_notif";
+    public static final String KEY_PREF_NOTIF = "pref_notif";
+
+    private static final String KEY_PREF_RESET = "pref_reset";
+
     private Settings mActivity;
 
     public SettingsFragment() {
@@ -29,7 +30,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         addPreferencesFromResource(R.xml.preferences);
 
-        Preference resetPreference = findPreference("pref_reset");
+        Preference resetPreference = findPreference(KEY_PREF_RESET);
         if (resetPreference != null) {
             resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -41,41 +42,4 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             });
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        SharedPreferences sharedPrefs = getPreferenceScreen().getSharedPreferences();
-        if (sharedPrefs != null) {
-            sharedPrefs.registerOnSharedPreferenceChangeListener(this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        SharedPreferences sharedPrefs = getPreferenceScreen().getSharedPreferences();
-        if (sharedPrefs != null) {
-            sharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
-        }
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(KEY_PREF_NOTIF)) {
-            boolean notification = sharedPreferences.getBoolean(KEY_PREF_NOTIF, false);
-            GcmRegistration gcm = new GcmRegistration(mActivity);
-            if (notification) {
-                if (!gcm.register()) {
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean("pref_notif", false);
-                    editor.commit();
-                }
-            } else {
-                gcm.unregister();
-            }
-        }
-    }
-
-
 }

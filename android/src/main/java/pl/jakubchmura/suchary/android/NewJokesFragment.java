@@ -44,7 +44,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         boolean saved = true;
         if (mRootView == null) {
             mRootView = inflater.inflate(R.layout.fragment_new, container, false);
@@ -91,12 +91,13 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
                     JokeDbHelper helper = new JokeDbHelper(mActivity);
                     return helper.getCount();
                 }
+
                 @Override
                 protected void onPostExecute(Long count) {
                     if (count == 0) downloadJokesFromServer();
                     else if (!saved) mFetcher.fetchNext();
                 }
-            }.execute((Void)null);
+            }.execute((Void) null);
         }
     }
 
@@ -143,5 +144,6 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     }
 
     @Override
-    public void errorDownloadingAll() {}
+    public void errorDownloadingAll() {
+    }
 }

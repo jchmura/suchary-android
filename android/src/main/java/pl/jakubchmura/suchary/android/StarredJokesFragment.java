@@ -81,6 +81,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 mFetcher.setFetchGetOlder(false);
                 return jokes;
             }
+
             @Override
             protected void onPostExecute(List<Joke> jokes) {
                 mProgress.setVisibility(View.GONE);
@@ -93,13 +94,13 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                     setRetainInstance(true);
                 }
             }
-        }.execute((Void)null);
+        }.execute((Void) null);
     }
 
     @Override
     protected JokeCard makeCard(final Joke joke) {
         CardFactory cardFactory = new CardFactory(mActivity);
-        Card.OnSwipeListener swipeListener = new Card.OnSwipeListener(){
+        Card.OnSwipeListener swipeListener = new Card.OnSwipeListener() {
             @Override
             public void onSwipe(Card card) {
                 joke.setStar(false);
@@ -111,7 +112,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
                 }
             }
         };
-        Card.OnUndoSwipeListListener undoSwipeListListener = new Card.OnUndoSwipeListListener(){
+        Card.OnUndoSwipeListListener undoSwipeListListener = new Card.OnUndoSwipeListListener() {
             @Override
             public void onUndoSwipe(Card card) {
                 joke.setStar(true);
@@ -124,7 +125,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
 
             }
         };
-        JokeCard card =  cardFactory.getCard(joke, swipeListener, undoSwipeListListener);
+        JokeCard card = cardFactory.getCard(joke, swipeListener, undoSwipeListListener);
         JokeExpand expand = (JokeExpand) card.getCardExpand();
         expand.setDismissAnimation(mDismissAnimation);
         return card;

@@ -48,7 +48,13 @@ public class SearchActivity extends Activity {
             boolean star = false;
             if (mFragment == null) {
                 star = intent.getIntExtra(FRAGMENT_NUMBER, 0) == 2;
-                mFragment = new SearchFragment(query, star);
+
+                Bundle args = new Bundle();
+                args.putString("query", query);
+                args.putBoolean("star", star);
+
+                mFragment = new SearchFragment();
+                mFragment.setArguments(args);
             }
 
             ActionBarTitle actionBarTitle = new ActionBarTitle(this);
@@ -56,8 +62,7 @@ public class SearchActivity extends Activity {
             if (star) title += " " + getResources().getString(R.string.in_favorites);
             actionBarTitle.setTitle(title);
             actionBarTitle.setSubTitle(query);
-        }
-        else {
+        } else {
             mFragment = new SearchFragment();
         }
     }
@@ -70,7 +75,7 @@ public class SearchActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search, menu);
         return true;

@@ -2,10 +2,10 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:top="@dimen/card_expand_button_padding_top"
         android:bottom="@dimen/card_expand_button_padding_bottom"
+        android:left="@dimen/card_expand_button_padding_left"
         android:right="@dimen/card_expand_button_padding_right"
-        android:left="@dimen/card_expand_button_padding_left" >
+        android:top="@dimen/card_expand_button_padding_top">
 
         <bitmap android:src="@drawable/action_star_dark" />
 

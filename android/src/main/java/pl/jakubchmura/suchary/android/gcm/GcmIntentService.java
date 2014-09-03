@@ -1,10 +1,16 @@
 package pl.jakubchmura.suchary.android.gcm;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -16,10 +22,12 @@ import java.util.Date;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.MainActivity;
+import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
 import pl.jakubchmura.suchary.android.joke.api.DownloadJoke;
 import pl.jakubchmura.suchary.android.joke.api.DownloadJokes;
+import pl.jakubchmura.suchary.android.settings.SettingsFragment;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 
 /**
@@ -29,13 +37,12 @@ import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 public class GcmIntentService extends IntentService implements DownloadJokes.DownloadJokesCallback,
         DownloadJoke.DownloadJokeCallback, DownloadAllJokes.DownloadAllJokesCallback {
 
-    private static final String TAG = "IntentService";
-    private Intent mIntent;
-    private static boolean mHandling = false;
-
     public static final String PREFS_NAME = "gcm_jokes";
     public static final String EDIT_JOKE = "edit_joke";
     public static final String DELETE_JOKE = "delete_joke";
+    private static final String TAG = "IntentService";
+    private static boolean mHandling = false;
+    private Intent mIntent;
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -64,6 +71,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                     break;
                 case GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE:
                     String type = extras.getString("type");
+                    Log.i(TAG, "Received GCM message: " + type);
                     switch (type) {
                         case "new":
                             handleNewJokes();
@@ -74,8 +82,11 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                         case "delete":
                             handleDeleteJoke(extras);
                             break;
+                        case "message":
+                            handleMessage(extras);
+                            break;
                         default:
-                            GcmBroadcastReceiver.completeWakefulIntent(mIntent);
+                            finish();
                     }
                     break;
             }
@@ -109,6 +120,21 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         }
     }
 
+    private void handleMessage(Bundle extras) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        builder.setVibrate(new long[]{0, 300, 400, 300});
+        builder.setSmallIcon(R.drawable.ic_stat_notify);
+        builder.setContentTitle(extras.getString("title"));
+        builder.setContentText(extras.getString("text"));
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(extras.getString("text"))
+                .setBigContentTitle(extras.getString("title")));
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.notify("Suchary message", 0, builder.build());
+    }
+
     @Override
     public void getAPIJokesResult(List<Joke> jokes) {
         addJokesToDatabase(jokes);
@@ -140,7 +166,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                     finish();
                 }
             }
-        }.execute((Void)null);
+        }.execute((Void) null);
     }
 
     private void downloadNewer(Date date) {
@@ -164,9 +190,13 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
             jokes.remove(jokes.size() - 1);
         }
         if (!jokes.isEmpty()) {
-            Joke last = jokes.get(jokes.size()-1);
-            NewJokeNotification.notify(this, last.getBody(), jokes.size());
+            Joke last = jokes.get(jokes.size() - 1);
             addJokesToDatabase(jokes);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
+            if (notification) {
+                NewJokeNotification.notify(this, last.getBody(), jokes.size());
+            }
         } else {
             finish();
         }
@@ -202,14 +232,15 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                 List<Joke> newJokes = params[0];
                 int size = newJokes.size();
                 String[] keys = new String[size];
-                
+
                 for (int i = 0; i < size; i++) {
                     keys[i] = newJokes.get(i).getKey();
                 }
-                List<Joke> oldJokes = helper.getJokes(keys);
+                List<Joke> oldJokes = helper.getJokes(keys, true);
 
                 for (int i = 0; i < size; i++) {
-                    newJokes.get(i).setStar(oldJokes.get(i).isStar());
+                    Joke oldJoke = oldJokes.get(i);
+                    if (oldJoke != null) newJokes.get(i).setStar(oldJoke.isStar());
                 }
                 helper.updateJokes(newJokes);
                 return null;
@@ -257,7 +288,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(EDIT_JOKE, edited);
-        editor.commit();
+        editor.apply();
     }
 
     private void addDeletedJokeToPrefs(String key) {
@@ -267,7 +298,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(DELETE_JOKE, deleted);
-        editor.commit();
+        editor.apply();
     }
 
     private void finish() {
@@ -281,8 +312,10 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     }
 
     @Override
-    public void setMaxProgress(int i) {}
+    public void setMaxProgress(int i) {
+    }
 
     @Override
-    public void incrementProgress(int i) {}
+    public void incrementProgress(int i) {
+    }
 }

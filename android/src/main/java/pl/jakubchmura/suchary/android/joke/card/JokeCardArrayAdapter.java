@@ -25,7 +25,7 @@ public class JokeCardArrayAdapter extends CardArrayAdapter {
     protected void populateCards() {
         mCards = new HashMap<>();
 
-        for (int i=0;i<getCount();i++) {
+        for (int i = 0; i < getCount(); i++) {
             JokeCard card = (JokeCard) getItem(i);
             String key = card.getJoke().getKey();
             mCards.put(key, card);
