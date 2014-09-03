@@ -1,7 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
-     https://developer.android.com/design/patterns/navigation-drawer.html -->
+
+    <!--
+     Per the design guidelines, navigation drawers should be between 240dp and 320dp:
+     https://developer.android.com/design/patterns/navigation-drawer.html
+    -->
     <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <!-- Global -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!-- Override default cardslib values -->
     <dimen name="card_base_empty_height">42dp</dimen>
@@ -42,4 +50,13 @@
     <dimen name="drawer_footer_item_margin_top">10dp</dimen>
     <dimen name="drawer_footer_item_margin_bottom">10dp</dimen>
     <dimen name="drawer_footer_item_image_height">25dp</dimen>
+
+    <!-- About -->
+    <dimen name="about_title_text_size">20sp</dimen>
+    <dimen name="about_title_margin_left">10dp</dimen>
+    <dimen name="about_title_margin_top">20dp</dimen>
+    <dimen name="about_description_text_size">16sp</dimen>
+    <dimen name="about_description_margin_top">5dp</dimen>
+    <dimen name="about_author_button_left_margin">10dp</dimen>
+
 </resources>

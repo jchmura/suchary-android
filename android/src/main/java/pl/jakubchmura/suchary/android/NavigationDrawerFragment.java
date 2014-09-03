@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 import pl.jakubchmura.suchary.android.util.DrawerAdapter;
@@ -187,6 +188,27 @@ public class NavigationDrawerFragment extends Fragment {
                 }
             });
             mDrawerListView.addFooterView(settings);
+        }
+
+        View about = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        if (about != null) {
+            ImageView topBar = (ImageView) about.findViewById(R.id.top_bar);
+            topBar.setVisibility(View.GONE);
+            ImageView imageSettings = (ImageView) about.findViewById(R.id.image);
+            imageSettings.setImageResource(R.drawable.ic_action_about);
+            TextView textSettings = (TextView) about.findViewById(R.id.text);
+            textSettings.setText(R.string.navigation_drawer_about);
+            about.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(mFragmentContainerView);
+                    }
+                    Intent intent = new Intent(getActivity(), AboutActivity.class);
+                    startActivity(intent);
+                }
+            });
+            mDrawerListView.addFooterView(about);
         }
     }
 
