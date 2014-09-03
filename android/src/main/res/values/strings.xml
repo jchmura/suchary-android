@@ -8,6 +8,7 @@
     <string name="title_activity_search">Szukaj</string>
     <string name="in_favorites">w ulubionych</string>
     <string name="title_activity_settings">Ustawienia</string>
+    <string name="title_activity_about">O aplikacji</string>
 
     <!-- Drawer -->
     <string name="navigation_drawer_open">Otwórz boczny panel</string>
@@ -40,6 +41,7 @@
         <item quantity="few">%d nowe suchary</item>
         <item quantity="other">%d nowych sucharów</item>
     </plurals>
+
     <string name="new_joke_notification_summary">Oraz %1$d więcej</string>
 
     <!-- Main activity -->
@@ -47,6 +49,7 @@
 
     <!-- Override CardsLib defaults -->
     <string name="list_card_undo_title">Cofnij</string>
+
     <plurals name="list_card_undo_items">
         <item quantity="one">Usunięto suchar z ulubionych</item>
         <item quantity="few">Usunięto %d suchary z ulubionych</item>
@@ -65,5 +68,13 @@
     <string name="pref_reset">Ściągnij ponownie wszystkie suchary</string>
     <string name="pref_reset_summ">Informacja o ulubionych sucharach zostanie zachowana</string>
     <string name="add_jokes_to_db">Zapisywanie sucharów</string>
+
+    <!-- About -->
+    <string name="about_application_title">Aplikacja</string>
+    <string name="about_application">Aplikacja wyświetlająca suchary pobrane z różnych miejsc w internecie. Wersja przeglądarkowa znajduje się na: <a href="http://suchary.jakubchmura.pl">http://suchary.jakubchmura.pl</a></string>
+    <string name="about_author_title">Autor</string>
+    <string name="about_author"><a href="mailto:android@jakubchmura.pl?subject=Suchary">Jakub Chmura</a></string>
+    <string name="about_libraries_title">Biblioteki opensource</string>
+    <string name="about_libraries">&#8226; <a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a>\n&#8226; <a href="https://github.com/keyboardsurfer/Crouton">Crouton</a></string>
 
 </resources>
