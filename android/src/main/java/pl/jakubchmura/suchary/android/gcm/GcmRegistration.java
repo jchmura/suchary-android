@@ -158,10 +158,11 @@ public class GcmRegistration {
                     wr = new DataOutputStream(connection.getOutputStream());
                     wr.writeBytes(data);
 
-                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        Log.d(TAG, "Server returned HTTP " + connection.getResponseCode()
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode != HttpURLConnection.HTTP_OK) {
+                        Log.d(TAG, "Server returned HTTP " + responseCode
                                 + " " + connection.getResponseMessage());
-                        Crashlytics.logException(new RuntimeException("GCM backend returned something else than HTTP OK"));
+                        Crashlytics.logException(new RuntimeException("GCM backend returned HTTP code " + responseCode));
                     }
                 } catch (IOException e) {
                     Crashlytics.logException(e);
