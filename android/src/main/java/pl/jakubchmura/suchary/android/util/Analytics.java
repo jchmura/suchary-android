@@ -39,7 +39,7 @@ public class Analytics {
         }
     }
 
-    public static void setShuffle(Context context) {
+    public static void clickedShuffle(Context context) {
         SucharyApp application = getApplication(context);
         if (application != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
@@ -58,6 +58,42 @@ public class Analytics {
                     .setVariable(variable)
                     .setLabel(label)
                     .setValue(value);
+            Tracker tracker = application.getTracker();
+            tracker.send(builder.build());
+        }
+    }
+
+    public static void clickedStarred(Context context, String label) {
+        SucharyApp application = getApplication(context);
+        if (application != null) {
+            HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
+            builder.setCategory("Expand")
+                    .setAction("Favorite")
+                    .setLabel(label);
+            Tracker tracker = application.getTracker();
+            tracker.send(builder.build());
+        }
+    }
+
+    public static void clickedOriginal(Context context, String label) {
+        SucharyApp application = getApplication(context);
+        if (application != null) {
+            HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
+            builder.setCategory("Expand")
+                    .setAction("Original")
+                    .setLabel(label);
+            Tracker tracker = application.getTracker();
+            tracker.send(builder.build());
+        }
+    }
+
+    public static void clickedShare(Context context, String label) {
+        SucharyApp application = getApplication(context);
+        if (application != null) {
+            HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
+            builder.setCategory("Expand")
+                    .setAction("Share")
+                    .setLabel(label);
             Tracker tracker = application.getTracker();
             tracker.send(builder.build());
         }

@@ -63,7 +63,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
                 mPreviousTotal = 0;
                 mFetcher.clear();
                 mAdapter.clear();
-                Analytics.setShuffle(mActivity);
+                Analytics.clickedShuffle(mActivity);
                 return true;
         }
         return super.onOptionsItemSelected(item);
