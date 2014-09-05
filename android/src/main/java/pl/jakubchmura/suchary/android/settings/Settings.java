@@ -19,7 +19,7 @@ public class Settings extends Activity {
         }
 
         ActionBarTitle actionBarTitle = new ActionBarTitle(this);
-        actionBarTitle.setTitle(getResources().getString(R.string.title_activity_settings));
+        actionBarTitle.setTitle(R.string.title_activity_settings);
     }
 
 }
