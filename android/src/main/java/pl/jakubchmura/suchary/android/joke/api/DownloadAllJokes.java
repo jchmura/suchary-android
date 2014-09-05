@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.util.Analytics;
 
 public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
 
@@ -22,6 +23,7 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
     private Context mContext;
     private DownloadAllJokesCallback mCallback;
     private List<Joke> mResult;
+    private long start;
 
     public DownloadAllJokes(Context context, DownloadAllJokesCallback callback) {
         mContext = context;
@@ -53,10 +55,13 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
+        long end = System.currentTimeMillis();
+        Analytics.setTime(mContext, "Download", "All jokes", String.valueOf(mResult.size()), end - start);
         mCallback.getAPIAllResult(mResult);
     }
 
     private void download(String url) throws IOException {
+        start = System.currentTimeMillis();
         String jsonString = URLConnectionReader.getText(url);
         APIResult apiResult = null;
         try {

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import pl.jakubchmura.suchary.android.JokesBaseFragment;
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.util.Analytics;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -28,6 +29,8 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
         Bundle arguments = getArguments();
         mQuery = arguments.getString("query");
         mStar = arguments.getBoolean("key");
+
+        Analytics.setSearchQuery(getActivity(), mQuery);
 
         View createdView = createView(false);
         getJokes();

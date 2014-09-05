@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.util.Analytics;
 
 public class DownloadJokes extends AsyncTask<String, Integer, List<Joke>> {
 
     private static final String TAG = "DownloadJokes";
     private Context mContext;
     private DownloadJokesCallback mCallback;
+    private long start;
 
     public DownloadJokes(Context context, DownloadJokesCallback callback) {
         mContext = context;
@@ -34,6 +36,7 @@ public class DownloadJokes extends AsyncTask<String, Integer, List<Joke>> {
                 getClass().getName());
         wl.acquire();
         ArrayList<Joke> results = new ArrayList<>();
+        start = System.currentTimeMillis();
         for (String url : params) {
             try {
                 results.add(download(url));
@@ -59,6 +62,8 @@ public class DownloadJokes extends AsyncTask<String, Integer, List<Joke>> {
     @Override
     protected void onPostExecute(List<Joke> result) {
         if (result != null) {
+            long end = System.currentTimeMillis();
+            Analytics.setTime(mContext, "Download", "Jokes", String.valueOf(result.size()),end - start);
             mCallback.getAPIJokesResult(result);
         }
     }

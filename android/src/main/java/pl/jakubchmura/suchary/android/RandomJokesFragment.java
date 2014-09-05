@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import pl.jakubchmura.suchary.android.util.Analytics;
+
 
 public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
     private static final String TAG = "RandomJokesFragment";
@@ -61,6 +63,7 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
                 mPreviousTotal = 0;
                 mFetcher.clear();
                 mAdapter.clear();
+                Analytics.setShuffle(mActivity);
                 return true;
         }
         return super.onOptionsItemSelected(item);

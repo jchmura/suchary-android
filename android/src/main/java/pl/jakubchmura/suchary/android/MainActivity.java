@@ -66,9 +66,6 @@ public class MainActivity extends Activity
         // Crashlytics.com
         Crashlytics.start(this);
 
-        // BugSense.com
-        // BugSenseHandler.initAndStartSession(this, "f875140f");
-
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)

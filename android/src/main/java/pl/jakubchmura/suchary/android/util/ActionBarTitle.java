@@ -18,7 +18,7 @@ public class ActionBarTitle {
     }
 
     public void setTitle(int resource) {
-        setTitle(mActivity.getResources().getString(resource));
+        setTitle(mActivity.getString(resource));
     }
 
     public void setTitle(CharSequence title) {
@@ -35,6 +35,7 @@ public class ActionBarTitle {
                 actionBar.setTitle(title);
             }
         }
+        setScreenName(title.toString());
     }
 
     public void setSubTitle(CharSequence subtitle) {
@@ -57,5 +58,11 @@ public class ActionBarTitle {
         String manufacturer = android.os.Build.MANUFACTURER;
         int api = Build.VERSION.SDK_INT;
         return !(manufacturer.toLowerCase().contains("lg") && api == Build.VERSION_CODES.JELLY_BEAN);
+    }
+
+    private void setScreenName(String name) {
+        if (!name.equals(mActivity.getString(R.string.app_name))) {
+            Analytics.setScreenName(mActivity, name);
+        }
     }
 }

@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import pl.jakubchmura.suchary.android.settings.Settings;
+import pl.jakubchmura.suchary.android.util.Analytics;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
 public class GcmRegistration {
@@ -137,7 +138,9 @@ public class GcmRegistration {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                Crashlytics.setUserIdentifier(mRegId.substring(0, 10));
+                String id = mRegId.substring(0, 10);
+                Crashlytics.setUserIdentifier(id);
+                Analytics.setId(mContext, id);
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
                 String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersion();

@@ -25,3 +25,7 @@
 -dontwarn it.gmariotti.cardslib.library.view.CardGridView
 
 -keepattributes SourceFile,LineNumberTable
+
+-keep public class com.google.android.gms.analytics.** {
+    public *;
+}
