@@ -18,6 +18,7 @@ import it.gmariotti.cardslib.library.internal.dismissanimation.SwipeDismissAnima
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.util.Analytics;
 import pl.jakubchmura.suchary.android.util.FontCache;
 
 public class JokeExpand extends CardExpand {
@@ -50,6 +51,7 @@ public class JokeExpand extends CardExpand {
             ivStar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Analytics.clickedStarred(mContext, mJoke.getKey());
                     mJoke.setStar(!mJoke.isStar());
                     colorStar((ImageView) v);
                     new AsyncTask<Void, Void, Void>() {
@@ -79,6 +81,7 @@ public class JokeExpand extends CardExpand {
             ivShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Analytics.clickedShare(mContext, mJoke.getKey());
                     Intent share = new Intent();
                     share.setAction(Intent.ACTION_SEND);
                     share.putExtra(Intent.EXTRA_TEXT, mJoke.getBody());
@@ -101,6 +104,7 @@ public class JokeExpand extends CardExpand {
             ivSource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Analytics.clickedOriginal(mContext, mJoke.getKey());
                     Uri uri = Uri.parse(mJoke.getUrl());
                     openBrowser(uri);
                 }

@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.util.Analytics;
 
 public class DownloadJoke extends AsyncTask<String, Integer, Joke> {
 
     private static final String TAG = "DownloadJoke";
     private Context mContext;
     private DownloadJokeCallback mCallback;
+    private long start;
 
     public DownloadJoke(Context context, DownloadJokeCallback callback) {
         mContext = context;
@@ -34,6 +36,7 @@ public class DownloadJoke extends AsyncTask<String, Integer, Joke> {
                 getClass().getName());
         wl.acquire();
         Joke joke = null;
+        start = System.currentTimeMillis();
         try {
             joke = download(params[0]);
         } catch (IOException e) {
@@ -60,6 +63,8 @@ public class DownloadJoke extends AsyncTask<String, Integer, Joke> {
     @Override
     protected void onPostExecute(Joke result) {
         if (result != null) {
+            long end = System.currentTimeMillis();
+            Analytics.setTime(mContext, "Download", "Joke", "1", end - start);
             mCallback.getAPIJokeResult(result);
         }
     }
