@@ -140,7 +140,7 @@ public class GcmRegistration {
                 Crashlytics.setUserIdentifier(mRegId.substring(0, 10));
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
-                String data = "registration_id=" + mRegId + "&android_id=" + androidID;
+                String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersion();
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
