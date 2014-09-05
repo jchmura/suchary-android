@@ -77,7 +77,7 @@ public class GcmRegistration {
         // since the existing regID is not guaranteed to work with the new
         // app version.
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
-        int currentVersion = getAppVersion();
+        int currentVersion = getAppVersionCode();
         if (registeredVersion != currentVersion) {
             Log.v(TAG, "App version changed.");
             return "";
@@ -90,20 +90,20 @@ public class GcmRegistration {
                 Context.MODE_PRIVATE);
     }
 
-    private int getAppVersion() {
-        try {
-            PackageManager packageManager = mContext.getPackageManager();
-            if (packageManager != null) {
-                PackageInfo packageInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
-                return packageInfo.versionCode;
-            }
-            return -1;
-        } catch (PackageManager.NameNotFoundException e) {
-            // should never happen
-            throw new RuntimeException("Could not get package name: " + e);
-        } catch (NullPointerException e) {
-            return -1;
+    private int getAppVersionCode() {
+        PackageInfo packageInfo = getPackageInfo();
+        if (packageInfo != null) {
+            return packageInfo.versionCode;
         }
+        return -1;
+    }
+
+    private String getAppVersionName() {
+        PackageInfo packageInfo = getPackageInfo();
+        if (packageInfo != null) {
+            return packageInfo.versionName;
+        }
+        return "-1";
     }
 
     private void registerInBackground() {
@@ -143,7 +143,7 @@ public class GcmRegistration {
                 Analytics.setId(mContext, id);
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
-                String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersion();
+                String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersionName();
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
@@ -189,7 +189,7 @@ public class GcmRegistration {
 
     private void storeRegistrationId() {
         final SharedPreferences prefs = getGCMPreferences();
-        int appVersion = getAppVersion();
+        int appVersion = getAppVersionCode();
         Log.i(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, mRegId);
@@ -210,6 +210,18 @@ public class GcmRegistration {
             return false;
         }
         return true;
+    }
+
+    private PackageInfo getPackageInfo() {
+        try {
+            PackageManager packageManager = mContext.getPackageManager();
+            return packageManager.getPackageInfo(mContext.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 }
