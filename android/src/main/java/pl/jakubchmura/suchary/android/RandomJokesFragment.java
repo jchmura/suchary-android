@@ -62,7 +62,9 @@ public class RandomJokesFragment extends JokesBaseFragment<MainActivity> {
             case R.id.shuffle:
                 mPreviousTotal = 0;
                 mFetcher.clear();
-                mAdapter.clear();
+                if (mAdapter != null) {
+                    mAdapter.clear();
+                }
                 Analytics.clickedShuffle(mActivity);
                 return true;
         }
