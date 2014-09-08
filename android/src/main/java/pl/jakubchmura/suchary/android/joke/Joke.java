@@ -4,6 +4,8 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -186,7 +188,7 @@ public class Joke implements Parcelable, Comparable<Joke> {
     }
 
     @Override
-    public int compareTo(Joke another) {
+    public int compareTo(@NotNull Joke another) {
         return mDate.compareTo(another.getDate());
     }
 }
