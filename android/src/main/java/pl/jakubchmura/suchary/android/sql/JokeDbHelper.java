@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
@@ -139,6 +140,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    @NotNull
     public List<Joke> getJokes(String[] keys, boolean sameLength) {
         List<Joke> jokes = new ArrayList<>();
         for (String key : keys) {
@@ -150,10 +152,12 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return jokes;
     }
 
+    @NotNull
     public List<Joke> getJokes(String[] keys) {
         return getJokes(keys, false);
     }
 
+    @NotNull
     public List<Joke> getJokes(String selection, String[] selectionArgs, String order, String limit) {
         SQLiteDatabase db = getReadableDatabase();
 
@@ -184,10 +188,12 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
     }
 
+    @NotNull
     public List<Joke> getAllJokes() {
         return getJokes(null, null, null, null);
     }
 
+    @NotNull
     public List<Joke> getBefore(Date date, Integer count) {
         String selection = null;
         String[] selectionArgs = null;
@@ -203,6 +209,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return getJokes(selection, selectionArgs, COLUMN_NAME_DATE + " DESC", limit);
     }
 
+    @NotNull
     public List<Joke> getAfter(Date date, Integer count) {
         String selection = null;
         String[] selectionArgs = null;
@@ -220,16 +227,18 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     @Nullable
     public Joke getNewest() {
         List<Joke> newestJokes = getAfter(null, 1);
-        if (newestJokes != null) {
+        if (!newestJokes.isEmpty()) {
             return newestJokes.get(0);
         }
         return null;
     }
 
+    @NotNull
     public List<Joke> getRandom(int limit) {
         return getJokes(null, null, "Random()", String.valueOf(limit));
     }
 
+    @NotNull
     public List<Joke> searchBody(String query, boolean star) {
         String selection = "(" + COLUMN_NAME_BODY + " LIKE ?" + " OR " + COLUMN_NAME_BODY + " LIKE ?)";
         if (star) {
@@ -268,6 +277,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
     }
 
+    @NotNull
     public List<Joke> getStarred() {
         String selection = COLUMN_NAME_STAR + " = 1";
 
