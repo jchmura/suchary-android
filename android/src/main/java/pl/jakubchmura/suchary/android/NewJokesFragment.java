@@ -102,21 +102,24 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     }
 
     private void downloadJokesFromServer() {
-        final DownloadAllJokes downloadAll = new DownloadAllJokes(mActivity, this);
-        mProgressDialog = new ProgressDialog(mActivity);
-        mProgressDialog.setTitle(getResources().getString(R.string.download_jokes_progress_title));
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setProgress(0);
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                downloadAll.cancel(true);
-            }
-        });
-        mProgressDialog.show();
+        if (isAdded()) {
+            final DownloadAllJokes downloadAll = new DownloadAllJokes(mActivity, this);
+            mProgressDialog = new ProgressDialog(mActivity);
+            mProgressDialog.setTitle(getResources().getString(R.string.download_jokes_progress_title));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setProgress(0);
+            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    downloadAll.cancel(true);
+                }
+            });
+            mProgressDialog.show();
 
-        downloadAll.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+            downloadAll.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+        }
+
     }
 
     @Override
