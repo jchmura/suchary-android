@@ -29,6 +29,9 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     private static final String TAG = "NewJokesFragment";
 
     private ProgressDialog mProgressDialog;
+    private DownloadAllJokes mDownloadAllTask;
+    private int mProgressDialogState;
+    private int mProgressDialogMaxState;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -54,7 +57,9 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         View createdView = createView(saved);
 
         setPullable();
-        getJokes(saved);
+        if (mDownloadAllTask == null) {
+            getJokes(saved);
+        }
 
         return createdView;
     }
@@ -69,9 +74,25 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     @Override
     public void onResume() {
         super.onResume();
-        checkNewJokes();
-        checkEditedJokes();
-        checkDeletedJoke();
+        if (mDownloadAllTask != null && mDownloadAllTask.getStatus() != AsyncTask.Status.FINISHED) {
+            showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
+            mDownloadAllTask.attach(mActivity, this);
+        } else {
+            checkNewJokes();
+            checkEditedJokes();
+            checkDeletedJoke();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+        if (mDownloadAllTask != null) {
+            mDownloadAllTask.detach();
+        }
     }
 
     @Override
@@ -102,21 +123,29 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     }
 
     private void downloadJokesFromServer() {
-        final DownloadAllJokes downloadAll = new DownloadAllJokes(mActivity, this);
+        if (isAdded() && mDownloadAllTask == null) {
+            mDownloadAllTask = new DownloadAllJokes(mActivity, this);
+            showProgressDialog(0, 100);
+            mDownloadAllTask.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+        }
+    }
+
+    private void showProgressDialog(int progress, int max) {
+        mProgressDialogState = progress;
+        mProgressDialogMaxState = max;
         mProgressDialog = new ProgressDialog(mActivity);
         mProgressDialog.setTitle(getResources().getString(R.string.download_jokes_progress_title));
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setProgress(0);
+        mProgressDialog.setMax(max);
+        mProgressDialog.setProgress(progress);
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                downloadAll.cancel(true);
+                mDownloadAllTask.cancel(true);
             }
         });
         mProgressDialog.show();
-
-        downloadAll.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
     }
 
     @Override
@@ -127,12 +156,14 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
 
     @Override
     public void setMaxProgress(int max) {
+        mProgressDialogMaxState = max;
         mProgressDialog.setMax(max);
     }
 
     @Override
     public void incrementProgress(int delta) {
-        mProgressDialog.incrementProgressBy(delta);
+        mProgressDialogState += delta;
+        mProgressDialog.setProgress(mProgressDialogState);
     }
 
     @Override

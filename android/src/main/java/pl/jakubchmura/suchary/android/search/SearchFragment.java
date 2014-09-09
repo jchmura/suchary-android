@@ -24,7 +24,11 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_search, container, false);
+        boolean saved = true;
+        if (mRootView == null) {
+            mRootView = inflater.inflate(R.layout.fragment_search, container, false);
+            saved = false;
+        }
 
         Bundle arguments = getArguments();
         mQuery = arguments.getString("query");
@@ -32,8 +36,10 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
 
         Analytics.setSearchQuery(getActivity(), mQuery);
 
-        View createdView = createView(false);
-        getJokes();
+        View createdView = createView(saved);
+        if (!saved) {
+            getJokes();
+        }
 
         return createdView;
     }

@@ -14,6 +14,7 @@ public class SettingsFragment extends PreferenceFragment {
     private static final String KEY_PREF_RESET = "pref_reset";
 
     private Settings mActivity;
+    private ResetJokes mResetJokes;
 
     public SettingsFragment() {
     }
@@ -22,6 +23,7 @@ public class SettingsFragment extends PreferenceFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = (Settings) activity;
+        setRetainInstance(true);
     }
 
     @Override
@@ -35,11 +37,27 @@ public class SettingsFragment extends PreferenceFragment {
             resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    ResetJokes resetJokes = new ResetJokes(mActivity);
-                    resetJokes.reset();
+                    mResetJokes = new ResetJokes(mActivity);
+                    mResetJokes.reset();
                     return true;
                 }
             });
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mResetJokes != null) {
+            mResetJokes.attach(mActivity);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mResetJokes != null) {
+            mResetJokes.detach();
         }
     }
 }
