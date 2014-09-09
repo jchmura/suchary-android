@@ -31,6 +31,11 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
         mResult = new ArrayList<>();
     }
 
+    public void attach(Context context, DownloadAllJokesCallback callback) {
+        mContext = context;
+        mCallback = callback;
+    }
+
     @Override
     protected Void doInBackground(String... params) {
         // take CPU lock to prevent CPU from going off if the user
@@ -55,9 +60,11 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        long end = System.currentTimeMillis();
-        Analytics.setTime(mContext, "Download", "All jokes", String.valueOf(mResult.size()), end - start);
-        mCallback.getAPIAllResult(mResult);
+        if (mCallback != null) {
+            long end = System.currentTimeMillis();
+            Analytics.setTime(mContext, "Download", "All jokes", String.valueOf(mResult.size()), end - start);
+            mCallback.getAPIAllResult(mResult);
+        }
     }
 
     private void download(String url) throws IOException {
@@ -75,20 +82,27 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
 
     private void processResult(APIResult result) throws IOException {
         if (result != null) {
-            if (mResult.isEmpty()) {
+            if (mCallback != null) {
                 mCallback.setMaxProgress(result.getCount());
             }
 
             if (result.getResults() != null) {
-                mCallback.incrementProgress(result.getResults().size());
+                if (mCallback != null) {
+                    mCallback.incrementProgress(result.getResults().size());
+                }
                 mResult.addAll(result.getResults());
                 if (result.getNext() != null && !isCancelled()) {
                     download(result.getNext());
                 }
             }
-        } else {
+        } else if (mCallback != null){
             mCallback.errorDownloadingAll();
         }
+    }
+
+    public void detach() {
+        mContext = null;
+        mCallback = null;
     }
 
     public interface DownloadAllJokesCallback {
