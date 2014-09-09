@@ -18,9 +18,12 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
 
     public static List<Joke> mJokes;
 
-    private final Context mContext;
+    private Context mContext;
     private ProgressDialog mProgressDialog;
     private HashSet<String> mStarred;
+    private DownloadAllJokes mDownloadAllTask;
+    private int mProgressDialogState;
+    private int mProgressDialogMaxState;
 
     public ResetJokes(Context context) {
         mContext = context;
@@ -42,6 +45,23 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
         }.execute((Void) null);
     }
 
+    public void detach() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+        if (mDownloadAllTask != null) {
+            mDownloadAllTask.detach();
+        }
+    }
+
+    public void attach(Context context) {
+        mContext = context;
+        if (mDownloadAllTask != null) {
+            showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
+            mDownloadAllTask.attach(mContext, this);
+        }
+    }
+
     private void saveStarred() {
         JokeDbHelper helper = new JokeDbHelper(mContext);
         List<Joke> starred = helper.getStarred();
@@ -52,21 +72,24 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
     }
 
     private void downloadAll() {
-        DownloadAllJokes downloadAll = new DownloadAllJokes(mContext, this);
-        showDeterminateProgress(downloadAll);
-        downloadAll.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+        mDownloadAllTask = new DownloadAllJokes(mContext, this);
+        showProgressDialog(0, 100);
+        mDownloadAllTask.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
     }
 
-    private void showDeterminateProgress(final DownloadAllJokes downloadAll) {
+    private void showProgressDialog(int progress, int max) {
+        mProgressDialogState = progress;
+        mProgressDialogMaxState = max;
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setTitle(mContext.getResources().getString(R.string.download_jokes_progress_title));
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setProgress(0);
+        mProgressDialog.setMax(max);
+        mProgressDialog.setProgress(progress);
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                downloadAll.cancel(true);
+                mDownloadAllTask.cancel(true);
             }
         });
         mProgressDialog.show();
@@ -74,12 +97,14 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
 
     @Override
     public void setMaxProgress(int max) {
+        mProgressDialogMaxState = max;
         mProgressDialog.setMax(max);
     }
 
     @Override
     public void incrementProgress(int delta) {
-        mProgressDialog.incrementProgressBy(delta);
+        mProgressDialogState += delta;
+        mProgressDialog.setProgress(mProgressDialogState);
     }
 
     @Override
