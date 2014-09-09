@@ -56,7 +56,7 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
 
     public void attach(Context context) {
         mContext = context;
-        if (mDownloadAllTask != null) {
+        if (mDownloadAllTask != null && mDownloadAllTask.getStatus() != AsyncTask.Status.FINISHED) {
             showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
             mDownloadAllTask.attach(mContext, this);
         }

@@ -74,7 +74,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     @Override
     public void onResume() {
         super.onResume();
-        if (mDownloadAllTask != null) {
+        if (mDownloadAllTask != null && mDownloadAllTask.getStatus() != AsyncTask.Status.FINISHED) {
             showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
             mDownloadAllTask.attach(mActivity, this);
         } else {
