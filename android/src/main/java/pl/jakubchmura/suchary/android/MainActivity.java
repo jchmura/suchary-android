@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
@@ -102,7 +103,12 @@ public class MainActivity extends Activity
     protected void onPause() {
         super.onPause();
 
-        unregisterReceiver(mReceiver);
+        try {
+            unregisterReceiver(mReceiver);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Error while unregistering broadcast receiver", e);
+            Crashlytics.logException(e);
+        }
     }
 
     @Override
