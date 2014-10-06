@@ -99,6 +99,21 @@ public class Analytics {
         }
     }
 
+    public static void setError(Context context, String description, boolean isFatal) {
+        SucharyApp application = getApplication(context);
+        if (application != null) {
+            HitBuilders.ExceptionBuilder builder = new HitBuilders.ExceptionBuilder();
+            builder.setDescription(description)
+                    .setFatal(isFatal);
+            Tracker tracker = application.getTracker();
+            tracker.send(builder.build());
+        }
+    }
+
+    public static void setError(Context context, String description) {
+        setError(context, description, false);
+    }
+
     private static SucharyApp getApplication(Context context) {
         SucharyApp application;
         if (context instanceof Activity) {

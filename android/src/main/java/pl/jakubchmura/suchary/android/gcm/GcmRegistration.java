@@ -125,10 +125,7 @@ public class GcmRegistration {
                     storeRegistrationId();
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
-                    Crashlytics.logException(ex);
-                    // If there is an error, don't just keep trying to register.
-                    // Require the user to click a button again, or perform
-                    // exponential back-off.
+                    Analytics.setError(mContext, ex.getMessage());
                 }
                 return msg;
             }
@@ -166,7 +163,7 @@ public class GcmRegistration {
                     if (responseCode != HttpURLConnection.HTTP_OK) {
                         Log.d(TAG, "Server returned HTTP " + responseCode
                                 + " " + connection.getResponseMessage());
-                        Crashlytics.logException(new RuntimeException("GCM backend returned HTTP code " + responseCode));
+                        Analytics.setError(mContext, "GCM backend returned HTTP code " + responseCode);
                     }
                 } catch (IOException e) {
                     Crashlytics.logException(e);
