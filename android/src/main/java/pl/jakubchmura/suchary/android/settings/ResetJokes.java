@@ -74,7 +74,7 @@ public class ResetJokes implements DownloadAllJokes.DownloadAllJokesCallback {
     private void downloadAll() {
         mDownloadAllTask = new DownloadAllJokes(mContext, this);
         showProgressDialog(0, 100);
-        mDownloadAllTask.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+        mDownloadAllTask.execute(mContext.getString(R.string.api_url) + "?limit=100");
     }
 
     private void showProgressDialog(int progress, int max) {

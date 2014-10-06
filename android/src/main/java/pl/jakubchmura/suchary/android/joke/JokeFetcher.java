@@ -132,7 +132,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      * Handle the result in {@link #getAPIAllResult(java.util.List)}.
      */
     private void downloadNewerThan(Date date) {
-        String url = "http://suchary.jakubchmura.pl/api/obcy";
+        String url = mContext.getString(R.string.api_url);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
         String first_date = dateFormat.format(date);
         try {

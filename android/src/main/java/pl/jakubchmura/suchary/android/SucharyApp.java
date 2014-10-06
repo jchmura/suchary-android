@@ -1,7 +1,9 @@
 package pl.jakubchmura.suchary.android;
 
 import android.app.Application;
+import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -20,5 +22,7 @@ public class SucharyApp extends Application {
     public void onCreate() {
         super.onCreate();
         mAnalytics = GoogleAnalytics.getInstance(this);
+        Crashlytics.start(this);
+        Crashlytics.log(Log.ERROR, "SucharyApp", "Testing crashlytics logging");
     }
 }

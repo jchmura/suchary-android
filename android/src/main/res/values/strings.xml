@@ -77,4 +77,8 @@
     <string name="about_libraries_title">Biblioteki opensource</string>
     <string name="about_libraries">&#8226; <a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a>\n&#8226; <a href="https://github.com/keyboardsurfer/Crouton">Crouton</a></string>
 
+    <!-- Global -->
+    <string name="api_url">http://suchary.jakubchmura.pl/api/obcy</string>
+    <string name="site_url">http://suchary.jakubchmura.pl/</string>
+
 </resources>

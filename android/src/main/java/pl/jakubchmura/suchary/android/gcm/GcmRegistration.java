@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.Analytics;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
@@ -147,7 +148,7 @@ public class GcmRegistration {
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
-                    URL url = new URL("http://suchary.jakubchmura.pl/" + action + "/");
+                    URL url = new URL(mContext.getString(R.string.site_url) + action + "/");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setDoOutput(true);
                     connection.setDoInput(true);

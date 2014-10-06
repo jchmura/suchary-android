@@ -106,7 +106,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     private void handleEditJoke(Bundle extras) {
         String key = extras.getString("key");
         if (key != null) {
-            String url = "http://suchary.jakubchmura.pl/api/obcy/" + key;
+            String url = getString(R.string.api_url) + "/" + key;
             DownloadJoke downloadJoke = new DownloadJoke(this, this);
             downloadJoke.execute(url);
         }
@@ -170,7 +170,7 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     }
 
     private void downloadNewer(Date date) {
-        String url = "http://suchary.jakubchmura.pl/api/obcy";
+        String url = getString(R.string.api_url);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
         String first_date = dateFormat.format(date);
         try {

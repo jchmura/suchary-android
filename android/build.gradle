@@ -44,11 +44,24 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+    }
+
+    productFlavors {
+        develop {
+            targetSdkVersion 20
+            compileSdkVersion 20
+            versionCode 7
+            versionName 'develop'
+        }
+        prod {
+
+        }
     }
 }
 
@@ -61,7 +74,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:+'
     compile 'com.android.support:support-v4:19.+'
     compile 'com.intellij:annotations:+@jar'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'de.keyboardsurfer.android.widget:crouton:+@aar'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
