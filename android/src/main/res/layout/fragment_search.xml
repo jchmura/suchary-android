@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_search"
     style="@style/card_list_view"
@@ -10,8 +10,8 @@
         style="@android:style/Widget.Holo.ProgressBar.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        android:layout_centerInParent="true" />
 
     <it.gmariotti.cardslib.library.view.CardListView
         android:id="@+id/cardList"
@@ -20,4 +20,4 @@
         android:visibility="gone"
         card:list_card_layout_resourceID="@layout/list_card_layout" />
 
-</FrameLayout>
+</RelativeLayout>
