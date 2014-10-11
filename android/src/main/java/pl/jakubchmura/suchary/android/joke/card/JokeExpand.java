@@ -51,7 +51,7 @@ public class JokeExpand extends CardExpand {
             ivStar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Analytics.clickedStarred(mContext, mJoke.getKey());
+                    Analytics.clickedStarred(mJoke.getKey());
                     mJoke.setStar(!mJoke.isStar());
                     colorStar((ImageView) v);
                     new AsyncTask<Void, Void, Void>() {
@@ -81,7 +81,7 @@ public class JokeExpand extends CardExpand {
             ivShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Analytics.clickedShare(mContext, mJoke.getKey());
+                    Analytics.clickedShare(mJoke.getKey());
                     Intent share = new Intent();
                     share.setAction(Intent.ACTION_SEND);
                     share.putExtra(Intent.EXTRA_TEXT, mJoke.getBody());
@@ -104,7 +104,7 @@ public class JokeExpand extends CardExpand {
             ivSource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Analytics.clickedOriginal(mContext, mJoke.getKey());
+                    Analytics.clickedOriginal(mJoke.getKey());
                     Uri uri = Uri.parse(mJoke.getUrl());
                     openBrowser(uri);
                 }

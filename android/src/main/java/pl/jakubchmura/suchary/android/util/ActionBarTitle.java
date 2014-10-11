@@ -62,7 +62,7 @@ public class ActionBarTitle {
 
     private void setScreenName(String name) {
         if (!name.equals(mActivity.getString(R.string.app_name))) {
-            Analytics.setScreenName(mActivity, name);
+            Analytics.setScreenName(name);
         }
     }
 }

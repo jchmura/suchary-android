@@ -125,7 +125,7 @@ public class GcmRegistration {
                     storeRegistrationId();
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
-                    Analytics.setError(mContext, ex.getMessage());
+                    Analytics.setError(ex.getMessage());
                 }
                 return msg;
             }
@@ -138,7 +138,7 @@ public class GcmRegistration {
             protected Object doInBackground(Object[] params) {
                 String id = mRegId.substring(0, 10);
                 Crashlytics.setUserIdentifier(id);
-                Analytics.setId(mContext, id);
+                Analytics.setId(id);
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
                 String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersionName();
@@ -163,7 +163,7 @@ public class GcmRegistration {
                     if (responseCode != HttpURLConnection.HTTP_OK) {
                         Log.d(TAG, "Server returned HTTP " + responseCode
                                 + " " + connection.getResponseMessage());
-                        Analytics.setError(mContext, "GCM backend returned HTTP code " + responseCode);
+                        Analytics.setError("GCM backend returned HTTP code " + responseCode);
                     }
                 } catch (IOException e) {
                     Crashlytics.logException(e);

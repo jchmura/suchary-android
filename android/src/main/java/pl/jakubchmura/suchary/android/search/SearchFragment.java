@@ -34,7 +34,7 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
         mQuery = arguments.getString("query");
         mStar = arguments.getBoolean("key");
 
-        Analytics.setSearchQuery(getActivity(), mQuery);
+        Analytics.setSearchQuery(mQuery);
 
         View createdView = createView(saved);
         if (!saved) {
