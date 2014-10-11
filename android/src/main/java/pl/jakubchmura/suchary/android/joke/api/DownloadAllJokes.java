@@ -62,7 +62,7 @@ public class DownloadAllJokes extends AsyncTask<String, Integer, Void> {
     protected void onPostExecute(Void aVoid) {
         if (mCallback != null) {
             long end = System.currentTimeMillis();
-            Analytics.setTime(mContext, "Download", "All jokes", String.valueOf(mResult.size()), end - start);
+            Analytics.setTime("Download", "All jokes", String.valueOf(mResult.size()), end - start);
             mCallback.getAPIAllResult(mResult);
         }
     }

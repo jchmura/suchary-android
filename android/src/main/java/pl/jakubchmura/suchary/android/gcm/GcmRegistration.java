@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.Analytics;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
@@ -124,10 +125,7 @@ public class GcmRegistration {
                     storeRegistrationId();
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
-                    Crashlytics.logException(ex);
-                    // If there is an error, don't just keep trying to register.
-                    // Require the user to click a button again, or perform
-                    // exponential back-off.
+                    Analytics.setError(ex.getMessage());
                 }
                 return msg;
             }
@@ -140,14 +138,14 @@ public class GcmRegistration {
             protected Object doInBackground(Object[] params) {
                 String id = mRegId.substring(0, 10);
                 Crashlytics.setUserIdentifier(id);
-                Analytics.setId(mContext, id);
+                Analytics.setId(id);
                 String androidID = android.provider.Settings.Secure.getString(mContext.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
                 String data = "registration_id=" + mRegId + "&android_id=" + androidID + "&version=" + getAppVersionName();
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
-                    URL url = new URL("http://suchary.jakubchmura.pl/" + action + "/");
+                    URL url = new URL(mContext.getString(R.string.site_url) + action + "/");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setDoOutput(true);
                     connection.setDoInput(true);
@@ -165,7 +163,7 @@ public class GcmRegistration {
                     if (responseCode != HttpURLConnection.HTTP_OK) {
                         Log.d(TAG, "Server returned HTTP " + responseCode
                                 + " " + connection.getResponseMessage());
-                        Crashlytics.logException(new RuntimeException("GCM backend returned HTTP code " + responseCode));
+                        Analytics.setError("GCM backend returned HTTP code " + responseCode);
                     }
                 } catch (IOException e) {
                     Crashlytics.logException(e);

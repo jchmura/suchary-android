@@ -26,5 +26,6 @@
         android:paddingBottom="15dp"
         android:paddingTop="10dp"
         android:textAppearance="@android:style/TextAppearance.Holo.Large"
+        android:textColor="@color/card_body_text"
         android:textSize="14sp" />
 </LinearLayout>

@@ -11,92 +11,104 @@ import pl.jakubchmura.suchary.android.SucharyApp;
 
 public class Analytics {
 
-    public static void setId(Context context, String id) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
-            application.getTracker().setClientId(id);
+    private static SucharyApp mApplication;
+
+    public static void init(Context context) {
+        mApplication = getApplication(context);
+    }
+
+    public static void setId(String id) {
+        if (mApplication != null) {
+            mApplication.getTracker().setClientId(id);
         }
     }
 
-    public static void setScreenName(Context context, String name) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
-            Tracker tracker = application.getTracker();
+    public static void setScreenName(String name) {
+        if (mApplication != null) {
+            Tracker tracker = mApplication.getTracker();
             tracker.setScreenName(name);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
 
-    public static void setSearchQuery(Context context, String query) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void setSearchQuery(String query) {
+        if (mApplication != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Actionbar")
                     .setAction("Search")
                     .setLabel(query);
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
     }
 
-    public static void clickedShuffle(Context context) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void clickedShuffle() {
+        if (mApplication != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Actionbar")
                     .setAction("Shuffle");
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
     }
 
-    public static void setTime(Context context, String category, String variable, String label, long value) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void setTime(String category, String variable, String label, long value) {
+        if (mApplication != null) {
             HitBuilders.TimingBuilder builder = new HitBuilders.TimingBuilder();
             builder.setCategory(category)
                     .setVariable(variable)
                     .setLabel(label)
                     .setValue(value);
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
     }
 
-    public static void clickedStarred(Context context, String label) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void clickedStarred(String label) {
+        if (mApplication != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Expand")
                     .setAction("Favorite")
                     .setLabel(label);
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
     }
 
-    public static void clickedOriginal(Context context, String label) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void clickedOriginal(String label) {
+        if (mApplication != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Expand")
                     .setAction("Original")
                     .setLabel(label);
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
     }
 
-    public static void clickedShare(Context context, String label) {
-        SucharyApp application = getApplication(context);
-        if (application != null) {
+    public static void clickedShare(String label) {
+        if (mApplication != null) {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Expand")
                     .setAction("Share")
                     .setLabel(label);
-            Tracker tracker = application.getTracker();
+            Tracker tracker = mApplication.getTracker();
             tracker.send(builder.build());
         }
+    }
+
+    public static void setError(String description, boolean isFatal) {
+        if (mApplication != null) {
+            HitBuilders.ExceptionBuilder builder = new HitBuilders.ExceptionBuilder();
+            builder.setDescription(description)
+                    .setFatal(isFatal);
+            Tracker tracker = mApplication.getTracker();
+            tracker.send(builder.build());
+        }
+    }
+
+    public static void setError(String description) {
+        setError(description, false);
     }
 
     private static SucharyApp getApplication(Context context) {

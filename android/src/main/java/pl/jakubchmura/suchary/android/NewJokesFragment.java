@@ -126,7 +126,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         if (isAdded() && mDownloadAllTask == null) {
             mDownloadAllTask = new DownloadAllJokes(mActivity, this);
             showProgressDialog(0, 100);
-            mDownloadAllTask.execute("http://suchary.jakubchmura.pl/api/obcy?limit=100");
+            mDownloadAllTask.execute(getString(R.string.api_url) + "?limit=100");
         }
     }
 

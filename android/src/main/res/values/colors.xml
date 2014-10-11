@@ -12,6 +12,8 @@
     <color name="date_expand">#e1e1e1</color>
     <color name="card_list_view_background">#f0f0f0</color>
 
+    <color name="card_body_text">#f0000000</color>
+
     <color name="drawer_background">#f4f4f4</color>
     <color name="drawer_item_background">#ffffff</color>
     <color name="drawer_item_background_pressed">#ebebeb</color>
