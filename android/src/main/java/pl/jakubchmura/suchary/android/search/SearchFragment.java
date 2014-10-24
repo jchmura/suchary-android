@@ -28,11 +28,13 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
         if (mRootView == null) {
             mRootView = inflater.inflate(R.layout.fragment_search, container, false);
             saved = false;
+        } else {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
         }
 
         Bundle arguments = getArguments();
         mQuery = arguments.getString("query");
-        mStar = arguments.getBoolean("key");
+        mStar = arguments.getBoolean("star");
 
         Analytics.setSearchQuery(mQuery);
 

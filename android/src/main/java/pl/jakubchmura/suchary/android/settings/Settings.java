@@ -1,12 +1,12 @@
 package pl.jakubchmura.suchary.android.settings;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
-public class Settings extends Activity {
+public class Settings extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +20,8 @@ public class Settings extends Activity {
 
         ActionBarTitle actionBarTitle = new ActionBarTitle(this);
         actionBarTitle.setTitle(R.string.title_activity_settings);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 }

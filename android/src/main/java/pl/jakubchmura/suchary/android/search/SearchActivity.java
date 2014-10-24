@@ -1,10 +1,9 @@
 package pl.jakubchmura.suchary.android.search;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,7 +11,7 @@ import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends ActionBarActivity {
 
     public static final String FRAGMENT_NUMBER = "fragment_number";
 
@@ -26,12 +25,13 @@ public class SearchActivity extends Activity {
         handleIntent(getIntent());
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mFragment)
                     .commit();
         }
 
         overridePendingTransition(R.anim.anim_in_left, R.anim.anim_out_left);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void handleIntent(Intent intent) {
@@ -42,7 +42,7 @@ public class SearchActivity extends Activity {
                 query = query.trim();
             }
 
-            FragmentManager fm = getFragmentManager();
+            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
             mFragment = (SearchFragment)
                     fm.findFragmentById(R.id.fragment_search);
             boolean star = false;

@@ -52,6 +52,8 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         if (mRootView == null) {
             mRootView = inflater.inflate(R.layout.fragment_new, container, false);
             saved = false;
+        } else {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
         }
 
         View createdView = createView(saved);

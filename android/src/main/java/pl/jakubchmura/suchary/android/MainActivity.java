@@ -1,19 +1,20 @@
 package pl.jakubchmura.suchary.android;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SearchView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -23,7 +24,7 @@ import pl.jakubchmura.suchary.android.search.SearchActivity;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String ACTION_NEW_JOKE = "action_new_joke";
@@ -67,13 +68,12 @@ public class MainActivity extends Activity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
     }
 
     @Override
@@ -111,7 +111,7 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             default:
             case 0:
@@ -145,9 +145,8 @@ public class MainActivity extends Activity
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             actionBar.setDisplayShowTitleEnabled(true);
         }
         setTitle();
@@ -165,7 +164,7 @@ public class MainActivity extends Activity
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             final MenuItem searchItem = menu.findItem(R.id.search);
             if (searchItem != null) {
-                SearchView searchView = (SearchView) searchItem.getActionView();
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
                 if (searchView != null) {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
