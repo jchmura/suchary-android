@@ -7,10 +7,22 @@
     <color name="holo_red">#cc0000</color>
     <color name="holo_green">#669900</color>
     <color name="holo_orange">#ff8000</color>
-    <color name="action_bar_title">#90000000</color>
-    <color name="action_bar_subtitle">@android:color/secondary_text_light</color>
+
+    <color name="white">#ffffff</color>
+
+    <!-- Material Design -->
+    <color name="deep_orange_500">#ff5722</color>
+    <color name="blue_grey_50">#eceff1</color>
+    <color name="blue_grey_100">#cfd8dc</color>
+    <color name="blue_grey_500">#607d8b</color>
+    <color name="blue_grey_600">#546e7a</color>
+    <color name="light_blue_500">#03a9f4</color>
+    <color name="light_blue_600">#039be5</color>
+
+    <color name="action_bar_title">@color/white</color>
+    <color name="action_bar_subtitle">@color/blue_grey_100</color>
     <color name="date_expand">#e1e1e1</color>
-    <color name="card_list_view_background">#f0f0f0</color>
+    <color name="card_list_view_background">@color/blue_grey_100</color>
 
     <color name="card_body_text">#f0000000</color>
 

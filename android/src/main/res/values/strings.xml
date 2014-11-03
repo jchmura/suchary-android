@@ -6,7 +6,7 @@
     <!-- Activities -->
     <string name="title_activity_main">Suchary</string>
     <string name="title_activity_search">Szukaj</string>
-    <string name="in_favorites">w ulubionych</string>
+    <string name="in_favorites">W ulubionych</string>
     <string name="title_activity_settings">Ustawienia</string>
     <string name="title_activity_about">O aplikacji</string>
 

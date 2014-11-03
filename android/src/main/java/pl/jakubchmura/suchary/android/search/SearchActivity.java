@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import pl.jakubchmura.suchary.android.R;
-import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 public class SearchActivity extends ActionBarActivity {
@@ -58,10 +57,10 @@ public class SearchActivity extends ActionBarActivity {
             }
 
             ActionBarTitle actionBarTitle = new ActionBarTitle(this);
-            String title = getResources().getString(R.string.title_activity_search);
-            if (star) title += " " + getResources().getString(R.string.in_favorites);
-            actionBarTitle.setTitle(title);
-            actionBarTitle.setSubTitle(query);
+            actionBarTitle.setTitle(query);
+            if (star) {
+                actionBarTitle.setSubTitle(getResources().getString(R.string.in_favorites));
+            }
         } else {
             mFragment = new SearchFragment();
         }
@@ -88,10 +87,6 @@ public class SearchActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-                Intent intent = new Intent(this, Settings.class);
-                startActivity(intent);
-                return true;
             case android.R.id.home:
                 finish();
                 overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_right);

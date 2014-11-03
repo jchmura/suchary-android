@@ -25,10 +25,10 @@ public class ActionBarTitle {
         if (actionBar != null) {
             if (supportSpanTitle()) {
                 SpannableString s = new SpannableString(title);
-                s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Bold.ttf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Regular.ttf"), 0, s.length(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 s.setSpan(new ForegroundColorSpan(mActivity.getResources().getColor(R.color.action_bar_title)),
-                        0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 actionBar.setTitle(s);
             } else {
                 actionBar.setTitle(title);
@@ -43,9 +43,9 @@ public class ActionBarTitle {
             if (supportSpanTitle()) {
                 SpannableString s = new SpannableString(subtitle);
                 s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Regular.ttf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 s.setSpan(new ForegroundColorSpan(mActivity.getResources().getColor(R.color.action_bar_subtitle)),
-                        0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 actionBar.setSubtitle(s);
             } else {
                 actionBar.setSubtitle(subtitle);

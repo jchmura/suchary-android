@@ -5,12 +5,26 @@
         <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
     <!--</style>-->
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="BaseTheme" parent="Theme.AppCompat.Light">
         <item name="drawerArrowStyle">@style/MyDrawerArrowToggle</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+        <item name="colorPrimary">@color/light_blue_500</item>
+        <item name="colorPrimaryDark">@color/light_blue_600</item>
+        <item name="colorAccent">@color/deep_orange_500</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+
     </style>
 
     <style name="MyDrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/action_bar_title</item>
+    </style>
 
+    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search_white_24dp</item>
+        <item name="closeIcon">@drawable/ic_close_white_24dp</item>
     </style>
 
     <style name="card_list_view" parent="android:Widget.ListView.White">
