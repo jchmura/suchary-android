@@ -6,4 +6,5 @@
     android:choiceMode="singleChoice"
     android:divider="@null"
     android:dividerHeight="0dp"
+    android:fitsSystemWindows="true"
     tools:context="pl.jakubchmura.suchary.android.NavigationDrawerFragment" />

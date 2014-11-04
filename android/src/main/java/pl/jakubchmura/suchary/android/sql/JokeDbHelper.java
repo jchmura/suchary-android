@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
-import pl.jakubchmura.suchary.android.util.Analytics;
 
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_ALL;
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_NAME_BODY;
@@ -241,11 +240,11 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
     @NotNull
     public List<Joke> searchBody(String query, boolean star) {
-        String selection = "(" + COLUMN_NAME_BODY + " LIKE ?" + " OR " + COLUMN_NAME_BODY + " LIKE ?)";
+        String selection = "( " + COLUMN_NAME_BODY + " LIKE ? COLLATE NOCASE)";
         if (star) {
-            selection += "AND ( " + COLUMN_NAME_STAR + " = 1)";
+            selection += " AND " + COLUMN_NAME_STAR + " = 1";
         }
-        String[] selectionArgs = new String[]{query + "%", "% " + query + "%"};
+        String[] selectionArgs = new String[]{"%" + query.trim() + "%"};
         return getJokes(selection, selectionArgs, null, null);
     }
 

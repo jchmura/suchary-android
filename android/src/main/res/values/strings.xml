@@ -6,7 +6,7 @@
     <!-- Activities -->
     <string name="title_activity_main">Suchary</string>
     <string name="title_activity_search">Szukaj</string>
-    <string name="in_favorites">w ulubionych</string>
+    <string name="in_favorites">W ulubionych</string>
     <string name="title_activity_settings">Ustawienia</string>
     <string name="title_activity_about">O aplikacji</string>
 
@@ -16,8 +16,8 @@
     <string name="section_new">Najnowsze</string>
     <string name="section_starred">Ulubione</string>
     <string name="section_random">Losowe</string>
-    <string name="navigation_drawer_settings">USTAWIENIA</string>
-    <string name="navigation_drawer_about">O APLIKACJI</string>
+    <string name="navigation_drawer_settings">Ustawienia</string>
+    <string name="navigation_drawer_about">O aplikacji</string>
 
     <!-- Action Bar -->
     <string name="action_settings">Ustawienia</string>

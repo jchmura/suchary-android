@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_random"
     style="@style/card_list_view"
     android:layout_width="match_parent"
@@ -20,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
-        android:visibility="gone" />
+        android:visibility="gone"
+        card:list_card_layout_resourceID="@layout/native_list_card_layout"/>
 
 </RelativeLayout>
