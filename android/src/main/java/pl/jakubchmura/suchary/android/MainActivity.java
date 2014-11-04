@@ -12,9 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
@@ -31,6 +35,10 @@ public class MainActivity extends ActionBarActivity
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
     public static final String ACTION_DELETE_JOKE = "action_delete_joke";
+
+    public static final int TOOLBAR_HEIGHT = 56;
+    public static final int MAXIMUM_DRAWER_WIDTH = 320;
+
     private static final String TAG = "MainActivity";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -71,10 +79,29 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        setNavigationDrawerWidth();
+    }
+
+    private void setNavigationDrawerWidth() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int dpWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) + 0.5);
+
+        View view = mNavigationDrawerFragment.getView();
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        layoutParams.width = dpWidth - TOOLBAR_HEIGHT;
+        if (layoutParams.width > MAXIMUM_DRAWER_WIDTH) {
+            layoutParams.width = MAXIMUM_DRAWER_WIDTH;
+        }
+        layoutParams.width = (int) ((layoutParams.width * displayMetrics.density) + 0.5);
+        view.setLayoutParams(layoutParams);
     }
 
     @Override

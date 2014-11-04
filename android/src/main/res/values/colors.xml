@@ -32,9 +32,9 @@
     <color name="date_expand">@color/card_body_text</color>
     <color name="card_list_view_background">@color/blue_grey_50</color>
 
-    <color name="drawer_background">#f4f4f4</color>
-    <color name="drawer_item_background">#ffffff</color>
-    <color name="drawer_item_background_pressed">#ebebeb</color>
+    <color name="drawer_background">@color/white</color>
+    <color name="drawer_item_background">@color/white</color>
+    <color name="drawer_item_background_pressed">@color/grey_200</color>
     <color name="drawer_footer_divider">#e5e5e5</color>
 
     <color name="notification_lights">#ffff7f00</color>

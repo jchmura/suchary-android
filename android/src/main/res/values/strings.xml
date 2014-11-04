@@ -16,8 +16,8 @@
     <string name="section_new">Najnowsze</string>
     <string name="section_starred">Ulubione</string>
     <string name="section_random">Losowe</string>
-    <string name="navigation_drawer_settings">USTAWIENIA</string>
-    <string name="navigation_drawer_about">O APLIKACJI</string>
+    <string name="navigation_drawer_settings">Ustawienia</string>
+    <string name="navigation_drawer_about">O aplikacji</string>
 
     <!-- Action Bar -->
     <string name="action_settings">Ustawienia</string>

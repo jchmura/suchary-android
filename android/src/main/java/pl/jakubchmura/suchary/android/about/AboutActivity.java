@@ -3,6 +3,7 @@ package pl.jakubchmura.suchary.android.about;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,9 @@ public class AboutActivity extends ActionBarActivity {
                     .add(R.id.container, new AboutFragment())
                     .commit();
         }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         ActionBarTitle actionBarTitle = new ActionBarTitle(this);
         actionBarTitle.setTitle(R.string.title_activity_about);

@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -28,6 +29,9 @@ public class SearchActivity extends ActionBarActivity {
                     .add(R.id.container, mFragment)
                     .commit();
         }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         overridePendingTransition(R.anim.anim_in_left, R.anim.anim_out_left);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -55,6 +59,9 @@ public class SearchActivity extends ActionBarActivity {
                 mFragment = new SearchFragment();
                 mFragment.setArguments(args);
             }
+
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
             ActionBarTitle actionBarTitle = new ActionBarTitle(this);
             actionBarTitle.setTitle(query);

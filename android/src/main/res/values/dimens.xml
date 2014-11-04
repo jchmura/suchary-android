@@ -5,7 +5,7 @@
      Per the design guidelines, navigation drawers should be between 240dp and 320dp:
      https://developer.android.com/design/patterns/navigation-drawer.html
     -->
-    <dimen name="navigation_drawer_width">240dp</dimen>
+    <dimen name="navigation_drawer_width">320dp</dimen>
 
     <!-- Global -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
@@ -42,18 +42,12 @@
     <dimen name="placeholder_text_margin_bottom">20dp</dimen>
 
     <!-- Drawer list item -->
-    <dimen name="drawer_item_text_size">20sp</dimen>
-    <dimen name="drawer_item_padding_top">18dp</dimen>
-    <dimen name="drawer_item_padding_bottom">18dp</dimen>
-    <dimen name="drawer_item_margin_left">20dp</dimen>
-
-    <!-- Drawer footer view -->
-    <dimen name="drawer_footer_item_margin_left">10dp</dimen>
-    <dimen name="drawer_footer_item_text_margin_left">0dp</dimen>
-    <dimen name="drawer_footer_item_text_size">14sp</dimen>
-    <dimen name="drawer_footer_item_margin_top">10dp</dimen>
-    <dimen name="drawer_footer_item_margin_bottom">10dp</dimen>
-    <dimen name="drawer_footer_item_image_height">25dp</dimen>
+    <dimen name="drawer_item_height">48dp</dimen>
+    <dimen name="drawer_item_text_size">18sp</dimen>
+    <dimen name="drawer_item_padding_top">8dp</dimen>
+    <dimen name="drawer_item_padding_bottom">8dp</dimen>
+    <dimen name="drawer_icon_margin_left">15dp</dimen>
+    <dimen name="drawer_text_margin_left">30dp</dimen>
 
     <!-- About -->
     <dimen name="about_title_text_size">20sp</dimen>
