@@ -1,8 +1,7 @@
 package pl.jakubchmura.suchary.android.util;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Build;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -11,9 +10,9 @@ import pl.jakubchmura.suchary.android.R;
 
 public class ActionBarTitle {
 
-    private Activity mActivity;
+    private ActionBarActivity mActivity;
 
-    public ActionBarTitle(Activity activity) {
+    public ActionBarTitle(ActionBarActivity activity) {
         mActivity = activity;
     }
 
@@ -22,14 +21,14 @@ public class ActionBarTitle {
     }
 
     public void setTitle(CharSequence title) {
-        ActionBar actionBar = mActivity.getActionBar();
+        android.support.v7.app.ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
             if (supportSpanTitle()) {
                 SpannableString s = new SpannableString(title);
-                s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Bold.ttf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Regular.ttf"), 0, s.length(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 s.setSpan(new ForegroundColorSpan(mActivity.getResources().getColor(R.color.action_bar_title)),
-                        0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 actionBar.setTitle(s);
             } else {
                 actionBar.setTitle(title);
@@ -39,14 +38,14 @@ public class ActionBarTitle {
     }
 
     public void setSubTitle(CharSequence subtitle) {
-        ActionBar actionBar = mActivity.getActionBar();
+        android.support.v7.app.ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
             if (supportSpanTitle()) {
                 SpannableString s = new SpannableString(subtitle);
                 s.setSpan(new TypefaceSpan(mActivity, "RobotoCondensed-Regular.ttf"), 0, s.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 s.setSpan(new ForegroundColorSpan(mActivity.getResources().getColor(R.color.action_bar_subtitle)),
-                        0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 actionBar.setSubtitle(s);
             } else {
                 actionBar.setSubtitle(subtitle);

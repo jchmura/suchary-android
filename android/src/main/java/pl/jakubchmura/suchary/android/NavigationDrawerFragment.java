@@ -1,15 +1,17 @@
 package pl.jakubchmura.suchary.android;
 
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +27,7 @@ import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 import pl.jakubchmura.suchary.android.util.DrawerAdapter;
+import pl.jakubchmura.suchary.android.util.FontCache;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -55,7 +58,8 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerAdapter<String> mDrawerAdapter;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition = 1;
+    private View mVerticalSpace;
 
     public NavigationDrawerFragment() {
     }
@@ -90,19 +94,27 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+
+        mVerticalSpace = new View(getActivity());
+        mVerticalSpace.setMinimumHeight((int) getResources().getDimension(R.dimen.drawer_item_padding_top));
+        setUpHeader();
         setUpFooter();
         mDrawerAdapter = new DrawerAdapter<>(
-                getActionBar().getThemedContext(),
+                getActivity(),
                 R.layout.drawer_list_item,
                 R.id.text,
+                R.id.icon,
                 new String[]{
                         getString(R.string.section_new),
                         getString(R.string.section_starred),
                         getString(R.string.section_random)
+                }, new int[]{
+                        R.drawable.ic_whatshot_black_18dp,
+                        R.drawable.ic_favorite_black_18dp,
+                        R.drawable.ic_shuffle_black_18dp
                 }
         );
         mDrawerListView.setAdapter(mDrawerAdapter);
-        mDrawerAdapter.setItemChecked(mCurrentSelectedPosition);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -132,9 +144,8 @@ public class NavigationDrawerFragment extends Fragment {
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         mDrawerToggle = new ActionBarDrawerToggle(
-                getActivity(),                    /* host Activity */
+                getActionBarActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -170,13 +181,30 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    private void setUpHeader() {
+        mDrawerListView.addHeaderView(mVerticalSpace);
+    }
+
     private void setUpFooter() {
-        View settings = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        mDrawerListView.addFooterView(mVerticalSpace);
+
+//        View bar = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
+        View bar = new View(getActivity());
+        bar.setBackgroundResource(R.color.drawer_footer_divider);
+        bar.setMinimumHeight(2);
+        mDrawerListView.addFooterView(bar);
+        mDrawerListView.addFooterView(mVerticalSpace);
+
+
+        Typeface typeface = FontCache.get("fonts/Roboto-Light.ttf", getActivity());
+
+        View settings = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
         if (settings != null) {
-            ImageView imageSettings = (ImageView) settings.findViewById(R.id.image);
-            imageSettings.setImageResource(R.drawable.ic_action_settings);
-            TextView textSettings = (TextView) settings.findViewById(R.id.text);
-            textSettings.setText(R.string.navigation_drawer_settings);
+            ImageView icon = (ImageView) settings.findViewById(R.id.icon);
+            icon.setImageResource(R.drawable.ic_settings_black_18dp);
+            TextView text = (TextView) settings.findViewById(R.id.text);
+            text.setText(R.string.navigation_drawer_settings);
+            text.setTypeface(typeface);
             settings.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -187,17 +215,17 @@ public class NavigationDrawerFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            settings.setMinimumHeight((int) getResources().getDimension(R.dimen.drawer_item_height));
             mDrawerListView.addFooterView(settings);
         }
 
-        View about = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_footer_item, null);
+        View about = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
         if (about != null) {
-            ImageView topBar = (ImageView) about.findViewById(R.id.top_bar);
-            topBar.setVisibility(View.GONE);
-            ImageView imageSettings = (ImageView) about.findViewById(R.id.image);
-            imageSettings.setImageResource(R.drawable.ic_action_about);
-            TextView textSettings = (TextView) about.findViewById(R.id.text);
-            textSettings.setText(R.string.navigation_drawer_about);
+            ImageView icon = (ImageView) about.findViewById(R.id.icon);
+            icon.setImageResource(R.drawable.ic_help_black_18dp);
+            TextView text = (TextView) about.findViewById(R.id.text);
+            text.setText(R.string.navigation_drawer_about);
+            text.setTypeface(typeface);
             about.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -208,6 +236,7 @@ public class NavigationDrawerFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            about.setMinimumHeight((int) getResources().getDimension(R.dimen.drawer_item_height));
             mDrawerListView.addFooterView(about);
         }
     }
@@ -216,13 +245,12 @@ public class NavigationDrawerFragment extends Fragment {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
-            mDrawerAdapter.setItemChecked(position);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onNavigationDrawerItemSelected(position - 1);
         }
     }
 
@@ -282,13 +310,16 @@ public class NavigationDrawerFragment extends Fragment {
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        ActionBarTitle actionBarTitle = new ActionBarTitle(getActivity());
+        ActionBarTitle actionBarTitle = new ActionBarTitle((ActionBarActivity) getActivity());
         actionBarTitle.setTitle(R.string.app_name);
     }
 
     private ActionBar getActionBar() {
-        return getActivity().getActionBar();
+        return getActionBarActivity().getSupportActionBar();
+    }
+
+    private ActionBarActivity getActionBarActivity() {
+        return (ActionBarActivity) getActivity();
     }
 
     /**

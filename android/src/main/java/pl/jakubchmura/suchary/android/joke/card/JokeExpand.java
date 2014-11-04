@@ -40,7 +40,7 @@ public class JokeExpand extends CardExpand {
 
         TextView tvDate = (TextView) view.findViewById(R.id.date);
         if (tvDate != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy");
             tvDate.setText(dateFormat.format(mJoke.getDate()));
             tvDate.setTypeface(typeface);
         }
@@ -63,7 +63,7 @@ public class JokeExpand extends CardExpand {
                         }
                     }.execute((Void) null);
                     if (mDismissAnimation != null && mParentCard != null) {
-                        mDismissAnimation.animateDismiss(mParentCard);
+//                        mDismissAnimation.animateDismiss(mParentCard);
                     }
                 }
             });
@@ -132,9 +132,9 @@ public class JokeExpand extends CardExpand {
 
     private void colorStar(ImageView view) {
         if (mJoke.isStar()) {
-            view.setImageResource(R.drawable.star_button_yellow);
+            view.setImageResource(R.drawable.fav_on_button);
         } else {
-            view.setImageResource(R.drawable.star_button_dark);
+            view.setImageResource(R.drawable.fav_off_button);
         }
     }
 }

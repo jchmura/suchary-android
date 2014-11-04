@@ -1,19 +1,25 @@
 package pl.jakubchmura.suchary.android;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SearchView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -23,12 +29,16 @@ import pl.jakubchmura.suchary.android.search.SearchActivity;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
     public static final String ACTION_DELETE_JOKE = "action_delete_joke";
+
+    public static final int TOOLBAR_HEIGHT = 56;
+    public static final int MAXIMUM_DRAWER_WIDTH = 320;
+
     private static final String TAG = "MainActivity";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -67,13 +77,31 @@ public class MainActivity extends Activity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        setNavigationDrawerWidth();
+    }
+
+    private void setNavigationDrawerWidth() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int dpWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) + 0.5);
+
+        View view = mNavigationDrawerFragment.getView();
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        layoutParams.width = dpWidth - TOOLBAR_HEIGHT;
+        if (layoutParams.width > MAXIMUM_DRAWER_WIDTH) {
+            layoutParams.width = MAXIMUM_DRAWER_WIDTH;
+        }
+        layoutParams.width = (int) ((layoutParams.width * displayMetrics.density) + 0.5);
+        view.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -111,7 +139,7 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             default:
             case 0:
@@ -145,9 +173,8 @@ public class MainActivity extends Activity
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             actionBar.setDisplayShowTitleEnabled(true);
         }
         setTitle();
@@ -165,10 +192,23 @@ public class MainActivity extends Activity
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             final MenuItem searchItem = menu.findItem(R.id.search);
             if (searchItem != null) {
-                SearchView searchView = (SearchView) searchItem.getActionView();
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
                 if (searchView != null) {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+                    // Text color
+                    try {
+                        LinearLayout ll = (LinearLayout)searchView.getChildAt(0);
+                        LinearLayout ll2 = (LinearLayout)ll.getChildAt(2);
+                        LinearLayout ll3 = (LinearLayout)ll2.getChildAt(1);
+                        SearchView.SearchAutoComplete autoComplete = ((SearchView.SearchAutoComplete)ll3.getChildAt(0));
+
+                        autoComplete.setHintTextColor(getResources().getColor(R.color.white));
+                        autoComplete.setTextColor(getResources().getColor(R.color.white));
+                    } catch (Exception e) {
+                        Crashlytics.logException(e);
+                    }
 
                     // Listener
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

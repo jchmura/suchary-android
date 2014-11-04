@@ -1,8 +1,34 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <!-- Customize your theme here. -->
+    <!--<style name="AppTheme" parent="android:Theme.Holo.Light">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+    <!--</style>-->
+
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="drawerArrowStyle">@style/MyDrawerArrowToggle</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+        <item name="colorPrimary">@color/indigo_500</item>
+        <item name="colorPrimaryDark">@color/indigo_600</item>
+        <item name="colorAccent">@color/deep_orange_500</item>
+        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+
+    </style>
+
+    <style name="MyDrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/action_bar_title</item>
+    </style>
+
+    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search_white_24dp</item>
+        <item name="closeIcon">@drawable/ic_close_white_24dp</item>
+    </style>
+
+    <style name="MyOverflowMenu" parent="Base.Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/abc_ic_menu_moreoverflow_mtrl_alpha</item>
     </style>
 
     <style name="card_list_view" parent="android:Widget.ListView.White">

@@ -43,7 +43,10 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         if (mRootView == null) {
             mRootView = inflater.inflate(R.layout.fragment_starred, container, false);
             saved = false;
+        } else {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
         }
+
         View createdView = createView(saved);
         if (!saved) {
             mDismissAnimation = new SwipeDismissAnimation(mActivity);

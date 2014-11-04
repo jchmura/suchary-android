@@ -1,8 +1,9 @@
 package pl.jakubchmura.suchary.android.about;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
-public class AboutActivity extends Activity {
+public class AboutActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +25,13 @@ public class AboutActivity extends Activity {
                     .commit();
         }
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         ActionBarTitle actionBarTitle = new ActionBarTitle(this);
         actionBarTitle.setTitle(R.string.title_activity_about);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     /**
