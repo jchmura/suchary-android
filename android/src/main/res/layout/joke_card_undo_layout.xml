@@ -21,16 +21,16 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_card_undobar"
-    style="@style/list_card_UndoBar"
+    style="@style/list_card_UndoBar_materialmobile"
     android:orientation="horizontal"
     android:visibility="gone">
 
     <TextView
         android:id="@+id/list_card_undobar_message"
-        style="@style/list_card_UndoBarMessage" />
+        style="@style/list_card_UndoBarMessage_materialmobile" />
 
     <Button
         android:id="@+id/list_card_undobar_button"
-        style="@style/list_card_UndoBarButton" />
+        style="@style/list_card_UndoBarButton_materialmobile" />
 </LinearLayout>
 

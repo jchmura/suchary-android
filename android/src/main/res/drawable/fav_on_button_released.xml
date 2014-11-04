@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="@dimen/card_expand_button_padding_bottom"
+        android:left="@dimen/card_expand_button_padding_left"
+        android:right="@dimen/card_expand_button_padding_right"
+        android:top="@dimen/card_expand_button_padding_top">
+
+        <bitmap android:src="@drawable/ic_favorite_black_18dp" />
+
+    </item>
+</layer-list>

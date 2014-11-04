@@ -146,7 +146,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
 
     private void showCroutonOffline() {
         if (mCroutonOffline == null) {
-            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.holo_orange).build();
+            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.indigo_600).build();
             mCroutonOffline = Crouton.makeText((Activity) mContext, R.string.no_internet_connection, style);
             mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
                 @Override

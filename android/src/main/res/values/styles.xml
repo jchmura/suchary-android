@@ -8,8 +8,8 @@
     <style name="BaseTheme" parent="Theme.AppCompat.Light">
         <item name="drawerArrowStyle">@style/MyDrawerArrowToggle</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
-        <item name="colorPrimary">@color/light_blue_500</item>
-        <item name="colorPrimaryDark">@color/light_blue_600</item>
+        <item name="colorPrimary">@color/indigo_500</item>
+        <item name="colorPrimaryDark">@color/indigo_600</item>
         <item name="colorAccent">@color/deep_orange_500</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
     </style>

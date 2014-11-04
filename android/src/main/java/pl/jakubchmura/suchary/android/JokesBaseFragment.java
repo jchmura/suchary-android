@@ -19,7 +19,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
-import it.gmariotti.cardslib.library.view.CardView;
+import it.gmariotti.cardslib.library.view.CardViewNative;
 import it.gmariotti.cardslib.library.view.listener.SwipeOnScrollListener;
 import pl.jakubchmura.suchary.android.gcm.GcmIntentService;
 import pl.jakubchmura.suchary.android.joke.Joke;
@@ -180,7 +180,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * @param size how many jokes was added
      */
     private void showCroutonNew(int size) {
-        @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.holo_blue).build();
+        @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.deep_orange_500).build();
         Configuration configuration = new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE).build();
         String croutonText = mActivity.getResources().getQuantityString(R.plurals.new_joke_notification, size, size);
         mCroutonNew = Crouton.makeText(mActivity, croutonText, style);
@@ -210,7 +210,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             JokeCard card = mAdapter.getCard(joke.getKey());
             if (card != null) {
                 JokeCard newCard = makeCard(joke);
-                CardView cardView = card.getCardView();
+                CardViewNative cardView = (CardViewNative) card.getCardView();
                 if (cardView != null) {
                     cardView.replaceCard(newCard);
                     card.setJoke(joke);

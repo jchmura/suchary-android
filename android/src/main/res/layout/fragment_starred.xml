@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:visibility="gone"
-            card:list_card_layout_resourceID="@layout/list_card_layout"
+            card:list_card_layout_resourceID="@layout/native_list_card_layout"
             tools:visibility="visible" />
 
         <LinearLayout
@@ -42,7 +42,7 @@
                 style="@style/placeholder_image"
                 android:layout_width="match_parent"
                 android:contentDescription="@string/no_starred_image"
-                android:src="@drawable/star_light" />
+                android:src="@drawable/ic_favorite_black_48dp" />
 
             <TextView
                 android:id="@+id/placeholder_text"
