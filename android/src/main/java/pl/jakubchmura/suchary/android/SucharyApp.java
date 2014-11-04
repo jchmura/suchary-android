@@ -1,6 +1,7 @@
 package pl.jakubchmura.suchary.android;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -26,5 +27,6 @@ public class SucharyApp extends Application {
         mAnalytics = GoogleAnalytics.getInstance(this);
         Analytics.init(this);
         Crashlytics.start(this);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 }
