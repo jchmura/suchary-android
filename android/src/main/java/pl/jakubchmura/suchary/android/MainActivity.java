@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -196,19 +195,6 @@ public class MainActivity extends ActionBarActivity
                 if (searchView != null) {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-                    // Text color
-                    try {
-                        LinearLayout ll = (LinearLayout)searchView.getChildAt(0);
-                        LinearLayout ll2 = (LinearLayout)ll.getChildAt(2);
-                        LinearLayout ll3 = (LinearLayout)ll2.getChildAt(1);
-                        SearchView.SearchAutoComplete autoComplete = ((SearchView.SearchAutoComplete)ll3.getChildAt(0));
-
-                        autoComplete.setHintTextColor(getResources().getColor(R.color.white));
-                        autoComplete.setTextColor(getResources().getColor(R.color.white));
-                    } catch (Exception e) {
-                        Crashlytics.logException(e);
-                    }
 
                     // Listener
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
