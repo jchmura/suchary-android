@@ -29,3 +29,6 @@
 -keep public class com.google.android.gms.analytics.** {
     public *;
 }
+
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
