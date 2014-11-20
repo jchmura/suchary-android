@@ -220,7 +220,7 @@ public class MainActivity extends ActionBarActivity
             restoreActionBar();
             return true;
         }
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
