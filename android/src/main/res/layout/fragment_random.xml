@@ -22,6 +22,6 @@
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
         android:visibility="gone"
-        card:list_card_layout_resourceID="@layout/native_list_card_layout"/>
+        card:list_card_layout_resourceID="@layout/joke_list_card_layout"/>
 
 </RelativeLayout>

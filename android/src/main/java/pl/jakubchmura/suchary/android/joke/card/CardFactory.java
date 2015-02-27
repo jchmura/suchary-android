@@ -19,14 +19,6 @@ public class CardFactory {
         return makeCard(joke);
     }
 
-    protected JokeCard makeCard(final Joke joke) {
-        JokeCard card = new JokeCard(mActivity);
-        JokeExpand expand = new JokeExpand(mActivity, joke);
-        card.addCardExpand(expand);
-        card.setJoke(joke);
-        return card;
-    }
-
     public JokeCard getCard(Joke joke, Card.OnSwipeListener onSwipeListener,
                             Card.OnUndoSwipeListListener undoSwipeListListener) {
         JokeCard card = makeCard(joke);
@@ -34,6 +26,14 @@ public class CardFactory {
         card.setId(joke.getKey());
         card.setOnSwipeListener(onSwipeListener);
         card.setOnUndoSwipeListListener(undoSwipeListListener);
+        return card;
+    }
+
+    protected JokeCard makeCard(final Joke joke) {
+        JokeCard card = new JokeCard(mActivity);
+        JokeExpand expand = new JokeExpand(mActivity, joke);
+        card.addCardExpand(expand);
+        card.setJoke(joke);
         return card;
     }
 }
