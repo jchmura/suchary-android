@@ -142,6 +142,12 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onStop() {
+        mNavigationDrawerFragment.close();
+        super.onStop();
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
