@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -116,6 +117,11 @@ public class NavigationDrawerFragment extends Fragment {
         );
         mDrawerListView.setAdapter(mDrawerAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mDrawerListView.setDrawSelectorOnTop(true);
+        }
+
         return mDrawerListView;
     }
 
@@ -192,18 +198,17 @@ public class NavigationDrawerFragment extends Fragment {
     private void setUpFooter() {
         mDrawerListView.addFooterView(mVerticalSpace);
 
-//        View bar = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
         View bar = new View(getActivity());
         bar.setBackgroundResource(R.color.drawer_footer_divider);
         bar.setMinimumHeight(2);
         mDrawerListView.addFooterView(bar);
         mDrawerListView.addFooterView(mVerticalSpace);
 
-
         Typeface typeface = FontCache.get("fonts/Roboto-Light.ttf", getActivity());
 
         View settings = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
         if (settings != null) {
+            settings.setBackgroundResource(R.drawable.drawer_footer_item_background);
             ImageView icon = (ImageView) settings.findViewById(R.id.icon);
             icon.setImageResource(R.drawable.ic_settings_black_18dp);
             TextView text = (TextView) settings.findViewById(R.id.text);
@@ -225,6 +230,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         View about = LayoutInflater.from(getActivity()).inflate(R.layout.drawer_list_item, null);
         if (about != null) {
+            about.setBackgroundResource(R.drawable.drawer_footer_item_background);
             ImageView icon = (ImageView) about.findViewById(R.id.icon);
             icon.setImageResource(R.drawable.ic_help_black_18dp);
             TextView text = (TextView) about.findViewById(R.id.text);
