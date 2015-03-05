@@ -53,10 +53,11 @@ public class NewJokeNotification {
         builder.setSound(Uri.parse(ringtone));
 
         // Vibration
-        boolean vibration = sharedPref.getBoolean("pref_vibration", false);
-        long[] vibrationPattern = {0, 0};
-        if (vibration) {
-            vibrationPattern = new long[]{0, 300, 400, 300};
+        String vibrationPatternString = sharedPref.getString("pref_vibration_pattern", "0 0");
+        String[] vibrations = vibrationPatternString.split(" ");
+        long[] vibrationPattern = new long[vibrations.length];
+        for (int i = 0; i < vibrations.length; i++) {
+            vibrationPattern[i] = Long.parseLong(vibrations[i]);
         }
         builder.setVibrate(vibrationPattern);
 

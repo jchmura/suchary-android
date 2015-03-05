@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="vibration_pattern_names">
+        <item>brak</item>
+        <item>1 krótka</item>
+        <item>1 długa</item>
+        <item>2 krótkie</item>
+        <item>2 długie</item>
+        <item>3 krótkie</item>
+        <item>3 długie</item>
+    </string-array>
+
+    <string-array name="vibration_pattern_values">
+        <item>0 0</item>
+        <item>0 300</item>
+        <item>0 800</item>
+        <item>0 300 400 300</item>
+        <item>0 800 600 800</item>
+        <item>0 300 400 300 600 300</item>
+        <item>0 800 600 800 600 800</item>
+    </string-array>
+</resources>
