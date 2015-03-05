@@ -29,6 +29,7 @@
     <string name="pref_notif_summ">Powiadamiaj o nowych sucharach</string>
     <string name="pref_ringtone">Dźwięk powiadomienia</string>
     <string name="pref_vibration">Wibracje</string>
+    <string name="pref_notif_color">Kolor diody powiadomień</string>
 
     <!-- Card expand -->
     <string name="joke_star">Ulubiony</string>
@@ -41,6 +42,10 @@
         <item quantity="few">%d nowe suchary</item>
         <item quantity="other">%d nowych sucharów</item>
     </plurals>
+    <string name="test_notification_title">Test</string>
+    <string name="test_notification_body">To jest powiadomienie testowe</string>
+    <string name="test_notification_dialog_title">Test powiadomienia</string>
+    <string name="test_notification_dialog_body">Testowe powiadomienie zostanie pokazane po wyłączeniu ekranu</string>
 
     <string name="new_joke_notification_summary">Oraz %1$d więcej</string>
 
@@ -55,6 +60,9 @@
         <item quantity="few">Usunięto %d suchary z ulubionych</item>
         <item quantity="other">Usunięto %d sucharów z ulubionych</item>
     </plurals>
+
+    <!-- Override Color Picker defaults -->
+    <string name="color_picker_default_title">Wybierz kolor</string>
 
     <!-- All -->
     <string name="no_internet_connection">Brak połączenia z internetem</string>

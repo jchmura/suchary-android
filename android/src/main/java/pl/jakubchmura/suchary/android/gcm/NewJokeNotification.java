@@ -61,7 +61,8 @@ public class NewJokeNotification {
         builder.setVibrate(vibrationPattern);
 
         // Light
-        builder.setLights(context.getResources().getColor(R.color.notification_lights), 800, 1000);
+        int lightColor = sharedPref.getInt("pref_notif_color", context.getResources().getColor(android.R.color.white));
+        builder.setLights(lightColor, 800, 1000);
         // Small icon, the notification title and text.
         builder.setSmallIcon(R.drawable.ic_stat_notify)
                 .setContentTitle(res.getQuantityString(
@@ -84,13 +85,12 @@ public class NewJokeNotification {
                         intent, PendingIntent.FLAG_UPDATE_CURRENT)
         );
 
+        // Number
         if (number > 1) {
-            // Number
             builder.setNumber(number);
         }
 
-        // Show expanded text content on devices running Android 4.1 or
-        // later.
+        // Show expanded text content on devices running Android 4.1 or later.
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
         bigTextStyle.bigText(text);
         bigTextStyle.setBigContentTitle(res.getQuantityString(

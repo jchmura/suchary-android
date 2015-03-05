@@ -5,16 +5,18 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import pl.jakubchmura.android.colorpicker.ColorPickerPreference;
 import pl.jakubchmura.suchary.android.R;
 
 public class SettingsFragment extends PreferenceFragment {
 
     public static final String KEY_PREF_NOTIF = "pref_notif";
-
+    private static final String KEY_PREF_NOTIF_COLOR = "pref_notif_color";
     private static final String KEY_PREF_RESET = "pref_reset";
 
     private Settings mActivity;
     private ResetJokes mResetJokes;
+    private ColorPickerPreference mColorPreference;
 
     public SettingsFragment() {
     }
@@ -43,6 +45,8 @@ public class SettingsFragment extends PreferenceFragment {
                 }
             });
         }
+
+        mColorPreference = (ColorPickerPreference) findPreference(KEY_PREF_NOTIF_COLOR);
     }
 
     @Override
@@ -50,6 +54,9 @@ public class SettingsFragment extends PreferenceFragment {
         super.onResume();
         if (mResetJokes != null) {
             mResetJokes.attach(mActivity);
+        }
+        if (mColorPreference != null) {
+            mColorPreference.attach(mActivity);
         }
     }
 

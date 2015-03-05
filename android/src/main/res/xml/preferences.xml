@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:key="pref_notif_title"
         android:title="@string/pref_notif_title">
@@ -24,6 +25,21 @@
             android:dependency="pref_notif"
             android:key="pref_vibration"
             android:title="@string/pref_vibration" />
+
+        <pl.jakubchmura.android.colorpicker.ColorPickerPreference
+            android:defaultValue="@android:color/white"
+            android:dependency="pref_notif"
+            android:key="pref_notif_color"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_notif_color"
+            app:cal_itemLayout="@layout/calendar_grid_item_color"
+            app:cal_numColumns="5" />
+
+        <pl.jakubchmura.suchary.android.settings.TestNotificationPreference
+            android:dependency="pref_notif"
+            android:key="pref_notif_test"
+            android:title="Testuj powiadomienie" />
     </PreferenceCategory>
 
     <PreferenceCategory
