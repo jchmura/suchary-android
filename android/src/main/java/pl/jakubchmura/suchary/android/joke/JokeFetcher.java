@@ -5,15 +5,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.util.Log;
+
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -21,16 +25,18 @@ import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import pl.jakubchmura.suchary.android.JokesBaseFragment;
 import pl.jakubchmura.suchary.android.R;
-import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
+import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.NewerJokesRequest;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
-public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
+public class JokeFetcher {
 
     private static final String TAG = "JokeFetcher";
     private static final int LIMIT = 15;
 
     private Context mContext;
+    private SpiceManager mSpiceManager;
     private JokesBaseFragment<?> mCallback;
     private List<Joke> mJokes;
     private int mServed = 0;
@@ -40,8 +46,9 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     private boolean mRandom = false;
     private Crouton mCroutonOffline = null;
 
-    public JokeFetcher(Context context, JokesBaseFragment<?> callback) {
+    public JokeFetcher(Context context, SpiceManager spiceManager, JokesBaseFragment<?> callback) {
         mContext = context;
+        mSpiceManager = spiceManager;
         mCallback = callback;
         mJokes = new ArrayList<>();
     }
@@ -129,19 +136,32 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
 
     /**
      * Download from server newer jokes than indicated.
-     * Handle the result in {@link #getAPIAllResult(java.util.List)}.
      */
     private void downloadNewerThan(Date date) {
-        String url = mContext.getString(R.string.api_url);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
-        String first_date = dateFormat.format(date);
-        try {
-            url += "?after=" + URLEncoder.encode(first_date, "UTF-8");
-            DownloadAllJokes download = new DownloadAllJokes(mContext, this);
-            download.execute(url);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        NewerJokesRequest request = new NewerJokesRequest(date);
+        mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "request failed", spiceException);
+            }
+
+            @Override
+            public void onRequestSuccess(APIResult.APIJokes apiJokes) {
+                List<Joke> jokes = apiJokes.getJokes();
+                List<Joke> newJokes = new LinkedList<>();
+                Collections.sort(jokes, Collections.reverseOrder());
+                for (Joke joke : jokes) {
+                    if (!mJokes.contains(joke)) {
+                        newJokes.add(joke);
+                        mJokes.add(0, joke);
+                    }
+                }
+                mServed += newJokes.size();
+
+                mCallback.addJokesToTop(newJokes, true);
+                addJokesToDatabase(newJokes);
+            }
+        });
     }
 
     private void showCroutonOffline() {
@@ -170,22 +190,6 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
             Joke first = mJokes.get(0);
             getJokesFromDatabaseAfter(first.getDate(), null);
         }
-    }
-
-    @Override
-    public void getAPIAllResult(List<Joke> jokes) {
-        List<Joke> newJokes = new ArrayList<>();
-        Collections.reverse(jokes);
-        for (Joke joke : jokes) {
-            if (!mJokes.contains(joke)) {
-                newJokes.add(joke);
-                mJokes.add(0, joke);
-            }
-        }
-        mServed += newJokes.size();
-
-        mCallback.addJokesToTop(newJokes, true);
-        addJokesToDatabase(newJokes);
     }
 
     /**
@@ -369,18 +373,6 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      */
     public void setFetchGetOlder(boolean can) {
         mCanGetOlder = can;
-    }
-
-    @Override
-    public void setMaxProgress(int i) {
-    }
-
-    @Override
-    public void incrementProgress(int i) {
-    }
-
-    @Override
-    public void errorDownloadingAll() {
     }
 
     public void setRandom(boolean random) {

@@ -11,6 +11,8 @@ import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.Space;
 
+import com.octo.android.robospice.SpiceManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import it.gmariotti.cardslib.library.view.listener.SwipeOnScrollListener;
 import pl.jakubchmura.suchary.android.gcm.GcmIntentService;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.JokeFetcher;
+import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
@@ -91,6 +94,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     private Crouton mCroutonNew;
 
+    protected SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
+
     public JokesBaseFragment() {
     }
 
@@ -98,6 +103,20 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = (ActivityClass) activity;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSpiceManager.start(getActivity());
+    }
+
+    @Override
+    public void onStop() {
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
+        super.onStop();
     }
 
     @Override
@@ -113,7 +132,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         if (!saved) {
             mCardListView = (CardListView) mRootView.findViewById(R.id.cardList);
             mProgress = (ProgressBar) mRootView.findViewById(R.id.progress);
-            mFetcher = new JokeFetcher(mActivity, this);
+            mFetcher = new JokeFetcher(mActivity, mSpiceManager, this);
 
             setScrollListener();
         }

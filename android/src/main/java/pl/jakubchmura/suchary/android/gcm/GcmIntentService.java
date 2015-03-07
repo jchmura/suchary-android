@@ -13,10 +13,11 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,9 +25,11 @@ import java.util.List;
 import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
-import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
-import pl.jakubchmura.suchary.android.joke.api.DownloadJoke;
-import pl.jakubchmura.suchary.android.joke.api.DownloadJokes;
+import pl.jakubchmura.suchary.android.joke.api.model.APIJoke;
+import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
+import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.NewerJokesRequest;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.SingleJokeRequest;
 import pl.jakubchmura.suchary.android.settings.SettingsFragment;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 
@@ -34,8 +37,7 @@ import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
  * An {@link android.app.IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  */
-public class GcmIntentService extends IntentService implements DownloadJokes.DownloadJokesCallback,
-        DownloadJoke.DownloadJokeCallback, DownloadAllJokes.DownloadAllJokesCallback {
+public class GcmIntentService extends IntentService {
 
     public static final String PREFS_NAME = "gcm_jokes";
     public static final String EDIT_JOKE = "edit_joke";
@@ -43,9 +45,16 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     private static final String TAG = "IntentService";
     private static boolean mHandling = false;
     private Intent mIntent;
+    private SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
 
     public GcmIntentService() {
         super("GcmIntentService");
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        mSpiceManager.start(this);
     }
 
     @Override
@@ -93,6 +102,12 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         }
     }
 
+    @Override
+    public void onDestroy() {
+        mSpiceManager.shouldStop();
+        super.onDestroy();
+    }
+
     private void handleNewJokes() {
         if (mHandling) {
             GcmBroadcastReceiver.completeWakefulIntent(mIntent);
@@ -106,9 +121,20 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     private void handleEditJoke(Bundle extras) {
         String key = extras.getString("key");
         if (key != null) {
-            String url = getString(R.string.api_url) + "/" + key;
-            DownloadJoke downloadJoke = new DownloadJoke(this, this);
-            downloadJoke.execute(url);
+            SingleJokeRequest request = new SingleJokeRequest(key);
+            mSpiceManager.execute(request, new RequestListener<APIJoke>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+
+                }
+
+                @Override
+                public void onRequestSuccess(APIJoke apiJoke) {
+                    Joke joke = apiJoke.getJoke();
+                    addEditedJokeToPrefs(joke);
+                    updateJokeInDatabase(joke);
+                }
+            });
         }
     }
 
@@ -135,17 +161,6 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         nm.notify("Suchary message", 0, builder.build());
     }
 
-    @Override
-    public void getAPIJokesResult(List<Joke> jokes) {
-        addJokesToDatabase(jokes);
-    }
-
-    @Override
-    public void getAPIJokeResult(Joke joke) {
-        addEditedJokeToPrefs(joke);
-        updateJokeInDatabase(joke);
-    }
-
     private void getNewer() {
         new AsyncTask<Void, Integer, Joke>() {
             @Override
@@ -170,36 +185,32 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     }
 
     private void downloadNewer(Date date) {
-        String url = getString(R.string.api_url);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
-        String first_date = dateFormat.format(date);
-        try {
-            url += "?after=" + URLEncoder.encode(first_date, "UTF-8");
-            DownloadAllJokes download = new DownloadAllJokes(this, this);
-            download.execute(url);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            finish();
-        }
-    }
-
-
-    @Override
-    public void getAPIAllResult(List<Joke> jokes) {
-        if (jokes.size() > 0) {
-            jokes.remove(jokes.size() - 1);
-        }
-        if (!jokes.isEmpty()) {
-            Joke last = jokes.get(jokes.size() - 1);
-            addJokesToDatabase(jokes);
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
-            if (notification) {
-                NewJokeNotification.notify(this, last.getBody(), jokes.size());
+        NewerJokesRequest request = new NewerJokesRequest(date);
+        mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                finish();
             }
-        } else {
-            finish();
-        }
+
+            @Override
+            public void onRequestSuccess(APIResult.APIJokes apiJokes) {
+                List<Joke> jokes = apiJokes.getJokes();
+                if (jokes.size() > 0) {
+                    jokes.remove(jokes.size() - 1);
+                }
+                if (!jokes.isEmpty()) {
+                    Joke last = jokes.get(jokes.size() - 1);
+                    addJokesToDatabase(jokes);
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(GcmIntentService.this);
+                    boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
+                    if (notification) {
+                        NewJokeNotification.notify(GcmIntentService.this, last.getBody(), jokes.size());
+                    }
+                } else {
+                    finish();
+                }
+            }
+        });
     }
 
     private void addJokesToDatabase(List<Joke> jokes) {
@@ -304,18 +315,5 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
     private void finish() {
         mHandling = false;
         GcmBroadcastReceiver.completeWakefulIntent(mIntent);
-    }
-
-    @Override
-    public void errorDownloadingAll() {
-        finish();
-    }
-
-    @Override
-    public void setMaxProgress(int i) {
-    }
-
-    @Override
-    public void incrementProgress(int i) {
     }
 }

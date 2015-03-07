@@ -44,7 +44,7 @@
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pl.jakubchmura.suchary.MainActivity" />
+                android:value="pl.jakubchmura.suchary.android.MainActivity" />
         </activity>
 
         <receiver
@@ -63,6 +63,11 @@
             android:name=".gcm.GcmIntentService"
             android:exported="false" >
         </service>
+
+        <service
+            android:name=".joke.api.network.JokeRetrofitSpiceService"
+            android:exported="false" />
+
 
         <activity
             android:name=".search.SearchActivity"

@@ -9,29 +9,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.PendingRequestListener;
+
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
-import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
+import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.AllJokesRequest;
 import pl.jakubchmura.suchary.android.settings.ResetJokes;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NewJokesFragment extends JokesBaseFragment<MainActivity>
-        implements DownloadAllJokes.DownloadAllJokesCallback {
+public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String TAG = "NewJokesFragment";
+    private static final String REQUEST_CACHE_KEY = "all jokes request from new fragment";
 
     private ProgressDialog mProgressDialog;
-    private DownloadAllJokes mDownloadAllTask;
     private int mProgressDialogState;
     private int mProgressDialogMaxState;
+    private AllJokesRequest mAllJokesRequest;
+    private PendingRequestListener<APIResult.APIJokes> mAllJokesRequestListener;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -59,7 +65,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         View createdView = createView(saved);
 
         setPullable();
-        if (mDownloadAllTask == null) {
+        if (mAllJokesRequest == null) {
             getJokes(saved);
         }
 
@@ -76,9 +82,9 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     @Override
     public void onResume() {
         super.onResume();
-        if (mDownloadAllTask != null && mDownloadAllTask.getStatus() != AsyncTask.Status.FINISHED) {
+        if (mAllJokesRequest != null && !mAllJokesRequest.isFinished()) {
             showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
-            mDownloadAllTask.attach(mActivity, this);
+            mSpiceManager.addListenerIfPending(APIResult.APIJokes.class, REQUEST_CACHE_KEY, mAllJokesRequestListener);
         } else {
             checkNewJokes();
             checkEditedJokes();
@@ -91,9 +97,6 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         super.onDestroyView();
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
-        }
-        if (mDownloadAllTask != null) {
-            mDownloadAllTask.detach();
         }
     }
 
@@ -125,10 +128,43 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     }
 
     private void downloadJokesFromServer() {
-        if (isAdded() && mDownloadAllTask == null) {
-            mDownloadAllTask = new DownloadAllJokes(mActivity, this);
+        if (isAdded() && mAllJokesRequest == null) {
             showProgressDialog(0, 100);
-            mDownloadAllTask.execute(getString(R.string.api_url) + "?limit=100");
+            mAllJokesRequest = new AllJokesRequest(100);
+            mAllJokesRequest.setProgressListener(new AllJokesRequest.ProgressListener() {
+                @Override
+                public void setMaxProgress(int max) {
+                    mProgressDialogMaxState = max;
+                    mProgressDialog.setMax(max);
+                }
+
+                @Override
+                public void incrementProgress(int delta) {
+                    mProgressDialogState += delta;
+                    mProgressDialog.setProgress(mProgressDialogState);
+                }
+            });
+            mAllJokesRequestListener = new PendingRequestListener<APIResult.APIJokes>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+
+                }
+
+                @Override
+                public void onRequestSuccess(APIResult.APIJokes apiJokes) {
+                    List<Joke> jokes = apiJokes.getJokes();
+                    mProgressDialog.dismiss();
+                    mFetcher.addJokesToDatabase(jokes);
+                    mFetcher.setJokes(jokes);
+                    mFetcher.fetchNext();
+                }
+
+                @Override
+                public void onRequestNotFound() {
+
+                }
+            };
+            mSpiceManager.execute(mAllJokesRequest, REQUEST_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, mAllJokesRequestListener);
         }
     }
 
@@ -144,7 +180,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                mDownloadAllTask.cancel(true);
+                mAllJokesRequest.cancel();
             }
         });
         mProgressDialog.show();
@@ -154,29 +190,5 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity>
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
         mSwipeRefresh.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void setMaxProgress(int max) {
-        mProgressDialogMaxState = max;
-        mProgressDialog.setMax(max);
-    }
-
-    @Override
-    public void incrementProgress(int delta) {
-        mProgressDialogState += delta;
-        mProgressDialog.setProgress(mProgressDialogState);
-    }
-
-    @Override
-    public void getAPIAllResult(List<Joke> jokes) {
-        mProgressDialog.dismiss();
-        mFetcher.addJokesToDatabase(jokes);
-        mFetcher.setJokes(jokes);
-        mFetcher.fetchNext();
-    }
-
-    @Override
-    public void errorDownloadingAll() {
     }
 }
