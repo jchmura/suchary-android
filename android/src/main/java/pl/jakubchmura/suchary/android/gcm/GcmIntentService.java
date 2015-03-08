@@ -15,6 +15,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
@@ -89,7 +90,7 @@ public class GcmIntentService extends IntentService {
 
     private void getChanged() {
         final Date lastChange = ChangeResolver.getLastChange(this);
-        ChangedJokesRequest request = new ChangedJokesRequest(lastChange);
+        ChangedJokesRequest request = new ChangedJokesRequest(lastChange, new CountDownLatch(0));
         mSpiceManager.execute(request, new RequestListener<APIResult.APIJokes>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {}

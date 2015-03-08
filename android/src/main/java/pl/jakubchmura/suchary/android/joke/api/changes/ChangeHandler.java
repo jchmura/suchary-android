@@ -50,7 +50,7 @@ public class ChangeHandler {
         if (jokes.isEmpty()) {
             Log.d(TAG, "There are no jokes to delete");
         } else {
-            Log.i(TAG, "About to handle deletion of " + jokes.size() + " jokes");
+            Log.i(TAG, "About to handle deletion of " + jokes.size() + " jokes with" + (notify? " ": "out ") + "notifying");
             String[] keys = getKeys(jokes);
             deleteJokesFromDatabase(keys);
             if (notify) {
@@ -65,7 +65,7 @@ public class ChangeHandler {
         if (jokes.isEmpty()) {
             Log.d(TAG, "There are no jokes to edit");
         } else {
-            Log.i(TAG, "About to handle edit of " + jokes.size() + " jokes");
+            Log.i(TAG, "About to handle edit of " + jokes.size() + " jokes with" + (notify? " ": "out ") + "notifying");
             String[] keys = getKeys(jokes);
             updateJokesInDatabase(jokes);
             if (notify) {
@@ -80,7 +80,7 @@ public class ChangeHandler {
         if (jokes.isEmpty()) {
             Log.d(TAG, "There are no jokes to add");
         } else {
-            Log.i(TAG, "About to handle addition of " + jokes.size() + " jokes");
+            Log.i(TAG, "About to handle addition of " + jokes.size() + " jokes with" + (notify? " ": "out ") + "notifying");
             Joke last = jokes.get(0);
             addJokesToDatabase(jokes);
             if (notify) {

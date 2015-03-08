@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
@@ -107,7 +108,7 @@ public class JokeFetcher {
     /**
      * Download newer jokes from server than the first present.
      *
-     * @see #downloadChangedAfter(java.util.Date)
+     * @see #downloadChangedAfter(java.util.Date, java.util.concurrent.CountDownLatch)
      */
     public void getNewer() {
         if (!NetworkHelper.isOnline(mContext)) {
@@ -115,7 +116,7 @@ public class JokeFetcher {
             showCroutonOffline();
             return;
         }
-        downloadChangedAfter(ChangeResolver.getLastChange(mContext));
+        downloadChangedAfter(ChangeResolver.getLastChange(mContext), new CountDownLatch(0));
     }
 
     /**
@@ -142,8 +143,8 @@ public class JokeFetcher {
     /**
      * Download from server newer jokes than indicated.
      */
-    private void downloadChangedAfter(final Date date) {
-        ChangedJokesRequest request = new ChangedJokesRequest(date);
+    public void downloadChangedAfter(final Date date, CountDownLatch countDownLatch) {
+        ChangedJokesRequest request = new ChangedJokesRequest(date, countDownLatch);
         mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
@@ -190,6 +191,8 @@ public class JokeFetcher {
         if (!mJokes.isEmpty()) {
             Joke first = mJokes.get(0);
             getJokesFromDatabaseAfter(first.getDate(), null);
+        } else {
+            mCallback.getCountDownLatch().countDown();
         }
     }
 
@@ -245,6 +248,7 @@ public class JokeFetcher {
                 mServed += jokes.size();
                 jokes.addAll(mJokes);
                 mJokes = jokes;
+                mCallback.getCountDownLatch().countDown();
             }
         }.execute((Void[]) null);
     }
@@ -304,8 +308,7 @@ public class JokeFetcher {
             @Override
             protected final List<Joke> doInBackground(String... keys) {
                 JokeDbHelper helper = new JokeDbHelper(mContext);
-                List<Joke> jokes;
-                jokes = helper.getJokes(keys);
+                List<Joke> jokes = helper.getJokes(keys);
                 Log.d(TAG, "Found " + jokes.size() + " updated in DB");
                 return jokes;
             }
@@ -313,6 +316,7 @@ public class JokeFetcher {
             @Override
             protected void onPostExecute(List<Joke> jokes) {
                 mCallback.replaceJokes(jokes);
+                mCallback.getCountDownLatch().countDown();
             }
         }.execute(keys);
     }
@@ -328,6 +332,7 @@ public class JokeFetcher {
             deleteJoke(key);
         }
         mCallback.deleteJokes(keys);
+        mCallback.getCountDownLatch().countDown();
     }
 
     /**

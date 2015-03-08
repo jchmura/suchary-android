@@ -14,6 +14,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
@@ -87,9 +88,13 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
             showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
             mSpiceManager.addListenerIfPending(APIResult.APIJokes.class, REQUEST_CACHE_KEY, mAllJokesRequestListener);
         } else {
+            int latches = 3;
+            if (mAdapter == null) latches++;
+            mCountDownLatch = new CountDownLatch(latches);
             checkNewJokes();
             checkEditedJokes();
             checkDeletedJoke();
+            downloadLatestChanges();
         }
     }
 
@@ -197,5 +202,9 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     protected void hideProgress() {
         mProgress.setVisibility(View.GONE);
         mSwipeRefresh.setVisibility(View.VISIBLE);
+    }
+
+    private void downloadLatestChanges() {
+        mFetcher.downloadChangedAfter(ChangeResolver.getLastChange(getActivity()), mCountDownLatch);
     }
 }

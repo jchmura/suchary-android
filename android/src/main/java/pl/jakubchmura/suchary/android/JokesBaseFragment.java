@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import com.octo.android.robospice.SpiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -94,7 +96,15 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     private Crouton mCroutonNew;
 
+    /**
+     * SpiceManager used for downloading content from the server
+     */
     protected SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
+
+    /**
+     * CyclicBarrier used for checking the database for changes before requesting them from the server
+     */
+    protected CountDownLatch mCountDownLatch = new CountDownLatch(0);
 
     public JokesBaseFragment() {
     }
@@ -156,16 +166,13 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
-//                mHeaderView = new Space(mActivity);
-//                mHeaderView.setMinimumHeight(10);
-//                mCardListView.addHeaderView(mHeaderView);
-//
                 mFooterView = new ProgressBar(mActivity);
                 mCardListView.addFooterView(mFooterView);
                 hideProgress();
 
                 mAdapter = new JokeCardArrayAdapter(mActivity, cards);
                 mCardListView.setAdapter(mAdapter);
+                mCountDownLatch.countDown();
             }
         }
     }
@@ -234,9 +241,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void replaceJokes(List<Joke> jokes) {
         if (mAdapter == null) {
+            Log.d(TAG, "Adapter is not set yet, cards can't be replaced");
             return;
         }
 
+        int successfullyReplaced = 0;
         for (Joke joke : jokes) {
             JokeCard card = mAdapter.getCard(joke.getKey());
             if (card != null) {
@@ -246,9 +255,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                     cardView.replaceCard(newCard);
                     card.setJoke(joke);
                     mAdapter.notifyDataSetChanged();
+                    successfullyReplaced++;
                 }
             }
         }
+        Log.d(TAG, "Successfully replaced " + successfullyReplaced + " joke(s) out of " + jokes.size());
     }
 
     /**
@@ -258,15 +269,19 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void deleteJokes(String[] keys) {
         if (mAdapter == null) {
+            Log.d(TAG, "Adapter is not set yet, cards can't be deleted");
             return;
         }
 
+        int successfullyDeleted = 0;
         for (String key : keys) {
             JokeCard card = mAdapter.getCard(key);
             if (card != null) {
                 mAdapter.remove(card);
+                successfullyDeleted++;
             }
         }
+        Log.d(TAG, "Successfully deleted " + successfullyDeleted + " joke(s) out of " + keys.length);
     }
 
     /**
@@ -355,6 +370,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         if (showNewJokes()) {
             showCrouton = true;
             mFetcher.getNewerFromDB();
+        } else {
+            mCountDownLatch.countDown();
         }
     }
 
@@ -370,6 +387,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(EDIT_JOKE, "");
             editor.apply();
+        } else {
+            mCountDownLatch.countDown();
         }
     }
 
@@ -385,6 +404,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(DELETE_JOKE, "");
             editor.apply();
+        } else {
+            mCountDownLatch.countDown();
         }
     }
 
@@ -400,6 +421,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mFetcher.getNewer();
             }
         });
+    }
+
+
+    public CountDownLatch getCountDownLatch() {
+        return mCountDownLatch;
     }
 
     /**
