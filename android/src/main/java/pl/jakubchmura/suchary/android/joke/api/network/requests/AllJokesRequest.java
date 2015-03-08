@@ -27,7 +27,7 @@ public class AllJokesRequest extends RetrofitSpiceRequest<APIResult.APIJokes, Jo
         int page = 1;
         do {
             if (mLimit > 0) {
-                apiResult = getService().jokes(mLimit, page);
+                apiResult = getService().jokes(page, mLimit);
             } else {
                 apiResult = getService().jokes(page);
             }

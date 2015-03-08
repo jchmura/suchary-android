@@ -1,6 +1,7 @@
 package pl.jakubchmura.suchary.android.joke.api.model;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,6 +49,19 @@ public class APIResult {
                 jokes.add(apiJoke.getJoke());
             }
             return jokes;
+        }
+
+        public Date getLastChange() {
+            Date lastChange = new Date(0);
+            for (APIJoke apiJoke: this) {
+                if (apiJoke.getChanged().after(lastChange)) {
+                    lastChange = apiJoke.getChanged();
+                }
+            }
+            if (lastChange.equals(new Date(0))) {
+                lastChange = null;
+            }
+            return lastChange;
         }
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
 import pl.jakubchmura.suchary.android.joke.api.network.requests.AllJokesRequest;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
@@ -112,6 +113,7 @@ public class ResetJokes {
                 }
                 mJokes = jokes;
                 addJokesToDatabase(jokes);
+                ChangeResolver.saveLastChange(mContext, apiJokes.getLastChange());
             }
 
             @Override

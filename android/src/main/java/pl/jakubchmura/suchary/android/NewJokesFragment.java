@@ -16,6 +16,7 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
 import pl.jakubchmura.suchary.android.joke.api.network.requests.AllJokesRequest;
 import pl.jakubchmura.suchary.android.settings.ResetJokes;
@@ -106,6 +107,11 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
         hideProgress();
     }
 
+    @Override
+    public boolean showNewJokes() {
+        return true;
+    }
+
     protected void getJokes(final boolean saved) {
         if (ResetJokes.mJokes != null) {
             mFetcher.setJokes(ResetJokes.mJokes);
@@ -157,6 +163,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
                     mFetcher.addJokesToDatabase(jokes);
                     mFetcher.setJokes(jokes);
                     mFetcher.fetchNext();
+                    ChangeResolver.saveLastChange(getActivity(), apiJokes.getLastChange());
                 }
 
                 @Override

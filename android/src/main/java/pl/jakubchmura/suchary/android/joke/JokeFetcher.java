@@ -25,8 +25,10 @@ import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import pl.jakubchmura.suchary.android.JokesBaseFragment;
 import pl.jakubchmura.suchary.android.R;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
-import pl.jakubchmura.suchary.android.joke.api.network.requests.NewerJokesRequest;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.ChangedJokesRequest;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
@@ -51,6 +53,10 @@ public class JokeFetcher {
         mSpiceManager = spiceManager;
         mCallback = callback;
         mJokes = new ArrayList<>();
+    }
+
+    public void setContext(Context context) {
+        mContext = context;
     }
 
     /**
@@ -101,7 +107,7 @@ public class JokeFetcher {
     /**
      * Download newer jokes from server than the first present.
      *
-     * @see #downloadNewerThan(java.util.Date)
+     * @see #downloadChangedAfter(java.util.Date)
      */
     public void getNewer() {
         if (!NetworkHelper.isOnline(mContext)) {
@@ -109,8 +115,7 @@ public class JokeFetcher {
             showCroutonOffline();
             return;
         }
-        Joke first = mJokes.get(0);
-        downloadNewerThan(first.getDate());
+        downloadChangedAfter(ChangeResolver.getLastChange(mContext));
     }
 
     /**
@@ -137,8 +142,8 @@ public class JokeFetcher {
     /**
      * Download from server newer jokes than indicated.
      */
-    private void downloadNewerThan(Date date) {
-        NewerJokesRequest request = new NewerJokesRequest(date);
+    private void downloadChangedAfter(final Date date) {
+        ChangedJokesRequest request = new ChangedJokesRequest(date);
         mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
@@ -147,19 +152,15 @@ public class JokeFetcher {
 
             @Override
             public void onRequestSuccess(APIResult.APIJokes apiJokes) {
-                List<Joke> jokes = apiJokes.getJokes();
-                List<Joke> newJokes = new LinkedList<>();
-                Collections.sort(jokes, Collections.reverseOrder());
-                for (Joke joke : jokes) {
-                    if (!mJokes.contains(joke)) {
-                        newJokes.add(joke);
-                        mJokes.add(0, joke);
-                    }
-                }
-                mServed += newJokes.size();
+                ChangeResolver resolver = new ChangeResolver(apiJokes, date);
 
-                mCallback.addJokesToTop(newJokes, true);
-                addJokesToDatabase(newJokes);
+                showNewerJokes(resolver.getAdded());
+                mCallback.replaceJokes(resolver.getEdited());
+                deleteJokes(ChangeHandler.getKeys(resolver.getDeleted()));
+
+                ChangeHandler handler = new ChangeHandler(mContext);
+                handler.handleAllInBackground(resolver, false);
+                ChangeResolver.saveLastChange(mContext, apiJokes.getLastChange());
             }
         });
     }
@@ -233,6 +234,7 @@ public class JokeFetcher {
                 JokeDbHelper helper = new JokeDbHelper(mContext);
                 List<Joke> jokes;
                 jokes = helper.getAfter(date, limit);
+                Log.d(TAG, "Found " + jokes.size() + " new jokes in DB");
                 return jokes;
             }
 
@@ -269,6 +271,20 @@ public class JokeFetcher {
         }.execute(jokes);
     }
 
+    private void showNewerJokes(List<Joke> jokes) {
+        List<Joke> newJokes = new LinkedList<>();
+        Collections.sort(jokes, Collections.reverseOrder());
+        for (Joke joke : jokes) {
+            if (!mJokes.contains(joke)) {
+                newJokes.add(joke);
+                mJokes.add(0, joke);
+            }
+        }
+        mServed += newJokes.size();
+
+        mCallback.addJokesToTop(newJokes, true);
+    }
+
     /**
      * Update jokes with newest version.
      *
@@ -290,6 +306,7 @@ public class JokeFetcher {
                 JokeDbHelper helper = new JokeDbHelper(mContext);
                 List<Joke> jokes;
                 jokes = helper.getJokes(keys);
+                Log.d(TAG, "Found " + jokes.size() + " updated in DB");
                 return jokes;
             }
 
@@ -306,6 +323,7 @@ public class JokeFetcher {
      * @param keys keys of jokes to delete
      */
     public void deleteJokes(String[] keys) {
+        Log.d(TAG, "Trying to delete " + keys.length + " jokes from the view");
         for (String key : keys) {
             deleteJoke(key);
         }

@@ -302,6 +302,17 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteJokes(String[] keys) {
+        if (keys.length == 0) {
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        if (db != null) {
+            db.delete(TABLE_NAME, COLUMN_NAME_KEY + " IN (" + new String(new char[keys.length - 1]).replace("\0", "?,") + "?)", keys);
+            db.close();
+        }
+    }
+
     public void deleteAllJokes() {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {

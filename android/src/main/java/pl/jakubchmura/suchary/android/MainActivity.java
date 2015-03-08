@@ -53,6 +53,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.i(TAG, "Received action: " + action);
             if (action != null && mFragment != null) {
                 switch (action) {
                     case ACTION_NEW_JOKE:

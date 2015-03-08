@@ -23,9 +23,9 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import it.gmariotti.cardslib.library.view.listener.SwipeOnScrollListener;
-import pl.jakubchmura.suchary.android.gcm.GcmIntentService;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.JokeFetcher;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
 import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
@@ -34,9 +34,9 @@ import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
 public abstract class JokesBaseFragment<ActivityClass extends Activity> extends Fragment {
 
     private static final String TAG = "JokesBaseFragment";
-    private static final String PREFS_NAME = GcmIntentService.PREFS_NAME;
-    private static final String EDIT_JOKE = GcmIntentService.EDIT_JOKE;
-    private static final String DELETE_JOKE = GcmIntentService.DELETE_JOKE;
+    private static final String PREFS_NAME = ChangeHandler.PREFS_NAME;
+    private static final String EDIT_JOKE = ChangeHandler.EDIT_JOKE;
+    private static final String DELETE_JOKE = ChangeHandler.DELETE_JOKE;
     private boolean showCrouton = false;
 
     /**
@@ -103,6 +103,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = (ActivityClass) activity;
+        if (mFetcher != null) {
+            mFetcher.setContext(mActivity);
+        }
     }
 
     @Override
@@ -165,6 +168,15 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mCardListView.setAdapter(mAdapter);
             }
         }
+    }
+
+    /**
+     * Whether to show new jokes at the top
+     *
+     * @return can add new jokes to the top
+     */
+    protected boolean showNewJokes() {
+        return false;
     }
 
     /**
@@ -340,8 +352,10 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Check for newer jokes in DB.
      */
     public void checkNewJokes() {
-        showCrouton = true;
-        mFetcher.getNewerFromDB();
+        if (showNewJokes()) {
+            showCrouton = true;
+            mFetcher.getNewerFromDB();
+        }
     }
 
     /**
