@@ -1,10 +1,11 @@
 package pl.jakubchmura.suchary.android;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
 import pl.jakubchmura.suchary.android.joke.api.network.requests.AllJokesRequest;
 import pl.jakubchmura.suchary.android.settings.ResetJokes;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -40,6 +42,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     private int mProgressDialogMaxState;
     private AllJokesRequest mAllJokesRequest;
     private PendingRequestListener<APIResult.APIJokes> mAllJokesRequestListener;
+    private boolean mFirstStart = true;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -84,9 +87,12 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     @Override
     public void onResume() {
         super.onResume();
-        if (mAllJokesRequest != null && !mAllJokesRequest.isFinished()) {
-            showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
-            mSpiceManager.addListenerIfPending(APIResult.APIJokes.class, REQUEST_CACHE_KEY, mAllJokesRequestListener);
+        if (mAllJokesRequest != null) {
+            if (!mAllJokesRequest.isFinished() && !mFirstStart) {
+                Log.d(TAG, "onResume show dialog");
+                showProgressDialog(mProgressDialogState, mProgressDialogMaxState);
+                mSpiceManager.addListenerIfPending(APIResult.APIJokes.class, REQUEST_CACHE_KEY, mAllJokesRequestListener);
+            }
         } else {
             int latches = 3;
             if (mAdapter == null) latches++;
@@ -96,6 +102,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
             checkDeletedJoke();
             downloadLatestChanges();
         }
+        mFirstStart = false;
     }
 
     @Override
@@ -122,24 +129,34 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
             mFetcher.setJokes(ResetJokes.mJokes);
             mFetcher.fetchNext();
         } else {
-            new AsyncTask<Void, Void, Long>() {
-                @Override
-                protected Long doInBackground(Void... params) {
-                    JokeDbHelper helper = new JokeDbHelper(mActivity);
-                    return helper.getCount();
-                }
-
-                @Override
-                protected void onPostExecute(Long count) {
-                    if (count == 0) downloadJokesFromServer();
-                    else if (!saved) mFetcher.fetchNext();
-                }
-            }.execute((Void) null);
+            JokeDbHelper helper = new JokeDbHelper(mActivity);
+            if (helper.getCount() == 0) downloadJokesFromServer();
+            else if (!saved) mFetcher.fetchNext();
         }
     }
 
     private void downloadJokesFromServer() {
         if (isAdded() && mAllJokesRequest == null) {
+            if (!NetworkHelper.isOnline(mActivity)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                builder.setMessage(R.string.no_network_first_download);
+                builder.setTitle(R.string.no_network);
+                builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mActivity.finish();
+                    }
+                });
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        mActivity.finish();
+                    }
+                });
+                builder.show();
+                return;
+            }
+            Log.d(TAG, "downloadJokesFromServer show dialog");
             showProgressDialog(0, 100);
             mAllJokesRequest = new AllJokesRequest(100);
             mAllJokesRequest.setProgressListener(new AllJokesRequest.ProgressListener() {
@@ -181,6 +198,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     }
 
     private void showProgressDialog(int progress, int max) {
+        Log.d(TAG, "show progress dialog, " + progress + " " + max);
         mProgressDialogState = progress;
         mProgressDialogMaxState = max;
         mProgressDialog = new ProgressDialog(mActivity);
@@ -205,6 +223,6 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     }
 
     private void downloadLatestChanges() {
-        mFetcher.downloadChangedAfter(ChangeResolver.getLastChange(getActivity()), mCountDownLatch);
+        mFetcher.getNewer(mCountDownLatch);
     }
 }
