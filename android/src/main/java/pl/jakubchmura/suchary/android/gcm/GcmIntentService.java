@@ -41,6 +41,10 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (mSpiceManager.isStarted()) {
+            return;
+        }
+
         mSpiceManager.start(this);
         mIntent = intent;
         Bundle extras = intent.getExtras();
