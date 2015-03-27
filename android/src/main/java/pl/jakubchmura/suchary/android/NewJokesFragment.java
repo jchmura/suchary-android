@@ -64,7 +64,10 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
             mRootView = inflater.inflate(R.layout.fragment_new, container, false);
             saved = false;
         } else {
-            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+            ViewGroup parent = (ViewGroup) mRootView.getParent();
+            if (parent != null) {
+                parent.removeView(mRootView);
+            }
         }
 
         View createdView = createView(saved);
@@ -138,6 +141,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
     private void downloadJokesFromServer() {
         if (isAdded() && mAllJokesRequest == null) {
             if (!NetworkHelper.isOnline(mActivity)) {
+                Log.w(TAG, "No network connectivity, not downloading all jokes");
                 AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                 builder.setMessage(R.string.no_network_first_download);
                 builder.setTitle(R.string.no_network);

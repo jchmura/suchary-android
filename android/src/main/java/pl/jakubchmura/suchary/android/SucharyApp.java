@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
+import io.fabric.sdk.android.Fabric;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
@@ -34,9 +35,10 @@ public class SucharyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         mAnalytics = GoogleAnalytics.getInstance(this);
         Analytics.init(this);
-        Crashlytics.start(this);
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         checkLastChangeValue();
     }
