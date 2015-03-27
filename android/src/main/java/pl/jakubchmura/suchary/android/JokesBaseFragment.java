@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -39,7 +40,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     private static final String PREFS_NAME = ChangeHandler.PREFS_NAME;
     private static final String EDIT_JOKE = ChangeHandler.EDIT_JOKE;
     private static final String DELETE_JOKE = ChangeHandler.DELETE_JOKE;
-    private boolean showCrouton = false;
+    private boolean showCroutonNew = false;
+    private Crouton mCroutonOffline = null;
+
 
     /**
      * Activity which attached this fragment
@@ -204,9 +207,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             }
             if (move && size > 0) {
                 mCardListView.setSelection(start + size);
-                if (showCrouton) {
+                if (showCroutonNew) {
                     showCroutonNew(size);
-                    showCrouton = false;
+                    showCroutonNew = false;
                 }
             }
         }
@@ -232,6 +235,24 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         mCroutonNew.setConfiguration(configuration);
         Crouton.cancelAllCroutons();
         mCroutonNew.show();
+    }
+
+    public void showCroutonOffline() {
+        if (mCroutonOffline == null) {
+            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.indigo_600).build();
+            mCroutonOffline = Crouton.makeText((Activity) mActivity, R.string.no_internet_connection, style);
+            mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
+                @Override
+                public void onDisplayed() {
+                }
+
+                @Override
+                public void onRemoved() {
+                    mCroutonOffline = null;
+                }
+            });
+            mCroutonOffline.show();
+        }
     }
 
     /**
@@ -368,7 +389,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void checkNewJokes() {
         if (showNewJokes()) {
-            showCrouton = true;
+            showCroutonNew = true;
             mFetcher.getNewerFromDB();
         } else {
             mCountDownLatch.countDown();

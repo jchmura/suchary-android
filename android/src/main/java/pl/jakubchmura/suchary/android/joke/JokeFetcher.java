@@ -1,7 +1,5 @@
 package pl.jakubchmura.suchary.android.joke;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
@@ -21,11 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import pl.jakubchmura.suchary.android.JokesBaseFragment;
-import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
 import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
@@ -41,13 +35,12 @@ public class JokeFetcher {
     private Context mContext;
     private SpiceManager mSpiceManager;
     private JokesBaseFragment<?> mCallback;
-    private List<Joke> mJokes;
+    private final List<Joke> mJokes;
     private int mServed = 0;
     private boolean mEnd = false;
     private boolean mGettingFromDB;
     private boolean mCanGetOlder = true;
     private boolean mRandom = false;
-    private Crouton mCroutonOffline = null;
 
     public JokeFetcher(Context context, SpiceManager spiceManager, JokesBaseFragment<?> callback) {
         mContext = context;
@@ -108,15 +101,23 @@ public class JokeFetcher {
     /**
      * Download newer jokes from server than the first present.
      *
-     * @see #downloadChangedAfter(java.util.Date, java.util.concurrent.CountDownLatch)
+     * @see #getNewer(CountDownLatch)
      */
     public void getNewer() {
+        getNewer(new CountDownLatch(0));
+    }
+
+    /**
+     * Download newer jokes from server than the first present.
+     * Executes {@link #downloadChangedAfter(Date, CountDownLatch)} if network is online.
+     */
+    public void getNewer(CountDownLatch countDownLatch) {
         if (!NetworkHelper.isOnline(mContext)) {
             mCallback.setRefreshComplete();
-            showCroutonOffline();
+            mCallback.showCroutonOffline();
             return;
         }
-        downloadChangedAfter(ChangeResolver.getLastChange(mContext), new CountDownLatch(0));
+        downloadChangedAfter(ChangeResolver.getLastChange(mContext), countDownLatch);
     }
 
     /**
@@ -143,7 +144,7 @@ public class JokeFetcher {
     /**
      * Download from server newer jokes than indicated.
      */
-    public void downloadChangedAfter(final Date date, CountDownLatch countDownLatch) {
+    private void downloadChangedAfter(final Date date, CountDownLatch countDownLatch) {
         ChangedJokesRequest request = new ChangedJokesRequest(date, countDownLatch);
         mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
             @Override
@@ -164,24 +165,6 @@ public class JokeFetcher {
                 ChangeResolver.saveLastChange(mContext, apiJokes.getLastChange());
             }
         });
-    }
-
-    private void showCroutonOffline() {
-        if (mCroutonOffline == null) {
-            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.indigo_600).build();
-            mCroutonOffline = Crouton.makeText((Activity) mContext, R.string.no_internet_connection, style);
-            mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
-                @Override
-                public void onDisplayed() {
-                }
-
-                @Override
-                public void onRemoved() {
-                    mCroutonOffline = null;
-                }
-            });
-            mCroutonOffline.show();
-        }
     }
 
     /**
@@ -247,7 +230,8 @@ public class JokeFetcher {
                 mCallback.addJokesToTop(jokes, false);
                 mServed += jokes.size();
                 jokes.addAll(mJokes);
-                mJokes = jokes;
+                mJokes.clear();
+                mJokes.addAll(jokes);
                 mCallback.getCountDownLatch().countDown();
             }
         }.execute((Void[]) null);
@@ -278,13 +262,15 @@ public class JokeFetcher {
     private void showNewerJokes(List<Joke> jokes) {
         List<Joke> newJokes = new LinkedList<>();
         Collections.sort(jokes, Collections.reverseOrder());
-        for (Joke joke : jokes) {
-            if (!mJokes.contains(joke)) {
-                newJokes.add(joke);
-                mJokes.add(0, joke);
+        synchronized (mJokes) {
+            for (Joke joke : jokes) {
+                if (!mJokes.contains(joke)) {
+                    newJokes.add(joke);
+                    mJokes.add(0, joke);
+                }
             }
+            mServed += newJokes.size();
         }
-        mServed += newJokes.size();
 
         mCallback.addJokesToTop(newJokes, true);
     }
@@ -363,7 +349,10 @@ public class JokeFetcher {
      * @param jokes jokes to replace with
      */
     public void setJokes(List<Joke> jokes) {
-        mJokes = jokes;
+        mServed = 0;
+        mJokes.clear();
+        mJokes.addAll(jokes);
+        mEnd = false;
     }
 
     /**
