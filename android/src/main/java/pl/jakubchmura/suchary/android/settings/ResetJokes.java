@@ -1,10 +1,12 @@
 package pl.jakubchmura.suchary.android.settings;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.util.Log;
 
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -20,9 +22,11 @@ import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
 import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
 import pl.jakubchmura.suchary.android.joke.api.network.requests.AllJokesRequest;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
 public class ResetJokes {
 
+    private static final String TAG = "ResetJokes";
     private static final String REQUEST_CACHE_KEY = "all jokes request from reset jokes";
 
     public static List<Joke> mJokes;
@@ -43,6 +47,15 @@ public class ResetJokes {
     }
 
     public void reset() {
+        if (!NetworkHelper.isOnline(mContext)) {
+            Log.w(TAG, "No network connectivity, not downloading all jokes for reset");
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage(R.string.no_network_reset);
+            builder.setTitle(R.string.no_network);
+            builder.setNeutralButton(R.string.ok, null);
+            builder.show();
+            return;
+        }
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {

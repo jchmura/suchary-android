@@ -77,6 +77,7 @@
     <string name="pref_admin_title">Zarządzanie danymi</string>
     <string name="pref_reset">Ściągnij ponownie wszystkie suchary</string>
     <string name="pref_reset_summ">Informacja o ulubionych sucharach zostanie zachowana</string>
+    <string name="no_network_reset">Aby ponownie ściągnąć wszystkie suchary musi być połączenie z internetem.</string>
     <string name="add_jokes_to_db">Zapisywanie sucharów</string>
 
     <!-- About -->
