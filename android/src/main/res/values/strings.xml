@@ -50,6 +50,8 @@
     <string name="new_joke_notification_summary">Oraz %1$d więcej</string>
 
     <!-- Main activity -->
+    <string name="no_network">Brak połączenie z internetem</string>
+    <string name="no_network_first_download">Przy pierwszym uruchomieniu wszystkie suchary muszą być pobrane z serwera. Nawiąż połączenie z internetem i uruchom aplikację ponownie.</string>
     <string name="download_jokes_progress_title">Pobieranie sucharów</string>
 
     <!-- Override CardsLib defaults -->
@@ -75,6 +77,7 @@
     <string name="pref_admin_title">Zarządzanie danymi</string>
     <string name="pref_reset">Ściągnij ponownie wszystkie suchary</string>
     <string name="pref_reset_summ">Informacja o ulubionych sucharach zostanie zachowana</string>
+    <string name="no_network_reset">Aby ponownie ściągnąć wszystkie suchary musi być połączenie z internetem.</string>
     <string name="add_jokes_to_db">Zapisywanie sucharów</string>
 
     <!-- About -->
@@ -88,5 +91,6 @@
     <!-- Global -->
     <string name="api_url">http://suchary.jakubchmura.pl/api/obcy</string>
     <string name="site_url">http://suchary.jakubchmura.pl/</string>
+    <string name="ok">OK</string>
 
 </resources>

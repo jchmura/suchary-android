@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import com.octo.android.robospice.SpiceManager;
+
 import pl.jakubchmura.android.colorpicker.ColorPickerPreference;
 import pl.jakubchmura.suchary.android.R;
+import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 
 public class SettingsFragment extends PreferenceFragment {
 
@@ -17,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment {
     private Settings mActivity;
     private ResetJokes mResetJokes;
     private ColorPickerPreference mColorPreference;
+    private SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
 
     public SettingsFragment() {
     }
@@ -26,6 +30,12 @@ public class SettingsFragment extends PreferenceFragment {
         super.onAttach(activity);
         mActivity = (Settings) activity;
         setRetainInstance(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSpiceManager.start(getActivity());
     }
 
     @Override
@@ -39,7 +49,7 @@ public class SettingsFragment extends PreferenceFragment {
             resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    mResetJokes = new ResetJokes(mActivity);
+                    mResetJokes = new ResetJokes(mActivity, mSpiceManager);
                     mResetJokes.reset();
                     return true;
                 }
@@ -58,6 +68,14 @@ public class SettingsFragment extends PreferenceFragment {
         if (mColorPreference != null) {
             mColorPreference.attach(mActivity);
         }
+    }
+
+    @Override
+    public void onStop() {
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
+        super.onStop();
     }
 
     @Override

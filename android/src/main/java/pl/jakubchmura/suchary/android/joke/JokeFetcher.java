@@ -1,49 +1,56 @@
 package pl.jakubchmura.suchary.android.joke;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.util.Log;
+
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import pl.jakubchmura.suchary.android.JokesBaseFragment;
-import pl.jakubchmura.suchary.android.R;
-import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
+import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.ChangedJokesRequest;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.NetworkHelper;
 
-public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
+public class JokeFetcher {
 
     private static final String TAG = "JokeFetcher";
     private static final int LIMIT = 15;
 
     private Context mContext;
+    private SpiceManager mSpiceManager;
     private JokesBaseFragment<?> mCallback;
-    private List<Joke> mJokes;
+    private final List<Joke> mJokes;
     private int mServed = 0;
     private boolean mEnd = false;
     private boolean mGettingFromDB;
     private boolean mCanGetOlder = true;
     private boolean mRandom = false;
-    private Crouton mCroutonOffline = null;
 
-    public JokeFetcher(Context context, JokesBaseFragment<?> callback) {
+    public JokeFetcher(Context context, SpiceManager spiceManager, JokesBaseFragment<?> callback) {
         mContext = context;
+        mSpiceManager = spiceManager;
         mCallback = callback;
         mJokes = new ArrayList<>();
+    }
+
+    public void setContext(Context context) {
+        mContext = context;
     }
 
     /**
@@ -94,16 +101,23 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
     /**
      * Download newer jokes from server than the first present.
      *
-     * @see #downloadNewerThan(java.util.Date)
+     * @see #getNewer(CountDownLatch)
      */
     public void getNewer() {
+        getNewer(new CountDownLatch(0));
+    }
+
+    /**
+     * Download newer jokes from server than the first present.
+     * Executes {@link #downloadChangedAfter(Date, CountDownLatch)} if network is online.
+     */
+    public void getNewer(CountDownLatch countDownLatch) {
         if (!NetworkHelper.isOnline(mContext)) {
             mCallback.setRefreshComplete();
-            showCroutonOffline();
+            mCallback.showCroutonOffline();
             return;
         }
-        Joke first = mJokes.get(0);
-        downloadNewerThan(first.getDate());
+        downloadChangedAfter(ChangeResolver.getLastChange(mContext), countDownLatch);
     }
 
     /**
@@ -129,37 +143,28 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
 
     /**
      * Download from server newer jokes than indicated.
-     * Handle the result in {@link #getAPIAllResult(java.util.List)}.
      */
-    private void downloadNewerThan(Date date) {
-        String url = mContext.getString(R.string.api_url);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
-        String first_date = dateFormat.format(date);
-        try {
-            url += "?after=" + URLEncoder.encode(first_date, "UTF-8");
-            DownloadAllJokes download = new DownloadAllJokes(mContext, this);
-            download.execute(url);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
+    private void downloadChangedAfter(final Date date, CountDownLatch countDownLatch) {
+        ChangedJokesRequest request = new ChangedJokesRequest(date, countDownLatch);
+        mSpiceManager.execute(request, date, DurationInMillis.ALWAYS_EXPIRED, new RequestListener<APIResult.APIJokes>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "request failed", spiceException);
+            }
 
-    private void showCroutonOffline() {
-        if (mCroutonOffline == null) {
-            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.indigo_600).build();
-            mCroutonOffline = Crouton.makeText((Activity) mContext, R.string.no_internet_connection, style);
-            mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
-                @Override
-                public void onDisplayed() {
-                }
+            @Override
+            public void onRequestSuccess(APIResult.APIJokes apiJokes) {
+                ChangeResolver resolver = new ChangeResolver(apiJokes, date);
 
-                @Override
-                public void onRemoved() {
-                    mCroutonOffline = null;
-                }
-            });
-            mCroutonOffline.show();
-        }
+                showNewerJokes(resolver.getAdded());
+                mCallback.replaceJokes(resolver.getEdited());
+                deleteJokes(ChangeHandler.getKeys(resolver.getDeleted()));
+
+                ChangeHandler handler = new ChangeHandler(mContext);
+                handler.handleAllInBackground(resolver, false);
+                ChangeResolver.saveLastChange(mContext, apiJokes.getLastChange());
+            }
+        });
     }
 
     /**
@@ -169,23 +174,9 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
         if (!mJokes.isEmpty()) {
             Joke first = mJokes.get(0);
             getJokesFromDatabaseAfter(first.getDate(), null);
+        } else {
+            mCallback.getCountDownLatch().countDown();
         }
-    }
-
-    @Override
-    public void getAPIAllResult(List<Joke> jokes) {
-        List<Joke> newJokes = new ArrayList<>();
-        Collections.reverse(jokes);
-        for (Joke joke : jokes) {
-            if (!mJokes.contains(joke)) {
-                newJokes.add(joke);
-                mJokes.add(0, joke);
-            }
-        }
-        mServed += newJokes.size();
-
-        mCallback.addJokesToTop(newJokes, true);
-        addJokesToDatabase(newJokes);
     }
 
     /**
@@ -229,6 +220,7 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
                 JokeDbHelper helper = new JokeDbHelper(mContext);
                 List<Joke> jokes;
                 jokes = helper.getAfter(date, limit);
+                Log.d(TAG, "Found " + jokes.size() + " new jokes in DB");
                 return jokes;
             }
 
@@ -238,7 +230,9 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
                 mCallback.addJokesToTop(jokes, false);
                 mServed += jokes.size();
                 jokes.addAll(mJokes);
-                mJokes = jokes;
+                mJokes.clear();
+                mJokes.addAll(jokes);
+                mCallback.getCountDownLatch().countDown();
             }
         }.execute((Void[]) null);
     }
@@ -265,6 +259,22 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
         }.execute(jokes);
     }
 
+    private void showNewerJokes(List<Joke> jokes) {
+        List<Joke> newJokes = new LinkedList<>();
+        Collections.sort(jokes, Collections.reverseOrder());
+        synchronized (mJokes) {
+            for (Joke joke : jokes) {
+                if (!mJokes.contains(joke)) {
+                    newJokes.add(joke);
+                    mJokes.add(0, joke);
+                }
+            }
+            mServed += newJokes.size();
+        }
+
+        mCallback.addJokesToTop(newJokes, true);
+    }
+
     /**
      * Update jokes with newest version.
      *
@@ -284,14 +294,15 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
             @Override
             protected final List<Joke> doInBackground(String... keys) {
                 JokeDbHelper helper = new JokeDbHelper(mContext);
-                List<Joke> jokes;
-                jokes = helper.getJokes(keys);
+                List<Joke> jokes = helper.getJokes(keys);
+                Log.d(TAG, "Found " + jokes.size() + " updated in DB");
                 return jokes;
             }
 
             @Override
             protected void onPostExecute(List<Joke> jokes) {
                 mCallback.replaceJokes(jokes);
+                mCallback.getCountDownLatch().countDown();
             }
         }.execute(keys);
     }
@@ -302,10 +313,12 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      * @param keys keys of jokes to delete
      */
     public void deleteJokes(String[] keys) {
+        Log.d(TAG, "Trying to delete " + keys.length + " jokes from the view");
         for (String key : keys) {
             deleteJoke(key);
         }
         mCallback.deleteJokes(keys);
+        mCallback.getCountDownLatch().countDown();
     }
 
     /**
@@ -336,7 +349,10 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      * @param jokes jokes to replace with
      */
     public void setJokes(List<Joke> jokes) {
-        mJokes = jokes;
+        mServed = 0;
+        mJokes.clear();
+        mJokes.addAll(jokes);
+        mEnd = false;
     }
 
     /**
@@ -369,18 +385,6 @@ public class JokeFetcher implements DownloadAllJokes.DownloadAllJokesCallback {
      */
     public void setFetchGetOlder(boolean can) {
         mCanGetOlder = can;
-    }
-
-    @Override
-    public void setMaxProgress(int i) {
-    }
-
-    @Override
-    public void incrementProgress(int i) {
-    }
-
-    @Override
-    public void errorDownloadingAll() {
     }
 
     public void setRandom(boolean random) {

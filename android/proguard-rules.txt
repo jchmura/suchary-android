@@ -32,3 +32,13 @@
 
 -keep class android.support.v7.** { *; }
 -keep interface android.support.v7.** { *; }
+
+#RoboSpice requests should be preserved in most cases
+-keepclassmembers class pl.jakubchmura.suchary.android.joke.api.network.requests.** {
+  public void set*(***);
+  public *** get*();
+  public *** is*();
+}
+
+#Retrofit
+-keep class com.octo.android.robospice.retrofit.** { *; }
