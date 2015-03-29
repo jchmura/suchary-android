@@ -23,6 +23,7 @@
     <string name="action_settings">Ustawienia</string>
     <string name="search_title">Szukaj</string>
     <string name="search_hint">Szukaj suchara</string>
+    <string name="search_hint_starred">Szukaj suchara w ulubionych</string>
 
     <!-- Preferences -->
     <string name="pref_notif">Powiadomienia</string>

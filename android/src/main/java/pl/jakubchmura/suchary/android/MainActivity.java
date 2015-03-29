@@ -312,6 +312,9 @@ public class MainActivity extends ActionBarActivity {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
+                    if (mDrawerItemSelected == 1)
+                    searchView.setQueryHint(getString(R.string.search_hint_starred));
+
                     // Listener
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
