@@ -103,7 +103,7 @@
     <string name="about_author_title">Autor</string>
     <string name="about_author"><a href="mailto:android@jakubchmura.pl?subject=Suchary">Jakub Chmura</a></string>
     <string name="about_libraries_title">Biblioteki opensource</string>
-    <string name="about_libraries">&#8226; <a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a>\n&#8226; <a href="https://github.com/keyboardsurfer/Crouton">Crouton</a></string>
+    <string name="about_libraries">&#8226; <a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a>\n&#8226; <a href="https://github.com/keyboardsurfer/Crouton">Crouton</a>\n&#8226; <a href="https://github.com/HeinrichReimer/material-drawer">material-drawer</a></string>
 
     <!-- Global -->
     <string name="api_url">http://suchary.jakubchmura.pl/api/obcy</string>
