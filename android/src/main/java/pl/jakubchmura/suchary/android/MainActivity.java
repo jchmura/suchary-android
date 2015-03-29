@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -25,11 +26,14 @@ import com.heinrichreimersoftware.materialdrawer.DrawerView;
 import com.heinrichreimersoftware.materialdrawer.structure.DrawerItem;
 import com.heinrichreimersoftware.materialdrawer.structure.DrawerProfile;
 
+import io.fabric.sdk.android.services.concurrency.AsyncTask;
 import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
 import pl.jakubchmura.suchary.android.gcm.NewJokeNotification;
 import pl.jakubchmura.suchary.android.search.SearchActivity;
 import pl.jakubchmura.suchary.android.settings.Settings;
+import pl.jakubchmura.suchary.android.sql.JokeCount;
+import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 
@@ -38,6 +42,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
     public static final String ACTION_DELETE_JOKE = "action_delete_joke";
+    public static final String ACTION_JOKE_COUNT = "action_joke_count";
 
     private static final String DRAWER_LAST_ITEM = "drawer_last_item";
 
@@ -68,6 +73,14 @@ public class MainActivity extends ActionBarActivity {
                         break;
                 }
             }
+        }
+    };
+
+    private BroadcastReceiver mDrawerReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Drawer received action to update");
+            updateDrawerJokeCount();
         }
     };
 
@@ -118,16 +131,21 @@ public class MainActivity extends ActionBarActivity {
         GcmRegistration gcm = new GcmRegistration(this);
         gcm.register();
 
-        // Register the broadcast receiver
+        // Register the broadcast receivers
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_NEW_JOKE);
         filter.addAction(ACTION_EDIT_JOKE);
         filter.addAction(ACTION_DELETE_JOKE);
         registerReceiver(mReceiver, filter);
 
+        IntentFilter drawerFilter = new IntentFilter();
+        drawerFilter.addAction(ACTION_JOKE_COUNT);
+        registerReceiver(mDrawerReceiver, drawerFilter);
+
         // Cancel the notification about new jokes
         NewJokeNotification.cancel(this);
 
+        updateDrawerJokeCount();
     }
 
     @Override
@@ -136,6 +154,7 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             unregisterReceiver(mReceiver);
+            unregisterReceiver(mDrawerReceiver);
         } catch (RuntimeException e) {
             Log.e(TAG, "Error while unregistering broadcast receiver", e);
             Crashlytics.logException(e);
@@ -348,5 +367,28 @@ public class MainActivity extends ActionBarActivity {
     private void setTitle() {
         ActionBarTitle actionBarTitle = new ActionBarTitle(this);
         actionBarTitle.setTitle(mTitle);
+    }
+
+    private void updateDrawerJokeCount() {
+        Log.d(TAG, "Updating joke count in the drawer");
+        new AsyncTask<Void, Void, JokeCount>() {
+
+            @Override
+            protected JokeCount doInBackground(Void... voids) {
+                JokeDbHelper helper = new JokeDbHelper(MainActivity.this);
+                return helper.getJokeCount();
+            }
+
+            @Override
+            protected void onPostExecute(JokeCount jokeCount) {
+                Log.d(TAG, "New count: " + jokeCount);
+                if (mDrawer != null) {
+                    Resources resources = getResources();
+                    String totalString = resources.getQuantityString(R.plurals.total_joke_count, (int) jokeCount.getTotal(), (int) jokeCount.getTotal());
+                    String starredString = resources.getQuantityString(R.plurals.starred_joke_count, (int) jokeCount.getStarred(), (int) jokeCount.getStarred());
+                    mDrawer.setProfile(mDrawer.getProfile().setDescription(totalString + " (" + starredString + ")"));
+                }
+            }
+        }.execute((Void) null);
     }
 }

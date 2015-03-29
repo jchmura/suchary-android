@@ -53,6 +53,22 @@
     <string name="no_network">Brak połączenie z internetem</string>
     <string name="no_network_first_download">Przy pierwszym uruchomieniu wszystkie suchary muszą być pobrane z serwera. Nawiąż połączenie z internetem i uruchom aplikację ponownie.</string>
     <string name="download_jokes_progress_title">Pobieranie sucharów</string>
+    <plurals name="total_joke_count">
+        <item quantity="zero">%d dowcipów</item>
+        <item quantity="one">%d dowcip</item>
+        <item quantity="two">%d dowcipy</item>
+        <item quantity="few">%d dowcipy</item>
+        <item quantity="many">%d dowcipów</item>
+        <item quantity="other">%d dowcipów</item>
+    </plurals>
+    <plurals name="starred_joke_count">
+        <item quantity="zero">%d ulubionych</item>
+        <item quantity="one">%d ulubiony</item>
+        <item quantity="two">%d ulubione</item>
+        <item quantity="few">%d ulubione</item>
+        <item quantity="many">%d ulubionych</item>
+        <item quantity="other">%d ulubionych</item>
+    </plurals>
 
     <!-- Override CardsLib defaults -->
     <string name="list_card_undo_title">Cofnij</string>

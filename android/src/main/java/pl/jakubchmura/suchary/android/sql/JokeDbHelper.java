@@ -2,6 +2,7 @@ package pl.jakubchmura.suchary.android.sql;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteConstraintException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.joke.Joke;
 
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_ALL;
@@ -41,8 +43,11 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "Suchary.db";
 
+    private Context mContext;
+
     public JokeDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
@@ -74,6 +79,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     null,
                     values);
             db.close();
+            notifyCount();
         }
     }
 
@@ -109,6 +115,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
             db.endTransaction();
 
             db.close();
+            notifyCount();
         }
     }
 
@@ -268,6 +275,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     new String[]{joke.getKey()}
             );
             db.close();
+            notifyCount();
         }
     }
 
@@ -294,11 +302,24 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    public JokeCount getJokeCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        long total = 0;
+        long starred = 0;
+        if (db != null) {
+            total = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
+            starred = DatabaseUtils.queryNumEntries(db, TABLE_NAME, COLUMN_NAME_STAR + " = 1");
+            db.close();
+        }
+        return new JokeCount(total, starred);
+    }
+
     public void deleteJoke(String key) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME_KEY + " = ?", new String[]{key});
             db.close();
+            notifyCount();
         }
     }
 
@@ -310,6 +331,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         if (db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME_KEY + " IN (" + new String(new char[keys.length - 1]).replace("\0", "?,") + "?)", keys);
             db.close();
+            notifyCount();
         }
     }
 
@@ -318,6 +340,13 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         if (db != null) {
             db.delete(TABLE_NAME, null, null);
             db.close();
+            notifyCount();
         }
+    }
+
+    private void notifyCount() {
+        Intent intent = new Intent();
+        intent.setAction(MainActivity.ACTION_JOKE_COUNT);
+        mContext.sendBroadcast(intent);
     }
 }
