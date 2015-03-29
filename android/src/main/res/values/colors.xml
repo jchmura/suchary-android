@@ -29,13 +29,4 @@
     <color name="card_body_text">#f0000000</color>
     <color name="date_expand">@color/card_body_text</color>
     <color name="card_list_view_background">@color/blue_grey_50</color>
-
-    <color name="drawer_background">@android:color/white</color>
-    <color name="drawer_item_background">@android:color/white</color>
-    <color name="drawer_item_background_pressed">#dfdfdf</color>
-    <color name="drawer_item_background_activated">#ededed</color>
-    <color name="drawer_footer_divider">#e5e5e5</color>
-
-    <color name="notification_lights">#ffff7f00</color>
-
 </resources>

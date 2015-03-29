@@ -5,50 +5,51 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.crashlytics.android.Crashlytics;
+import com.heinrichreimersoftware.materialdrawer.DrawerView;
+import com.heinrichreimersoftware.materialdrawer.structure.DrawerItem;
+import com.heinrichreimersoftware.materialdrawer.structure.DrawerProfile;
 
+import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
 import pl.jakubchmura.suchary.android.gcm.NewJokeNotification;
 import pl.jakubchmura.suchary.android.search.SearchActivity;
+import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
 
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity {
 
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
     public static final String ACTION_DELETE_JOKE = "action_delete_joke";
 
-    public static final int TOOLBAR_HEIGHT = 56;
-    public static final int MAXIMUM_DRAWER_WIDTH = 320;
+    private static final String DRAWER_LAST_ITEM = "drawer_last_item";
 
     private static final String TAG = "MainActivity";
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private String mTitle;
     private int mFragmentNumber;
     private JokesBaseFragment<MainActivity> mFragment;
+    private DrawerView mDrawer;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private int mDrawerItemSelected = 0;
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -76,8 +77,8 @@ public class MainActivity extends ActionBarActivity
 
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerView) findViewById(R.id.drawer);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,26 +89,25 @@ public class MainActivity extends ActionBarActivity
             actionBar.setHomeButtonEnabled(true);
         }
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        setNavigationDrawerWidth();
+        setUpDrawer(savedInstanceState);
     }
 
-    private void setNavigationDrawerWidth() {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int dpWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) + 0.5);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
 
-        View view = mNavigationDrawerFragment.getView();
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        layoutParams.width = dpWidth - TOOLBAR_HEIGHT;
-        if (layoutParams.width > MAXIMUM_DRAWER_WIDTH) {
-            layoutParams.width = MAXIMUM_DRAWER_WIDTH;
+    private boolean isDrawerOpen() {
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mDrawer);
+    }
+
+    private void selectItem(int position) {
+        mDrawer.selectItem(position);
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mDrawer);
         }
-        layoutParams.width = (int) ((layoutParams.width * displayMetrics.density) + 0.5);
-        view.setLayoutParams(layoutParams);
+        onNavigationDrawerItemSelected(position);
     }
 
     @Override
@@ -144,12 +144,17 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onStop() {
-        mNavigationDrawerFragment.close();
         super.onStop();
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void onNavigationDrawerItemSelected(int position) {
+        mDrawerItemSelected = position;
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
@@ -167,6 +172,85 @@ public class MainActivity extends ActionBarActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
                 .commit();
+    }
+
+    private void setUpDrawer(Bundle savedInstanceState) {
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        ) {
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, 0);
+            }
+        };
+
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(mDrawer);
+            }
+        });
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.closeDrawer(mDrawer);
+
+        mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.section_new)).setImage(getResources().getDrawable(R.drawable.ic_whatshot_black_18dp)));
+        mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.section_starred)).setImage(getResources().getDrawable(R.drawable.ic_favorite_black_18dp)));
+        mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.section_random)).setImage(getResources().getDrawable(R.drawable.ic_shuffle_black_18dp)));
+
+        mDrawer.addDivider();
+
+        mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_settings)).setImage(getResources().getDrawable(R.drawable.ic_settings_black_18dp)));
+        mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_about)).setImage(getResources().getDrawable(R.drawable.ic_help_black_18dp)));
+
+        mDrawer.setProfile(new DrawerProfile().setName(getString(R.string.app_name)).setBackground(getResources().getDrawable(R.drawable.profile_background)));
+
+        mDrawer.setOnItemClickListener(new DrawerItem.OnItemClickListener() {
+            @Override
+            public void onClick(DrawerItem item, int id, int position) {
+                switch (position) {
+                    case 0:
+                    case 1:
+                    case 2:
+                        selectItem(position);
+                        break;
+                    case 4:
+                        if (isDrawerOpen()) {
+                            mDrawerLayout.closeDrawer(mDrawer);
+                        }
+                        startActivity(new Intent(MainActivity.this, Settings.class));
+                        break;
+                    case 5:
+                        if (isDrawerOpen()) {
+                            mDrawerLayout.closeDrawer(mDrawer);
+                        }
+                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                        break;
+                }
+            }
+        });
+
+        if (savedInstanceState != null) {
+            mDrawerItemSelected = savedInstanceState.getInt(DRAWER_LAST_ITEM, 0);
+        } else {
+            selectItem(0);
+        }
+        mDrawer.selectItem(mDrawerItemSelected);
     }
 
     public void onSectionAttached(int number) {
@@ -195,7 +279,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (!isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
@@ -238,10 +322,12 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        // int id = item.getItemId();
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle other action bar items...
         return super.onOptionsItemSelected(item);
     }
 
@@ -251,6 +337,12 @@ public class MainActivity extends ActionBarActivity
         appData.putInt(SearchActivity.FRAGMENT_NUMBER, mFragmentNumber);
         startSearch(null, false, appData, false);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(DRAWER_LAST_ITEM, mDrawerItemSelected);
     }
 
     private void setTitle() {
