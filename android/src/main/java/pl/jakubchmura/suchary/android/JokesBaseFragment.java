@@ -360,6 +360,12 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
+                // fix SwipeRefreshLayout starting too soon
+                if (mSwipeRefresh != null) {
+                    int topRowVerticalPosition = (mCardListView == null || mCardListView.getChildCount() == 0) ? 0 : mCardListView.getChildAt(0).getTop();
+                    mSwipeRefresh.setEnabled(topRowVerticalPosition >= 0);
+                }
+
                 if (firstVisibleItem == 1 && mCroutonNew != null) {
                     mCroutonNew.hide();
                 }
