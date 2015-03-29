@@ -90,4 +90,5 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.2.2@aar') {
         transitive = true;
     }
+    compile 'com.heinrichreimersoftware.materialdrawer:library:1.4.2'
 }
