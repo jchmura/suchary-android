@@ -13,7 +13,11 @@
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme">
+    <style name="AppThemeWithNavDrawer" parent="BaseTheme">
+
+    </style>
+
+    <style name="AppThemeWithoutNavDrawer" parent="BaseTheme">
 
     </style>
 
