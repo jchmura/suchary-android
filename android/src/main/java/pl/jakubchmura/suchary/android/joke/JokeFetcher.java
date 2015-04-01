@@ -41,6 +41,7 @@ public class JokeFetcher {
     private boolean mGettingFromDB;
     private boolean mCanGetOlder = true;
     private boolean mRandom = false;
+    private boolean mOnlyStarred = false;
 
     public JokeFetcher(Context context, SpiceManager spiceManager, JokesBaseFragment<?> callback) {
         mContext = context;
@@ -189,11 +190,16 @@ public class JokeFetcher {
         new AsyncTask<Void, Integer, Void>() {
             @Override
             protected final Void doInBackground(Void... params) {
+                Log.d(TAG, "getJokesFromDatabaseBefore " + date + " with limit " + limit + ". Show only starred? " + mOnlyStarred);
                 mGettingFromDB = true;
                 JokeDbHelper helper = new JokeDbHelper(mContext);
-                List<Joke> jokes;
-                jokes = helper.getBefore(date, limit);
+                List<Joke> jokes = helper.getBefore(date, limit, mOnlyStarred);
                 mJokes.addAll(jokes);
+
+                if (jokes.isEmpty()) {
+                    mCanGetOlder = false;
+                }
+
                 return null;
             }
 
@@ -216,10 +222,10 @@ public class JokeFetcher {
         new AsyncTask<Void, Integer, List<Joke>>() {
             @Override
             protected final List<Joke> doInBackground(Void... params) {
+                Log.d(TAG, "getJokesFromDatabaseAfter " + date + " with limit " + limit);
                 mGettingFromDB = true;
                 JokeDbHelper helper = new JokeDbHelper(mContext);
-                List<Joke> jokes;
-                jokes = helper.getAfter(date, limit);
+                List<Joke> jokes = helper.getAfter(date, limit);
                 Log.d(TAG, "Found " + jokes.size() + " new jokes in DB");
                 return jokes;
             }
@@ -389,5 +395,9 @@ public class JokeFetcher {
 
     public void setRandom(boolean random) {
         mRandom = random;
+    }
+
+    public void setOnlyStarred(boolean onlyStarred) {
+        mOnlyStarred = onlyStarred;
     }
 }

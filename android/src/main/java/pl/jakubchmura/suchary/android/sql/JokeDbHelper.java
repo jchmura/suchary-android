@@ -19,12 +19,14 @@ import org.jetbrains.annotations.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.joke.Joke;
+import roboguice.util.temp.Strings;
 
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_ALL;
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_NAME_BODY;
@@ -38,6 +40,8 @@ import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.TABLE_NA
 
 
 public class JokeDbHelper extends SQLiteOpenHelper {
+
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final String TAG = "JokeDbHelper";
     private static final int DATABASE_VERSION = 1;
@@ -201,19 +205,22 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    public List<Joke> getBefore(Date date, Integer count) {
-        String selection = null;
-        String[] selectionArgs = null;
+    public List<Joke> getBefore(Date date, Integer count, boolean onlyStarred) {
+        List<String> selection = new LinkedList<>();
+        List<String> selectionArgs = new LinkedList<>();
         if (date != null) {
-            selection = COLUMN_NAME_DATE + " < ?";
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            selectionArgs = new String[]{dateFormat.format(date)};
+            selection.add(COLUMN_NAME_DATE + " < ?");
+            selectionArgs.add(DATE_FORMAT.format(date));
+        }
+        if (onlyStarred) {
+            selection.add(COLUMN_NAME_STAR + " = ?");
+            selectionArgs.add("1");
         }
         String limit;
         if (count != null) limit = String.valueOf(count);
         else limit = null;
 
-        return getJokes(selection, selectionArgs, COLUMN_NAME_DATE + " DESC", limit);
+        return getJokes(Strings.join(" AND ", selection), selectionArgs.toArray(new String[selectionArgs.size()]), COLUMN_NAME_DATE + " DESC", limit);
     }
 
     @NotNull
@@ -222,8 +229,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         String[] selectionArgs = null;
         if (date != null) {
             selection = COLUMN_NAME_DATE + " > ?";
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            selectionArgs = new String[]{dateFormat.format(date)};
+            selectionArgs = new String[]{DATE_FORMAT.format(date)};
         }
         String limit = null;
         if (count != null) limit = String.valueOf(count);
