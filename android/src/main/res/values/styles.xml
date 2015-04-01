@@ -21,6 +21,10 @@
 
     </style>
 
+    <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">19sp</item>
+    </style>
+
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="searchIcon">@drawable/ic_search_white_24dp</item>
         <item name="closeIcon">@drawable/ic_close_white_24dp</item>
