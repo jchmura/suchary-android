@@ -36,7 +36,7 @@
             android:positiveButtonText="@null"
             android:title="@string/pref_notif_color"
             app:cal_itemLayout="@layout/calendar_grid_item_color"
-            app:cal_numColumns="5" />
+            app:cal_numColumns="4" />
 
         <pl.jakubchmura.suchary.android.settings.TestNotificationPreference
             android:dependency="pref_notif"
