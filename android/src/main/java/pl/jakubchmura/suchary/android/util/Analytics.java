@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -18,16 +19,24 @@ public class Analytics {
     }
 
     public static void setId(String id) {
-        if (mApplication != null) {
-            mApplication.getTracker().setClientId(id);
+        try {
+            if (mApplication != null) {
+                mApplication.getTracker().setClientId(id);
+            }
+        } catch (Throwable th) {
+            Crashlytics.logException(th);
         }
     }
 
     public static void setScreenName(String name) {
         if (mApplication != null) {
-            Tracker tracker = mApplication.getTracker();
-            tracker.setScreenName(name);
-            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.setScreenName(name);
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -37,8 +46,12 @@ public class Analytics {
             builder.setCategory("Actionbar")
                     .setAction("Search")
                     .setLabel(query);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -47,8 +60,12 @@ public class Analytics {
             HitBuilders.EventBuilder builder = new HitBuilders.EventBuilder();
             builder.setCategory("Actionbar")
                     .setAction("Shuffle");
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -59,8 +76,12 @@ public class Analytics {
                     .setVariable(variable)
                     .setLabel(label)
                     .setValue(value);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -70,8 +91,12 @@ public class Analytics {
             builder.setCategory("Expand")
                     .setAction("Favorite")
                     .setLabel(label);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -81,8 +106,12 @@ public class Analytics {
             builder.setCategory("Expand")
                     .setAction("Original")
                     .setLabel(label);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -92,8 +121,12 @@ public class Analytics {
             builder.setCategory("Expand")
                     .setAction("Share")
                     .setLabel(label);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
@@ -102,8 +135,12 @@ public class Analytics {
             HitBuilders.ExceptionBuilder builder = new HitBuilders.ExceptionBuilder();
             builder.setDescription(description)
                     .setFatal(isFatal);
-            Tracker tracker = mApplication.getTracker();
-            tracker.send(builder.build());
+            try {
+                Tracker tracker = mApplication.getTracker();
+                tracker.send(builder.build());
+            } catch (Throwable th) {
+                Crashlytics.logException(th);
+            }
         }
     }
 
