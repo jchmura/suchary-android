@@ -103,6 +103,8 @@ public class MainActivity extends ActionBarActivity {
         }
 
         setUpDrawer(savedInstanceState);
+        ActionBarTitle actionBarTitle = new ActionBarTitle(this);
+        actionBarTitle.setTitle(R.string.app_name);
     }
 
     @Override
