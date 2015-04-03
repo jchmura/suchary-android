@@ -29,7 +29,10 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
             mRootView = inflater.inflate(R.layout.fragment_search, container, false);
             saved = false;
         } else {
-            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+            ViewGroup parent = (ViewGroup) mRootView.getParent();
+            if (parent != null) {
+                parent.removeView(mRootView);
+            }
         }
 
         Bundle arguments = getArguments();

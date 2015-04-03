@@ -4,45 +4,36 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.RingtoneManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
-import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.R;
-import pl.jakubchmura.suchary.android.joke.Joke;
-import pl.jakubchmura.suchary.android.joke.api.DownloadAllJokes;
-import pl.jakubchmura.suchary.android.joke.api.DownloadJoke;
-import pl.jakubchmura.suchary.android.joke.api.DownloadJokes;
-import pl.jakubchmura.suchary.android.settings.SettingsFragment;
-import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeResolver;
+import pl.jakubchmura.suchary.android.joke.api.model.APIResult;
+import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
+import pl.jakubchmura.suchary.android.joke.api.network.requests.ChangedJokesRequest;
 
 /**
  * An {@link android.app.IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  */
-public class GcmIntentService extends IntentService implements DownloadJokes.DownloadJokesCallback,
-        DownloadJoke.DownloadJokeCallback, DownloadAllJokes.DownloadAllJokesCallback {
+public class GcmIntentService extends IntentService {
 
-    public static final String PREFS_NAME = "gcm_jokes";
-    public static final String EDIT_JOKE = "edit_joke";
-    public static final String DELETE_JOKE = "delete_joke";
     private static final String TAG = "IntentService";
     private static boolean mHandling = false;
     private Intent mIntent;
+    private SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -50,6 +41,11 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (mSpiceManager.isStarted()) {
+            return;
+        }
+
+        mSpiceManager.start(this);
         mIntent = intent;
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
@@ -73,14 +69,8 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
                     String type = extras.getString("type");
                     Log.i(TAG, "Received GCM message: " + type);
                     switch (type) {
-                        case "new":
-                            handleNewJokes();
-                            break;
-                        case "edit":
-                            handleEditJoke(extras);
-                            break;
-                        case "delete":
-                            handleDeleteJoke(extras);
+                        case "change":
+                            handleChangedJokes();
                             break;
                         case "message":
                             handleMessage(extras);
@@ -93,31 +83,31 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         }
     }
 
-    private void handleNewJokes() {
+    private void handleChangedJokes() {
         if (mHandling) {
             GcmBroadcastReceiver.completeWakefulIntent(mIntent);
             return;
         }
         mHandling = true;
-        getNewer();
+        getChanged();
     }
 
+    private void getChanged() {
+        final Date lastChange = ChangeResolver.getLastChange(this);
+        ChangedJokesRequest request = new ChangedJokesRequest(lastChange, new CountDownLatch(0));
+        mSpiceManager.execute(request, new RequestListener<APIResult.APIJokes>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {}
 
-    private void handleEditJoke(Bundle extras) {
-        String key = extras.getString("key");
-        if (key != null) {
-            String url = getString(R.string.api_url) + "/" + key;
-            DownloadJoke downloadJoke = new DownloadJoke(this, this);
-            downloadJoke.execute(url);
-        }
-    }
-
-    private void handleDeleteJoke(Bundle extras) {
-        String key = extras.getString("key");
-        if (key != null) {
-            removeJokeInDatabase(key);
-            addDeletedJokeToPrefs(key);
-        }
+            @Override
+            public void onRequestSuccess(APIResult.APIJokes apiJokes) {
+                ChangeResolver resolver = new ChangeResolver(apiJokes, lastChange);
+                ChangeHandler handler = new ChangeHandler(GcmIntentService.this);
+                handler.handleAll(resolver, true);
+                ChangeResolver.saveLastChange(GcmIntentService.this, apiJokes.getLastChange());
+                finish();
+            }
+        });
     }
 
     private void handleMessage(Bundle extras) {
@@ -135,187 +125,11 @@ public class GcmIntentService extends IntentService implements DownloadJokes.Dow
         nm.notify("Suchary message", 0, builder.build());
     }
 
-    @Override
-    public void getAPIJokesResult(List<Joke> jokes) {
-        addJokesToDatabase(jokes);
-    }
-
-    @Override
-    public void getAPIJokeResult(Joke joke) {
-        addEditedJokeToPrefs(joke);
-        updateJokeInDatabase(joke);
-    }
-
-    private void getNewer() {
-        new AsyncTask<Void, Integer, Joke>() {
-            @Override
-            protected final Joke doInBackground(Void... params) {
-                JokeDbHelper helper = new JokeDbHelper(GcmIntentService.this);
-                Joke newestJoke = helper.getNewest();
-                if (newestJoke != null) {
-                    return newestJoke;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Joke joke) {
-                if (joke != null) {
-                    downloadNewer(joke.getDate());
-                } else {
-                    finish();
-                }
-            }
-        }.execute((Void) null);
-    }
-
-    private void downloadNewer(Date date) {
-        String url = getString(R.string.api_url);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
-        String first_date = dateFormat.format(date);
-        try {
-            url += "?after=" + URLEncoder.encode(first_date, "UTF-8");
-            DownloadAllJokes download = new DownloadAllJokes(this, this);
-            download.execute(url);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            finish();
-        }
-    }
-
-
-    @Override
-    public void getAPIAllResult(List<Joke> jokes) {
-        if (jokes.size() > 0) {
-            jokes.remove(jokes.size() - 1);
-        }
-        if (!jokes.isEmpty()) {
-            Joke last = jokes.get(jokes.size() - 1);
-            addJokesToDatabase(jokes);
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
-            if (notification) {
-                NewJokeNotification.notify(this, last.getBody(), jokes.size());
-            }
-        } else {
-            finish();
-        }
-    }
-
-    private void addJokesToDatabase(List<Joke> jokes) {
-        new AsyncTask<List<Joke>, Integer, Void>() {
-            @SafeVarargs
-            @Override
-            protected final Void doInBackground(List<Joke>... params) {
-                JokeDbHelper helper = new JokeDbHelper(GcmIntentService.this);
-                helper.createJokes(params[0]);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Intent intent = new Intent();
-                intent.setAction(MainActivity.ACTION_NEW_JOKE);
-                sendBroadcast(intent);
-                finish();
-            }
-        }.execute(jokes);
-    }
-
-    private void updateJokesInDatabase(List<Joke> jokes) {
-        new AsyncTask<List<Joke>, Integer, Void>() {
-            @SafeVarargs
-            @Override
-            protected final Void doInBackground(List<Joke>... params) {
-                JokeDbHelper helper = new JokeDbHelper(GcmIntentService.this);
-
-                List<Joke> newJokes = params[0];
-                int size = newJokes.size();
-                String[] keys = new String[size];
-
-                for (int i = 0; i < size; i++) {
-                    keys[i] = newJokes.get(i).getKey();
-                }
-                List<Joke> oldJokes = helper.getJokes(keys, true);
-
-                for (int i = 0; i < size; i++) {
-                    Joke oldJoke = oldJokes.get(i);
-                    if (oldJoke != null) newJokes.get(i).setStar(oldJoke.isStar());
-                }
-                helper.updateJokes(newJokes);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Intent intent = new Intent();
-                intent.setAction(MainActivity.ACTION_EDIT_JOKE);
-                sendBroadcast(intent);
-                GcmBroadcastReceiver.completeWakefulIntent(mIntent);
-            }
-        }.execute(jokes);
-    }
-
-    private void removeJokeInDatabase(String key) {
-        new AsyncTask<String, Integer, Void>() {
-            @Override
-            protected final Void doInBackground(String... params) {
-                JokeDbHelper helper = new JokeDbHelper(GcmIntentService.this);
-                helper.deleteJoke(params[0]);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Intent intent = new Intent();
-                intent.setAction(MainActivity.ACTION_DELETE_JOKE);
-                sendBroadcast(intent);
-                GcmBroadcastReceiver.completeWakefulIntent(mIntent);
-            }
-        }.execute(key);
-    }
-
-    private void updateJokeInDatabase(Joke joke) {
-        List<Joke> jokes = new ArrayList<>();
-        jokes.add(joke);
-        updateJokesInDatabase(jokes);
-    }
-
-    private void addEditedJokeToPrefs(Joke joke) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
-        String edited = sharedPreferences.getString(EDIT_JOKE, "");
-        edited += " " + joke.getKey();
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(EDIT_JOKE, edited);
-        editor.apply();
-    }
-
-    private void addDeletedJokeToPrefs(String key) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
-        String deleted = sharedPreferences.getString(DELETE_JOKE, "");
-        deleted += " " + key;
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(DELETE_JOKE, deleted);
-        editor.apply();
-    }
-
     private void finish() {
         mHandling = false;
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
         GcmBroadcastReceiver.completeWakefulIntent(mIntent);
-    }
-
-    @Override
-    public void errorDownloadingAll() {
-        finish();
-    }
-
-    @Override
-    public void setMaxProgress(int i) {
-    }
-
-    @Override
-    public void incrementProgress(int i) {
     }
 }

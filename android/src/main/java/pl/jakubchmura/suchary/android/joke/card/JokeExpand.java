@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import it.gmariotti.cardslib.library.internal.CardExpand;
@@ -40,7 +41,7 @@ public class JokeExpand extends CardExpand {
 
         TextView tvDate = (TextView) view.findViewById(R.id.date);
         if (tvDate != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy");
+            DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG);
             tvDate.setText(dateFormat.format(mJoke.getDate()));
             tvDate.setTypeface(typeface);
         }

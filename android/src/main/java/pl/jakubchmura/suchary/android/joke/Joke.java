@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pl.jakubchmura.suchary.android.joke.api.model.APIJoke;
 import pl.jakubchmura.suchary.android.sql.JokeContract;
 
 public class Joke implements Parcelable, Comparable<Joke> {
@@ -87,6 +88,10 @@ public class Joke implements Parcelable, Comparable<Joke> {
         mUrl = stringArray[3];
         mBody = stringArray[4];
         mSite = stringArray[5];
+    }
+
+    public Joke(APIJoke apiJoke) {
+        this(apiJoke.getKey(), apiJoke.getVotes(), apiJoke.getAdded(), apiJoke.getUrl(), apiJoke.getBody(), apiJoke.getSite());
     }
 
     @Override

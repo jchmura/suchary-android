@@ -6,24 +6,30 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.Space;
 
+import com.octo.android.robospice.SpiceManager;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import it.gmariotti.cardslib.library.view.listener.SwipeOnScrollListener;
-import pl.jakubchmura.suchary.android.gcm.GcmIntentService;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.JokeFetcher;
+import pl.jakubchmura.suchary.android.joke.api.changes.ChangeHandler;
+import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
@@ -31,10 +37,12 @@ import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
 public abstract class JokesBaseFragment<ActivityClass extends Activity> extends Fragment {
 
     private static final String TAG = "JokesBaseFragment";
-    private static final String PREFS_NAME = GcmIntentService.PREFS_NAME;
-    private static final String EDIT_JOKE = GcmIntentService.EDIT_JOKE;
-    private static final String DELETE_JOKE = GcmIntentService.DELETE_JOKE;
-    private boolean showCrouton = false;
+    private static final String PREFS_NAME = ChangeHandler.PREFS_NAME;
+    private static final String EDIT_JOKE = ChangeHandler.EDIT_JOKE;
+    private static final String DELETE_JOKE = ChangeHandler.DELETE_JOKE;
+    private boolean showCroutonNew = false;
+    private Crouton mCroutonOffline = null;
+
 
     /**
      * Activity which attached this fragment
@@ -91,6 +99,16 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     private Crouton mCroutonNew;
 
+    /**
+     * SpiceManager used for downloading content from the server
+     */
+    protected SpiceManager mSpiceManager = new SpiceManager(JokeRetrofitSpiceService.class);
+
+    /**
+     * CyclicBarrier used for checking the database for changes before requesting them from the server
+     */
+    protected CountDownLatch mCountDownLatch = new CountDownLatch(0);
+
     public JokesBaseFragment() {
     }
 
@@ -98,6 +116,23 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = (ActivityClass) activity;
+        if (mFetcher != null) {
+            mFetcher.setContext(mActivity);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSpiceManager.start(getActivity());
+    }
+
+    @Override
+    public void onStop() {
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
+        super.onStop();
     }
 
     @Override
@@ -113,7 +148,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         if (!saved) {
             mCardListView = (CardListView) mRootView.findViewById(R.id.cardList);
             mProgress = (ProgressBar) mRootView.findViewById(R.id.progress);
-            mFetcher = new JokeFetcher(mActivity, this);
+            mFetcher = new JokeFetcher(mActivity, mSpiceManager, this);
 
             setScrollListener();
         }
@@ -134,18 +169,24 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mAdapter.addAll(cards);
                 mAdapter.notifyDataSetChanged();
             } else {
-//                mHeaderView = new Space(mActivity);
-//                mHeaderView.setMinimumHeight(10);
-//                mCardListView.addHeaderView(mHeaderView);
-//
                 mFooterView = new ProgressBar(mActivity);
                 mCardListView.addFooterView(mFooterView);
                 hideProgress();
 
                 mAdapter = new JokeCardArrayAdapter(mActivity, cards);
                 mCardListView.setAdapter(mAdapter);
+                mCountDownLatch.countDown();
             }
         }
+    }
+
+    /**
+     * Whether to show new jokes at the top
+     *
+     * @return can add new jokes to the top
+     */
+    protected boolean showNewJokes() {
+        return false;
     }
 
     /**
@@ -166,9 +207,9 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             }
             if (move && size > 0) {
                 mCardListView.setSelection(start + size);
-                if (showCrouton) {
+                if (showCroutonNew) {
                     showCroutonNew(size);
-                    showCrouton = false;
+                    showCroutonNew = false;
                 }
             }
         }
@@ -183,7 +224,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.deep_orange_500).build();
         Configuration configuration = new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE).build();
         String croutonText = mActivity.getResources().getQuantityString(R.plurals.new_joke_notification, size, size);
-        mCroutonNew = Crouton.makeText(mActivity, croutonText, style);
+        mCroutonNew = Crouton.makeText(mActivity, croutonText, style, (android.view.ViewGroup) mRootView);
         mCroutonNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,6 +237,24 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
         mCroutonNew.show();
     }
 
+    public void showCroutonOffline() {
+        if (mCroutonOffline == null) {
+            @SuppressLint("ResourceAsColor") Style style = new Style.Builder().setBackgroundColor(R.color.indigo_600).build();
+            mCroutonOffline = Crouton.makeText((Activity) mActivity, R.string.no_internet_connection, style);
+            mCroutonOffline.setLifecycleCallback(new LifecycleCallback() {
+                @Override
+                public void onDisplayed() {
+                }
+
+                @Override
+                public void onRemoved() {
+                    mCroutonOffline = null;
+                }
+            });
+            mCroutonOffline.show();
+        }
+    }
+
     /**
      * Replace jokes with modified version of them.
      *
@@ -203,9 +262,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void replaceJokes(List<Joke> jokes) {
         if (mAdapter == null) {
+            Log.d(TAG, "Adapter is not set yet, cards can't be replaced");
             return;
         }
 
+        int successfullyReplaced = 0;
         for (Joke joke : jokes) {
             JokeCard card = mAdapter.getCard(joke.getKey());
             if (card != null) {
@@ -215,9 +276,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                     cardView.replaceCard(newCard);
                     card.setJoke(joke);
                     mAdapter.notifyDataSetChanged();
+                    successfullyReplaced++;
                 }
             }
         }
+        Log.d(TAG, "Successfully replaced " + successfullyReplaced + " joke(s) out of " + jokes.size());
     }
 
     /**
@@ -227,15 +290,19 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     public void deleteJokes(String[] keys) {
         if (mAdapter == null) {
+            Log.d(TAG, "Adapter is not set yet, cards can't be deleted");
             return;
         }
 
+        int successfullyDeleted = 0;
         for (String key : keys) {
             JokeCard card = mAdapter.getCard(key);
             if (card != null) {
                 mAdapter.remove(card);
+                successfullyDeleted++;
             }
         }
+        Log.d(TAG, "Successfully deleted " + successfullyDeleted + " joke(s) out of " + keys.length);
     }
 
     /**
@@ -293,6 +360,12 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
+                // fix SwipeRefreshLayout starting too soon
+                if (mSwipeRefresh != null) {
+                    int topRowVerticalPosition = (mCardListView == null || mCardListView.getChildCount() == 0) ? 0 : mCardListView.getChildAt(0).getTop();
+                    mSwipeRefresh.setEnabled(topRowVerticalPosition >= 0);
+                }
+
                 if (firstVisibleItem == 1 && mCroutonNew != null) {
                     mCroutonNew.hide();
                 }
@@ -321,8 +394,12 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      * Check for newer jokes in DB.
      */
     public void checkNewJokes() {
-        showCrouton = true;
-        mFetcher.getNewerFromDB();
+        if (showNewJokes()) {
+            showCroutonNew = true;
+            mFetcher.getNewerFromDB();
+        } else {
+            mCountDownLatch.countDown();
+        }
     }
 
     /**
@@ -337,6 +414,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(EDIT_JOKE, "");
             editor.apply();
+        } else {
+            mCountDownLatch.countDown();
         }
     }
 
@@ -352,6 +431,8 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(DELETE_JOKE, "");
             editor.apply();
+        } else {
+            mCountDownLatch.countDown();
         }
     }
 
@@ -367,6 +448,11 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
                 mFetcher.getNewer();
             }
         });
+    }
+
+
+    public CountDownLatch getCountDownLatch() {
+        return mCountDownLatch;
     }
 
     /**

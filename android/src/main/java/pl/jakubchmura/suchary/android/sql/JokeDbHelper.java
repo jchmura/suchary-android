@@ -2,6 +2,7 @@ package pl.jakubchmura.suchary.android.sql;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteConstraintException;
@@ -18,11 +19,14 @@ import org.jetbrains.annotations.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.joke.Joke;
+import roboguice.util.temp.Strings;
 
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_ALL;
 import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.COLUMN_NAME_BODY;
@@ -37,12 +41,17 @@ import static pl.jakubchmura.suchary.android.sql.JokeContract.FeedEntry.TABLE_NA
 
 public class JokeDbHelper extends SQLiteOpenHelper {
 
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private static final String TAG = "JokeDbHelper";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "Suchary.db";
 
+    private Context mContext;
+
     public JokeDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
@@ -74,6 +83,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     null,
                     values);
             db.close();
+            notifyCount();
         }
     }
 
@@ -109,6 +119,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
             db.endTransaction();
 
             db.close();
+            notifyCount();
         }
     }
 
@@ -194,19 +205,22 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    public List<Joke> getBefore(Date date, Integer count) {
-        String selection = null;
-        String[] selectionArgs = null;
+    public List<Joke> getBefore(Date date, Integer count, boolean onlyStarred) {
+        List<String> selection = new LinkedList<>();
+        List<String> selectionArgs = new LinkedList<>();
         if (date != null) {
-            selection = COLUMN_NAME_DATE + " < ?";
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            selectionArgs = new String[]{dateFormat.format(date)};
+            selection.add(COLUMN_NAME_DATE + " < ?");
+            selectionArgs.add(DATE_FORMAT.format(date));
+        }
+        if (onlyStarred) {
+            selection.add(COLUMN_NAME_STAR + " = ?");
+            selectionArgs.add("1");
         }
         String limit;
         if (count != null) limit = String.valueOf(count);
         else limit = null;
 
-        return getJokes(selection, selectionArgs, COLUMN_NAME_DATE + " DESC", limit);
+        return getJokes(Strings.join(" AND ", selection), selectionArgs.toArray(new String[selectionArgs.size()]), COLUMN_NAME_DATE + " DESC", limit);
     }
 
     @NotNull
@@ -215,8 +229,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         String[] selectionArgs = null;
         if (date != null) {
             selection = COLUMN_NAME_DATE + " > ?";
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            selectionArgs = new String[]{dateFormat.format(date)};
+            selectionArgs = new String[]{DATE_FORMAT.format(date)};
         }
         String limit = null;
         if (count != null) limit = String.valueOf(count);
@@ -268,6 +281,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
                     new String[]{joke.getKey()}
             );
             db.close();
+            notifyCount();
         }
     }
 
@@ -294,11 +308,36 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    public JokeCount getJokeCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        long total = 0;
+        long starred = 0;
+        if (db != null) {
+            total = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
+            starred = DatabaseUtils.queryNumEntries(db, TABLE_NAME, COLUMN_NAME_STAR + " = 1");
+            db.close();
+        }
+        return new JokeCount(total, starred);
+    }
+
     public void deleteJoke(String key) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME_KEY + " = ?", new String[]{key});
             db.close();
+            notifyCount();
+        }
+    }
+
+    public void deleteJokes(String[] keys) {
+        if (keys.length == 0) {
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        if (db != null) {
+            db.delete(TABLE_NAME, COLUMN_NAME_KEY + " IN (" + new String(new char[keys.length - 1]).replace("\0", "?,") + "?)", keys);
+            db.close();
+            notifyCount();
         }
     }
 
@@ -307,6 +346,13 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         if (db != null) {
             db.delete(TABLE_NAME, null, null);
             db.close();
+            notifyCount();
         }
+    }
+
+    private void notifyCount() {
+        Intent intent = new Intent();
+        intent.setAction(MainActivity.ACTION_JOKE_COUNT);
+        mContext.sendBroadcast(intent);
     }
 }

@@ -1,6 +1,5 @@
 package pl.jakubchmura.suchary.android.gcm;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -199,11 +198,11 @@ public class GcmRegistration {
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext);
         if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, (Activity) mContext,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            if (!GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                Log.w(TAG, "This device is not supported.");
+                Analytics.setError("This device is not supported by Google Play Services");
             } else {
-                Log.i(TAG, "This device is not supported.");
+                Analytics.setError("This device does not have installed Google Play Services");
             }
             return false;
         }

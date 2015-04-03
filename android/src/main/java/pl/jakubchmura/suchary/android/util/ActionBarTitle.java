@@ -1,6 +1,7 @@
 package pl.jakubchmura.suchary.android.util;
 
 import android.os.Build;
+import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -16,7 +17,7 @@ public class ActionBarTitle {
         mActivity = activity;
     }
 
-    public void setTitle(int resource) {
+    public void setTitle(@StringRes int resource) {
         setTitle(mActivity.getString(resource));
     }
 
@@ -54,9 +55,8 @@ public class ActionBarTitle {
     }
 
     private boolean supportSpanTitle() {
-        String manufacturer = android.os.Build.MANUFACTURER;
         int api = Build.VERSION.SDK_INT;
-        return !(manufacturer.toLowerCase().contains("lg") && api == Build.VERSION_CODES.JELLY_BEAN);
+        return api >= Build.VERSION_CODES.JELLY_BEAN_MR2;
     }
 
     private void setScreenName(String name) {

@@ -18,6 +18,7 @@ import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.joke.card.JokeExpand;
+import pl.jakubchmura.suchary.android.sql.JokeCount;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.FontCache;
 
@@ -44,7 +45,10 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
             mRootView = inflater.inflate(R.layout.fragment_starred, container, false);
             saved = false;
         } else {
-            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+            ViewGroup parent = (ViewGroup) mRootView.getParent();
+            if (parent != null) {
+                parent.removeView(mRootView);
+            }
         }
 
         View createdView = createView(saved);
@@ -71,28 +75,28 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
     @Override
     public void addJokesToBottom(List<Joke> jokes) {
         super.addJokesToBottom(jokes);
-        mAdapter.setEnableUndo(true);
-        mDismissAnimation.setup(mAdapter);
+        if (!mAdapter.isEnableUndo()) {
+            mAdapter.setEnableUndo(true);
+            mDismissAnimation.setup(mAdapter);
+        }
     }
 
     protected void getJokes() {
-        new AsyncTask<Void, Void, List<Joke>>() {
+        new AsyncTask<Void, Void, JokeCount>() {
             @Override
-            protected List<Joke> doInBackground(Void... params) {
+            protected JokeCount doInBackground(Void... params) {
                 JokeDbHelper helper = new JokeDbHelper(mActivity);
-                List<Joke> jokes = helper.getStarred();
-                mFetcher.setFetchGetOlder(false);
-                return jokes;
+                return helper.getJokeCount();
             }
 
             @Override
-            protected void onPostExecute(List<Joke> jokes) {
+            protected void onPostExecute(JokeCount jokeCount) {
                 mProgress.setVisibility(View.GONE);
-                if (jokes.size() == 0) {
+                if (jokeCount.getStarred() == 0) {
                     showPlaceholder();
                     setRetainInstance(false);
                 } else {
-                    mFetcher.setJokes(jokes);
+                    mFetcher.setOnlyStarred(true);
                     mFetcher.fetchNext();
                     setRetainInstance(true);
                 }

@@ -18,7 +18,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppThemeWithNavDrawer"
         android:name=".SucharyApp">
         <meta-data
             android:name="com.google.android.gms.version"
@@ -27,7 +27,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="pl.jakubchmura.suchary.android.search.SearchActivity" />
@@ -41,10 +41,11 @@
         <activity
             android:name=".settings.Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeWithoutNavDrawer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pl.jakubchmura.suchary.MainActivity" />
+                android:value="pl.jakubchmura.suchary.android.MainActivity" />
         </activity>
 
         <receiver
@@ -64,10 +65,16 @@
             android:exported="false" >
         </service>
 
+        <service
+            android:name=".joke.api.network.JokeRetrofitSpiceService"
+            android:exported="false" />
+
+
         <activity
             android:name=".search.SearchActivity"
             android:label="@string/title_activity_search"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeWithoutNavDrawer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.jakubchmura.suchary.android.MainActivity" />
@@ -84,7 +91,8 @@
         <activity
             android:name=".about.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeWithoutNavDrawer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.jakubchmura.suchary.android.MainActivity" />

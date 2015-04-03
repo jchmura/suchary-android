@@ -6,7 +6,6 @@
     <!--</style>-->
 
     <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="drawerArrowStyle">@style/MyDrawerArrowToggle</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
         <item name="colorPrimary">@color/indigo_500</item>
         <item name="colorPrimaryDark">@color/indigo_600</item>
@@ -14,12 +13,16 @@
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme">
+    <style name="AppThemeWithNavDrawer" parent="BaseTheme">
 
     </style>
 
-    <style name="MyDrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/action_bar_title</item>
+    <style name="AppThemeWithoutNavDrawer" parent="BaseTheme">
+
+    </style>
+
+    <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">19sp</item>
     </style>
 
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
