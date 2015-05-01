@@ -380,7 +380,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected JokeCount doInBackground(Void... voids) {
-                JokeDbHelper helper = new JokeDbHelper(MainActivity.this);
+                JokeDbHelper helper = JokeDbHelper.getInstance(MainActivity.this);
                 return helper.getJokeCount();
             }
 

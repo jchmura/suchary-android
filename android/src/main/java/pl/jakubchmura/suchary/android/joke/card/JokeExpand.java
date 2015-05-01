@@ -58,7 +58,7 @@ public class JokeExpand extends CardExpand {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            JokeDbHelper helper = new JokeDbHelper(mContext);
+                            JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                             helper.updateJoke(mJoke);
                             return null;
                         }

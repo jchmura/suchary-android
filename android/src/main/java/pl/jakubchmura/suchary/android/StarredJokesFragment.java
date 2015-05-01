@@ -85,7 +85,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         new AsyncTask<Void, Void, JokeCount>() {
             @Override
             protected JokeCount doInBackground(Void... params) {
-                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
                 return helper.getJokeCount();
             }
 
@@ -111,7 +111,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
             @Override
             public void onSwipe(Card card) {
                 joke.setStar(false);
-                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
                 helper.updateJoke(joke);
                 if (mAdapter.getCount() == 0) {
                     showPlaceholder();
@@ -123,7 +123,7 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
             @Override
             public void onUndoSwipe(Card card) {
                 joke.setStar(true);
-                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
                 helper.updateJoke(joke);
                 if (mAdapter.getCount() > 0) {
                     hidePlaceholder();
