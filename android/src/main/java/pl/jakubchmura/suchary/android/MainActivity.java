@@ -239,11 +239,11 @@ public class MainActivity extends ActionBarActivity {
         mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_settings)).setImage(getResources().getDrawable(R.drawable.ic_settings_black_18dp)));
         mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_about)).setImage(getResources().getDrawable(R.drawable.ic_help_black_18dp)));
 
-        mDrawer.setProfile(new DrawerProfile().setName(getString(R.string.app_name)).setBackground(getResources().getDrawable(R.drawable.profile_background)));
+        mDrawer.addProfile(new DrawerProfile().setName(getString(R.string.app_name)).setBackground(getResources().getDrawable(R.drawable.profile_background)));
 
         mDrawer.setOnItemClickListener(new DrawerItem.OnItemClickListener() {
             @Override
-            public void onClick(DrawerItem item, int id, int position) {
+            public void onClick(DrawerItem item, long id, int position) {
                 switch (position) {
                     case 0:
                     case 1:
@@ -391,7 +391,9 @@ public class MainActivity extends ActionBarActivity {
                     Resources resources = getResources();
                     String totalString = resources.getQuantityString(R.plurals.total_joke_count, (int) jokeCount.getTotal(), (int) jokeCount.getTotal());
                     String starredString = resources.getQuantityString(R.plurals.starred_joke_count, (int) jokeCount.getStarred(), (int) jokeCount.getStarred());
-                    mDrawer.setProfile(mDrawer.getProfile().setDescription(totalString + " (" + starredString + ")"));
+                    DrawerProfile profile = mDrawer.getProfiles().get(0).setDescription(totalString + " (" + starredString + ")");
+                    mDrawer.clearProfiles();
+                    mDrawer.addProfile(profile);
                 }
             }
         }.execute((Void) null);
