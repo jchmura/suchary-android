@@ -381,7 +381,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected JokeCount doInBackground(Void... voids) {
                 JokeDbHelper helper = JokeDbHelper.getInstance(MainActivity.this);
-                return helper.getJokeCount();
+                try {
+                    return helper.getJokeCount();
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    throw e;
+                }
             }
 
             @Override

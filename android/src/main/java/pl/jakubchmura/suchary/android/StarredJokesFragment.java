@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
@@ -86,13 +89,18 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
             @Override
             protected JokeCount doInBackground(Void... params) {
                 JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
-                return helper.getJokeCount();
+                try {
+                    return helper.getJokeCount();
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    return null;
+                }
             }
 
             @Override
             protected void onPostExecute(JokeCount jokeCount) {
                 mProgress.setVisibility(View.GONE);
-                if (jokeCount.getStarred() == 0) {
+                if (jokeCount == null || jokeCount.getStarred() == 0) {
                     showPlaceholder();
                     setRetainInstance(false);
                 } else {
@@ -110,9 +118,15 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         Card.OnSwipeListener swipeListener = new Card.OnSwipeListener() {
             @Override
             public void onSwipe(Card card) {
-                joke.setStar(false);
-                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
-                helper.updateJoke(joke);
+                try {
+                    joke.setStar(false);
+                    JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
+                    helper.updateJoke(joke);
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    Log.e(TAG, "Joke update failed onSwipeList", e);
+                }
+
                 if (mAdapter.getCount() == 0) {
                     showPlaceholder();
                     setRetainInstance(false);
@@ -122,9 +136,15 @@ public class StarredJokesFragment extends JokesBaseFragment<MainActivity> {
         Card.OnUndoSwipeListListener undoSwipeListListener = new Card.OnUndoSwipeListListener() {
             @Override
             public void onUndoSwipe(Card card) {
-                joke.setStar(true);
-                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
-                helper.updateJoke(joke);
+                try {
+                    joke.setStar(true);
+                    JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
+                    helper.updateJoke(joke);
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    Log.w(TAG, "Joke update failed onUndoSwipeList", e);
+                }
+
                 if (mAdapter.getCount() > 0) {
                     hidePlaceholder();
                     setRetainInstance(true);

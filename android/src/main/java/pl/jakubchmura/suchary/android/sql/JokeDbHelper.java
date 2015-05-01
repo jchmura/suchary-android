@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -64,7 +65,12 @@ public class JokeDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(JokeContract.SQL_CREATE_ENTRIES);
+        try {
+            db.execSQL(JokeContract.SQL_CREATE_ENTRIES);
+        } catch (SQLException e) {
+            Crashlytics.logException(e);
+            throw e;
+        }
     }
 
     @Override

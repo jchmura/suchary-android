@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +26,8 @@ import pl.jakubchmura.suchary.android.util.Analytics;
 import pl.jakubchmura.suchary.android.util.FontCache;
 
 public class JokeExpand extends CardExpand {
+
+    private static final String TAG = "JokeExpand";
 
     private Joke mJoke;
     private Context mContext;
@@ -51,18 +56,36 @@ public class JokeExpand extends CardExpand {
             colorStar(ivStar);
             ivStar.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     Analytics.clickedStarred(mJoke.getKey());
                     mJoke.setStar(!mJoke.isStar());
                     colorStar((ImageView) v);
+
                     new AsyncTask<Void, Void, Void>() {
+                        private Exception mException;
+
                         @Override
                         protected Void doInBackground(Void... params) {
-                            JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
-                            helper.updateJoke(mJoke);
+                            try {
+                                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
+                                helper.updateJoke(mJoke);
+                            } catch (Exception e) {
+                                Crashlytics.logException(e);
+                                Log.w(TAG, e);
+                                mException = e;
+                            }
                             return null;
                         }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            if (mException != null) {
+                                mJoke.setStar(!mJoke.isStar());
+                                colorStar((ImageView) v);
+                            }
+                        }
                     }.execute((Void) null);
+
                     if (mDismissAnimation != null && mParentCard != null) {
 //                        mDismissAnimation.animateDismiss(mParentCard);
                     }
@@ -132,10 +155,14 @@ public class JokeExpand extends CardExpand {
     }
 
     private void colorStar(ImageView view) {
-        if (mJoke.isStar()) {
-            view.setImageResource(R.drawable.fav_on_button);
-        } else {
-            view.setImageResource(R.drawable.fav_off_button);
+        try {
+            if (mJoke.isStar()) {
+                view.setImageResource(R.drawable.fav_on_button);
+            } else {
+                view.setImageResource(R.drawable.fav_off_button);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't change joke favorite icon value to " + mJoke.isStar(), e);
         }
     }
 }
