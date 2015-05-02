@@ -65,7 +65,7 @@ public class SearchFragment extends JokesBaseFragment<SearchActivity> {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                JokeDbHelper helper = new JokeDbHelper(mActivity);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
                 mFetcher.setJokes(helper.searchBody(mQuery, mStar));
                 mFetcher.setFetchGetOlder(false);
                 return null;

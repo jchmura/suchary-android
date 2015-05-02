@@ -22,6 +22,60 @@
     <color name="action_bar_title">@android:color/white</color>
     <color name="action_bar_subtitle">@color/grey_200</color>
 
+    <!-- Theme primary colors -->
+    <color name="primary_1">#F44336</color>
+    <color name="primary_2">#E91E63</color>
+    <color name="primary_3">#673AB7</color>
+    <color name="primary_4">#3F51B5</color>
+    <color name="primary_5">#2196F3</color>
+    <color name="primary_6">#03A9F4</color>
+    <color name="primary_7">#00BCD4</color>
+    <color name="primary_8">#009688</color>
+    <color name="primary_9">#4CAF50</color>
+    <color name="primary_10">#8BC34A</color>
+    <color name="primary_11">#FFC107</color>
+    <color name="primary_12">#FF9800</color>
+    <color name="primary_13">#FF5722</color>
+    <color name="primary_14">#795548</color>
+    <color name="primary_15">#9E9E9E</color>
+    <color name="primary_16">#607D8B</color>
+
+    <!-- Theme primary dark colors -->
+    <color name="primary_dark_1">#D32F2F</color>
+    <color name="primary_dark_2">#C2185B</color>
+    <color name="primary_dark_3">#512DA8</color>
+    <color name="primary_dark_4">#303F9F</color>
+    <color name="primary_dark_5">#1976D2</color>
+    <color name="primary_dark_6">#0288D1</color>
+    <color name="primary_dark_7">#0097A7</color>
+    <color name="primary_dark_8">#00796B</color>
+    <color name="primary_dark_9">#388E3C</color>
+    <color name="primary_dark_10">#689F38</color>
+    <color name="primary_dark_11">#FFA000</color>
+    <color name="primary_dark_12">#F57C00</color>
+    <color name="primary_dark_13">#E64A19</color>
+    <color name="primary_dark_14">#5D4037</color>
+    <color name="primary_dark_15">#616161</color>
+    <color name="primary_dark_16">#455A64</color>
+
+    <!-- Theme accent colors -->
+    <color name="accent_1">#536DFE</color>
+    <color name="accent_2">#448AFF</color>
+    <color name="accent_3">#FF9800</color>
+    <color name="accent_4">#FF5722</color>
+    <color name="accent_5">#FFC107</color>
+    <color name="accent_6">#FFC107</color>
+    <color name="accent_7">#CDDC39</color>
+    <color name="accent_8">#FF5722</color>
+    <color name="accent_9">#448AFF</color>
+    <color name="accent_10">#03A9F4</color>
+    <color name="accent_11">#448AFF</color>
+    <color name="accent_12">#536DFE</color>
+    <color name="accent_13">#009688</color>
+    <color name="accent_14">#FF4081</color>
+    <color name="accent_15">#FF5252</color>
+    <color name="accent_16">#FF5252</color>
+
     <!-- Cardslib override -->
     <color name="card_backgroundExpand">@color/card_native_background</color>
     <color name="card_undobar_material_text_color">@color/deep_orange_500</color>

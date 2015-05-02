@@ -132,7 +132,7 @@ public class NewJokesFragment extends JokesBaseFragment<MainActivity> {
             mFetcher.setJokes(ResetJokes.mJokes);
             mFetcher.fetchNext();
         } else {
-            JokeDbHelper helper = new JokeDbHelper(mActivity);
+            JokeDbHelper helper = JokeDbHelper.getInstance(mActivity);
             if (helper.getCount() == 0) downloadJokesFromServer();
             else if (!saved) mFetcher.fetchNext();
         }

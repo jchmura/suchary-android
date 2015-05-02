@@ -129,7 +129,7 @@ public class JokeFetcher {
             @Override
             protected final List<Joke> doInBackground(Void... params) {
                 mGettingFromDB = true;
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 return helper.getRandom(15);
             }
 
@@ -192,7 +192,7 @@ public class JokeFetcher {
             protected final Void doInBackground(Void... params) {
                 Log.d(TAG, "getJokesFromDatabaseBefore " + date + " with limit " + limit + ". Show only starred? " + mOnlyStarred);
                 mGettingFromDB = true;
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 List<Joke> jokes = helper.getBefore(date, limit, mOnlyStarred);
                 mJokes.addAll(jokes);
 
@@ -224,7 +224,7 @@ public class JokeFetcher {
             protected final List<Joke> doInBackground(Void... params) {
                 Log.d(TAG, "getJokesFromDatabaseAfter " + date + " with limit " + limit);
                 mGettingFromDB = true;
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 List<Joke> jokes = helper.getAfter(date, limit);
                 Log.d(TAG, "Found " + jokes.size() + " new jokes in DB");
                 return jokes;
@@ -257,7 +257,7 @@ public class JokeFetcher {
                 PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                         getClass().getName());
                 wl.acquire();
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 helper.createJokes(params[0]);
                 wl.release();
                 return null;
@@ -299,7 +299,7 @@ public class JokeFetcher {
         new AsyncTask<String, Integer, List<Joke>>() {
             @Override
             protected final List<Joke> doInBackground(String... keys) {
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 List<Joke> jokes = helper.getJokes(keys);
                 Log.d(TAG, "Found " + jokes.size() + " updated in DB");
                 return jokes;

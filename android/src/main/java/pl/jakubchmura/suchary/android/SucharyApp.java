@@ -51,7 +51,7 @@ public class SucharyApp extends Application {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
-                    JokeDbHelper dbHelper = new JokeDbHelper(SucharyApp.this);
+                    JokeDbHelper dbHelper = JokeDbHelper.getInstance(SucharyApp.this);
                     Joke newest = dbHelper.getNewest();
                     if (newest != null) {
                         ChangeResolver.saveLastChange(SucharyApp.this, newest.getDate());

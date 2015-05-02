@@ -5,21 +5,112 @@
         <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
     <!--</style>-->
 
-    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="DefaultTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
-        <item name="colorPrimary">@color/indigo_500</item>
-        <item name="colorPrimaryDark">@color/indigo_600</item>
-        <item name="colorAccent">@color/deep_orange_500</item>
+        <item name="colorPrimary">@color/primary_4</item>
+        <item name="colorPrimaryDark">@color/primary_dark_4</item>
+        <item name="colorAccent">@color/accent_4</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
     </style>
 
-    <style name="AppThemeWithNavDrawer" parent="BaseTheme">
-
+    <style name="Theme1" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_1</item>
+        <item name="colorPrimaryDark">@color/primary_dark_1</item>
+        <item name="colorAccent">@color/accent_1</item>
     </style>
 
-    <style name="AppThemeWithoutNavDrawer" parent="BaseTheme">
-
+    <style name="Theme2" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_2</item>
+        <item name="colorPrimaryDark">@color/primary_dark_2</item>
+        <item name="colorAccent">@color/accent_2</item>
     </style>
+
+    <style name="Theme3" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_3</item>
+        <item name="colorPrimaryDark">@color/primary_dark_3</item>
+        <item name="colorAccent">@color/accent_3</item>
+    </style>
+
+    <style name="Theme4" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_4</item>
+        <item name="colorPrimaryDark">@color/primary_dark_4</item>
+        <item name="colorAccent">@color/accent_4</item>
+    </style>
+
+    <style name="Theme5" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_5</item>
+        <item name="colorPrimaryDark">@color/primary_dark_5</item>
+        <item name="colorAccent">@color/accent_5</item>
+    </style>
+
+    <style name="Theme6" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_6</item>
+        <item name="colorPrimaryDark">@color/primary_dark_6</item>
+        <item name="colorAccent">@color/accent_6</item>
+    </style>
+
+    <style name="Theme7" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_7</item>
+        <item name="colorPrimaryDark">@color/primary_dark_7</item>
+        <item name="colorAccent">@color/accent_7</item>
+    </style>
+
+    <style name="Theme8" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_8</item>
+        <item name="colorPrimaryDark">@color/primary_dark_8</item>
+        <item name="colorAccent">@color/accent_8</item>
+    </style>
+
+    <style name="Theme9" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_9</item>
+        <item name="colorPrimaryDark">@color/primary_dark_9</item>
+        <item name="colorAccent">@color/accent_9</item>
+    </style>
+
+    <style name="Theme10" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_10</item>
+        <item name="colorPrimaryDark">@color/primary_dark_10</item>
+        <item name="colorAccent">@color/accent_10</item>
+    </style>
+
+    <style name="Theme11" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_11</item>
+        <item name="colorPrimaryDark">@color/primary_dark_11</item>
+        <item name="colorAccent">@color/accent_11</item>
+    </style>
+
+    <style name="Theme12" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_12</item>
+        <item name="colorPrimaryDark">@color/primary_dark_12</item>
+        <item name="colorAccent">@color/accent_12</item>
+    </style>
+
+    <style name="Theme13" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_13</item>
+        <item name="colorPrimaryDark">@color/primary_dark_13</item>
+        <item name="colorAccent">@color/accent_13</item>
+    </style>
+
+    <style name="Theme14" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_14</item>
+        <item name="colorPrimaryDark">@color/primary_dark_14</item>
+        <item name="colorAccent">@color/accent_14</item>
+    </style>
+
+    <style name="Theme15" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_15</item>
+        <item name="colorPrimaryDark">@color/primary_dark_15</item>
+        <item name="colorAccent">@color/accent_15</item>
+    </style>
+
+    <style name="Theme16" parent="DefaultTheme">
+        <item name="colorPrimary">@color/primary_16</item>
+        <item name="colorPrimaryDark">@color/primary_dark_16</item>
+        <item name="colorAccent">@color/accent_16</item>
+    </style>
+
+    <style name="AppThemeWithNavDrawer" parent="DefaultTheme"/>
+    <style name="AppThemeWithoutNavDrawer" parent="DefaultTheme"/>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">19sp</item>

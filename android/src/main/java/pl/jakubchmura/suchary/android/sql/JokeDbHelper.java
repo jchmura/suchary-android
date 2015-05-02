@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -46,17 +47,30 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     private static final String TAG = "JokeDbHelper";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "Suchary.db";
+    private static JokeDbHelper mInstance;
 
     private Context mContext;
 
-    public JokeDbHelper(Context context) {
+    private JokeDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
     }
 
+    public static JokeDbHelper getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new JokeDbHelper(context.getApplicationContext());
+        }
+        return mInstance;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(JokeContract.SQL_CREATE_ENTRIES);
+        try {
+            db.execSQL(JokeContract.SQL_CREATE_ENTRIES);
+        } catch (SQLException e) {
+            Crashlytics.logException(e);
+            throw e;
+        }
     }
 
     @Override
@@ -65,7 +79,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void createJoke(Joke joke) {
+    public synchronized void createJoke(Joke joke) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -87,7 +101,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void createJokes(List<Joke> list) {
+    public synchronized void createJokes(List<Joke> list) {
         String sql = JokeContract.SQL_INSERT_ENTRIES;
         Set<Joke> jokes = new TreeSet<>(list);
         SQLiteDatabase db = getWritableDatabase();
@@ -124,7 +138,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public Joke getJoke(String key) {
+    public synchronized Joke getJoke(String key) {
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor;
@@ -169,7 +183,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    public List<Joke> getJokes(String selection, String[] selectionArgs, String order, String limit) {
+    public synchronized List<Joke> getJokes(String selection, String[] selectionArgs, String order, String limit) {
         SQLiteDatabase db = getReadableDatabase();
 
         ArrayList<Joke> jokes = new ArrayList<>();
@@ -261,7 +275,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return getJokes(selection, selectionArgs, null, null);
     }
 
-    public void updateJoke(Joke joke) {
+    public synchronized void updateJoke(Joke joke) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -298,7 +312,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return getJokes(selection, null, COLUMN_NAME_DATE + " DESC", null);
     }
 
-    public long getCount() {
+    public synchronized long getCount() {
         SQLiteDatabase db = getReadableDatabase();
         long count = 0;
         if (db != null) {
@@ -308,7 +322,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public JokeCount getJokeCount() {
+    public synchronized JokeCount getJokeCount() {
         SQLiteDatabase db = getReadableDatabase();
         long total = 0;
         long starred = 0;
@@ -320,7 +334,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         return new JokeCount(total, starred);
     }
 
-    public void deleteJoke(String key) {
+    public synchronized void deleteJoke(String key) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME_KEY + " = ?", new String[]{key});
@@ -329,7 +343,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteJokes(String[] keys) {
+    public synchronized void deleteJokes(String[] keys) {
         if (keys.length == 0) {
             return;
         }
@@ -341,7 +355,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteAllJokes() {
+    public synchronized void deleteAllJokes() {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.delete(TABLE_NAME, null, null);

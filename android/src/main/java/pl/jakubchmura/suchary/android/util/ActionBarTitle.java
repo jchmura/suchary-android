@@ -2,7 +2,7 @@ package pl.jakubchmura.suchary.android.util;
 
 import android.os.Build;
 import android.support.annotation.StringRes;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -11,9 +11,9 @@ import pl.jakubchmura.suchary.android.R;
 
 public class ActionBarTitle {
 
-    private ActionBarActivity mActivity;
+    private AppCompatActivity mActivity;
 
-    public ActionBarTitle(ActionBarActivity activity) {
+    public ActionBarTitle(AppCompatActivity activity) {
         mActivity = activity;
     }
 

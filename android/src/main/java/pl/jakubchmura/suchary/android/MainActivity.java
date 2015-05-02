@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -35,9 +34,10 @@ import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.sql.JokeCount;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
+import pl.jakubchmura.suchary.android.util.ThemedActivity;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ThemedActivity {
 
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
@@ -47,6 +47,7 @@ public class MainActivity extends ActionBarActivity {
     private static final String DRAWER_LAST_ITEM = "drawer_last_item";
 
     private static final String TAG = "MainActivity";
+
     private String mTitle;
     private int mFragmentNumber;
     private JokesBaseFragment<MainActivity> mFragment;
@@ -239,11 +240,11 @@ public class MainActivity extends ActionBarActivity {
         mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_settings)).setImage(getResources().getDrawable(R.drawable.ic_settings_black_18dp)));
         mDrawer.addItem(new DrawerItem().setTextPrimary(getString(R.string.navigation_drawer_about)).setImage(getResources().getDrawable(R.drawable.ic_help_black_18dp)));
 
-        mDrawer.setProfile(new DrawerProfile().setName(getString(R.string.app_name)).setBackground(getResources().getDrawable(R.drawable.profile_background)));
+        mDrawer.addProfile(new DrawerProfile().setName(getString(R.string.app_name)).setBackground(getResources().getDrawable(R.drawable.profile_background)));
 
         mDrawer.setOnItemClickListener(new DrawerItem.OnItemClickListener() {
             @Override
-            public void onClick(DrawerItem item, int id, int position) {
+            public void onClick(DrawerItem item, long id, int position) {
                 switch (position) {
                     case 0:
                     case 1:
@@ -314,8 +315,9 @@ public class MainActivity extends ActionBarActivity {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-                    if (mDrawerItemSelected == 1)
-                    searchView.setQueryHint(getString(R.string.search_hint_starred));
+                    String searchHint = getString(R.string.search_hint);
+                    if (mDrawerItemSelected == 1) searchHint = getString(R.string.search_hint_starred);
+                    searchView.setQueryHint(searchHint);
 
                     // Listener
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -380,8 +382,13 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected JokeCount doInBackground(Void... voids) {
-                JokeDbHelper helper = new JokeDbHelper(MainActivity.this);
-                return helper.getJokeCount();
+                JokeDbHelper helper = JokeDbHelper.getInstance(MainActivity.this);
+                try {
+                    return helper.getJokeCount();
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    throw e;
+                }
             }
 
             @Override
@@ -391,9 +398,16 @@ public class MainActivity extends ActionBarActivity {
                     Resources resources = getResources();
                     String totalString = resources.getQuantityString(R.plurals.total_joke_count, (int) jokeCount.getTotal(), (int) jokeCount.getTotal());
                     String starredString = resources.getQuantityString(R.plurals.starred_joke_count, (int) jokeCount.getStarred(), (int) jokeCount.getStarred());
-                    mDrawer.setProfile(mDrawer.getProfile().setDescription(totalString + " (" + starredString + ")"));
+                    DrawerProfile profile = mDrawer.getProfiles().get(0).setDescription(totalString + " (" + starredString + ")");
+                    mDrawer.clearProfiles();
+                    mDrawer.addProfile(profile);
                 }
             }
         }.execute((Void) null);
+    }
+
+    @Override
+    protected boolean hasDrawer() {
+        return true;
     }
 }

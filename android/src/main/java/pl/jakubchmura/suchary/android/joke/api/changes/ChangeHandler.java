@@ -104,12 +104,12 @@ public class ChangeHandler {
     }
 
     private void deleteJokesFromDatabase(String[] keys) {
-        JokeDbHelper helper = new JokeDbHelper(mContext);
+        JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
         helper.deleteJokes(keys);
     }
 
     private void updateJokesInDatabase(List<Joke> jokes) {
-        JokeDbHelper helper = new JokeDbHelper(mContext);
+        JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
 
         int size = jokes.size();
         List<Joke> oldJokes = helper.getJokes(getKeys(jokes), true);
@@ -122,7 +122,7 @@ public class ChangeHandler {
     }
 
     private void addJokesToDatabase(List<Joke> jokes) {
-        JokeDbHelper helper = new JokeDbHelper(mContext);
+        JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
         helper.createJokes(jokes);
     }
 

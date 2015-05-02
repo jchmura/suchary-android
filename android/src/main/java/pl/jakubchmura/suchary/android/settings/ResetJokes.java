@@ -85,7 +85,7 @@ public class ResetJokes {
     }
 
     private void saveStarred() {
-        JokeDbHelper helper = new JokeDbHelper(mContext);
+        JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
         List<Joke> starred = helper.getStarred();
         for (Joke joke : starred) {
             mStarred.add(joke.getKey());
@@ -165,7 +165,7 @@ public class ResetJokes {
                         getClass().getName());
                 wl.acquire();
 
-                JokeDbHelper helper = new JokeDbHelper(mContext);
+                JokeDbHelper helper = JokeDbHelper.getInstance(mContext);
                 helper.createJokes(params[0]);
 
                 wl.release();
