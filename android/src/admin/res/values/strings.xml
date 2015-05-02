@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Suchary Admin</string>
+
+    <!-- Joke Admin -->
+    <string name="manage_joke">Zarządzaj sucharem</string>
+    <string name="edit_joke">Edytuj</string>
+    <string name="delete_joke">Usuń</string>
+</resources>
