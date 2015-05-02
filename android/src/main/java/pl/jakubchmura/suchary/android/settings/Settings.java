@@ -1,13 +1,13 @@
 package pl.jakubchmura.suchary.android.settings;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
+import pl.jakubchmura.suchary.android.util.ThemedActivity;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends ThemedActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

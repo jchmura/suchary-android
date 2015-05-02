@@ -13,7 +13,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,9 +34,10 @@ import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.sql.JokeCount;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
+import pl.jakubchmura.suchary.android.util.ThemedActivity;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ThemedActivity {
 
     public static final String ACTION_NEW_JOKE = "action_new_joke";
     public static final String ACTION_EDIT_JOKE = "action_edit_joke";
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DRAWER_LAST_ITEM = "drawer_last_item";
 
     private static final String TAG = "MainActivity";
+
     private String mTitle;
     private int mFragmentNumber;
     private JokesBaseFragment<MainActivity> mFragment;
@@ -314,8 +315,9 @@ public class MainActivity extends AppCompatActivity {
                     // Assumes current activity is the searchable activity
                     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-                    if (mDrawerItemSelected == 1)
-                    searchView.setQueryHint(getString(R.string.search_hint_starred));
+                    String searchHint = getString(R.string.search_hint);
+                    if (mDrawerItemSelected == 1) searchHint = getString(R.string.search_hint_starred);
+                    searchView.setQueryHint(searchHint);
 
                     // Listener
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -402,5 +404,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }.execute((Void) null);
+    }
+
+    @Override
+    protected boolean hasDrawer() {
+        return true;
     }
 }

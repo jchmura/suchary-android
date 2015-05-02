@@ -33,8 +33,9 @@ import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 import pl.jakubchmura.suchary.android.joke.card.CardFactory;
 import pl.jakubchmura.suchary.android.joke.card.JokeCard;
 import pl.jakubchmura.suchary.android.joke.card.JokeCardArrayAdapter;
+import pl.jakubchmura.suchary.android.util.ThemedActivity;
 
-public abstract class JokesBaseFragment<ActivityClass extends Activity> extends Fragment {
+public abstract class JokesBaseFragment<ActivityClass extends ThemedActivity> extends Fragment {
 
     private static final String TAG = "JokesBaseFragment";
     private static final String PREFS_NAME = ChangeHandler.PREFS_NAME;
@@ -441,7 +442,7 @@ public abstract class JokesBaseFragment<ActivityClass extends Activity> extends 
      */
     protected void setPullable() {
         mSwipeRefresh = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe);
-        mSwipeRefresh.setColorSchemeResources(R.color.light_blue_500, R.color.deep_orange_500);
+        mSwipeRefresh.setColorSchemeResources(mActivity.getAccentColor());
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

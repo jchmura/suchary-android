@@ -3,6 +3,7 @@ package pl.jakubchmura.suchary.android.settings;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 
 import com.octo.android.robospice.SpiceManager;
@@ -11,11 +12,16 @@ import pl.jakubchmura.android.colorpicker.ColorPickerPreference;
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.api.network.JokeRetrofitSpiceService;
 
+import static pl.jakubchmura.suchary.android.util.Versions.isLollipop;
+
 public class SettingsFragment extends PreferenceFragment {
 
     public static final String KEY_PREF_NOTIF = "pref_notif";
     private static final String KEY_PREF_NOTIF_COLOR = "pref_notif_color";
     private static final String KEY_PREF_RESET = "pref_reset";
+    private static final String KEY_PREF_THEME = "pref_theme_color";
+    private static final String KEY_PREF_NAVBAR_COLOR = "pref_navbar_color";
+    private static final String KEY_PREF_VIEW_CATEGORY = "pref_view_title";
 
     private Settings mActivity;
     private ResetJokes mResetJokes;
@@ -43,6 +49,27 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
+
+        Preference themePreference = findPreference(KEY_PREF_THEME);
+        if (themePreference != null) {
+            themePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    mActivity.finish();
+                    startActivity(mActivity.getIntent());
+                    mActivity.overridePendingTransition(0, 0);
+                    return true;
+                }
+            });
+        }
+
+        PreferenceCategory viewCategory = (PreferenceCategory) findPreference(KEY_PREF_VIEW_CATEGORY);
+        Preference navbarColor = findPreference(KEY_PREF_NAVBAR_COLOR);
+        if (viewCategory != null && navbarColor != null) {
+            if (!isLollipop()) {
+                viewCategory.removePreference(navbarColor);
+            }
+        }
 
         Preference resetPreference = findPreference(KEY_PREF_RESET);
         if (resetPreference != null) {

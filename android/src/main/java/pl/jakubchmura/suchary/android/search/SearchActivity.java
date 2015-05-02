@@ -3,15 +3,15 @@ package pl.jakubchmura.suchary.android.search;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.util.ActionBarTitle;
+import pl.jakubchmura.suchary.android.util.ThemedActivity;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends ThemedActivity {
 
     public static final String FRAGMENT_NUMBER = "fragment_number";
 
