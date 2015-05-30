@@ -157,7 +157,7 @@ public class JokeFetcher {
             public void onRequestSuccess(APIResult.APIJokes apiJokes) {
                 ChangeResolver resolver = new ChangeResolver(apiJokes, date);
 
-                showNewerJokes(resolver.getAdded());
+                showNewerJokes(resolver.getAdded(), true);
                 mCallback.replaceJokes(resolver.getEdited());
                 deleteJokes(ChangeHandler.getKeys(resolver.getDeleted()));
 
@@ -233,11 +233,7 @@ public class JokeFetcher {
             @Override
             protected void onPostExecute(List<Joke> jokes) {
                 mGettingFromDB = false;
-                mCallback.addJokesToTop(jokes, false);
-                mServed += jokes.size();
-                jokes.addAll(mJokes);
-                mJokes.clear();
-                mJokes.addAll(jokes);
+                showNewerJokes(jokes, false);
                 mCallback.getCountDownLatch().countDown();
             }
         }.execute((Void[]) null);
@@ -265,7 +261,7 @@ public class JokeFetcher {
         }.execute(jokes);
     }
 
-    private void showNewerJokes(List<Joke> jokes) {
+    private void showNewerJokes(List<Joke> jokes, boolean move) {
         List<Joke> newJokes = new LinkedList<>();
         Collections.sort(jokes, Collections.reverseOrder());
         synchronized (mJokes) {
@@ -278,7 +274,7 @@ public class JokeFetcher {
             mServed += newJokes.size();
         }
 
-        mCallback.addJokesToTop(newJokes, true);
+        mCallback.addJokesToTop(newJokes, move);
     }
 
     /**
