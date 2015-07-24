@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -105,9 +106,15 @@ public class NewJokeNotification {
 
         // Automatically dismiss the notification when it is touched.
         builder.setAutoCancel(true);
-
         builder.setDeleteIntent(getDeleteIntent(context));
+
+        // Do not vibrate and emit sound when only updating
         builder.setOnlyAlertOnce(onlyAlertOnce);
+
+        // Wearable features
+        NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
+                        .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.wear_background));
+        builder.extend(wearableExtender);
 
         notify(context, builder.build());
     }
