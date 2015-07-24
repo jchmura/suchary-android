@@ -28,7 +28,7 @@ import com.heinrichreimersoftware.materialdrawer.structure.DrawerProfile;
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 import pl.jakubchmura.suchary.android.about.AboutActivity;
 import pl.jakubchmura.suchary.android.gcm.GcmRegistration;
-import pl.jakubchmura.suchary.android.gcm.NewJokeNotification;
+import pl.jakubchmura.suchary.android.gcm.notification.NotificationManager;
 import pl.jakubchmura.suchary.android.search.SearchActivity;
 import pl.jakubchmura.suchary.android.settings.Settings;
 import pl.jakubchmura.suchary.android.sql.JokeCount;
@@ -146,7 +146,7 @@ public class MainActivity extends ThemedActivity {
         registerReceiver(mDrawerReceiver, drawerFilter);
 
         // Cancel the notification about new jokes
-        NewJokeNotification.cancel(this);
+        new NotificationManager(this).clear();
 
         updateDrawerJokeCount();
     }

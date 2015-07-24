@@ -166,7 +166,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    public List<Joke> getJokes(String[] keys, boolean sameLength) {
+    public List<Joke> getJokes(String[] keys, boolean sameLength) { //TODO use collections instead of array
         List<Joke> jokes = new ArrayList<>();
         for (String key : keys) {
             Joke joke = getJoke(key);
@@ -178,7 +178,7 @@ public class JokeDbHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    public List<Joke> getJokes(String[] keys) {
+    public List<Joke> getJokes(String[] keys) { //TODO use collections instead of array
         return getJokes(keys, false);
     }
 

@@ -1,4 +1,4 @@
-package pl.jakubchmura.suchary.android.gcm;
+package pl.jakubchmura.suchary.android.gcm.notification;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 
 import pl.jakubchmura.suchary.android.MainActivity;
 import pl.jakubchmura.suchary.android.R;
+import pl.jakubchmura.suchary.android.gcm.notification.broadcast.NotificationBroadcastReceiver;
 
 
 /**
@@ -36,8 +37,7 @@ public class NewJokeNotification {
      *
      * @see #cancel(android.content.Context)
      */
-    public static void notify(final Context context, final String text,
-                              final int number) {
+    static void notify(final Context context, final String text, final int number, boolean onlyAlertOnce) {
         final Resources res = context.getResources();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -106,6 +106,8 @@ public class NewJokeNotification {
         // Automatically dismiss the notification when it is touched.
         builder.setAutoCancel(true);
 
+        builder.setDeleteIntent(getDeleteIntent(context));
+        builder.setOnlyAlertOnce(onlyAlertOnce);
 
         notify(context, builder.build());
     }
@@ -121,12 +123,18 @@ public class NewJokeNotification {
         }
     }
 
+    private static PendingIntent getDeleteIntent(Context context) {
+        Intent intent = new Intent(context, NotificationBroadcastReceiver.class);
+        intent.setAction(NotificationBroadcastReceiver.NOTIFICATION_CANCELLED);
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
     /**
      * Cancels any notifications of this type previously shown using
-     * {@link #notify(android.content.Context, String, int)}.
+     * {@link #notify(Context, String, int, boolean)}.
      */
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    public static void cancel(final Context context) {
+    static void cancel(final Context context) {
         final NotificationManager nm = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
