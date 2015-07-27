@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
+import pl.jakubchmura.suchary.android.joke.JokeComparator;
+import pl.jakubchmura.suchary.android.joke.JokeMerger;
 
 public class NotificationManager {
 
@@ -29,6 +30,7 @@ public class NotificationManager {
             Log.d(TAG, "{newJokes} No new jokes, doing nothing");
             return;
         }
+        jokes = JokeMerger.merge(jokes);
 
         Log.d(TAG, "{newJokes} " + jokes.size() + " new jokes arrived, displaying notification");
         mDbManager.insertJokes(jokes);
@@ -40,13 +42,15 @@ public class NotificationManager {
             Log.d(TAG, "{editJokes} No edited jokes, doing nothing");
             return;
         }
-        mDbManager.insertJokes(jokes);
+        jokes = JokeMerger.merge(jokes);
 
         if (isNotificationDisplayed()) {
-            Log.d(TAG, "{editJokes} " + jokes.size() + " new jokes arrived, updating notification");
-            List<Joke> total = new ArrayList<>(jokes);
-            total.addAll(mDbManager.getAllJokes());
-            display(total, true);
+            Log.d(TAG, "{editJokes} " + jokes.size() + " edited jokes arrived, updating notification");
+            List<Joke> current = mDbManager.getAllJokes();
+            Log.d(TAG, "{editJokes} current jokes in notification: " + current);
+            List<Joke> updated = JokeMerger.update(current, jokes);
+            mDbManager.insertJokes(updated);
+            display(updated, true);
         } else {
             Log.d(TAG, "{editJokes} notification is not displayed, not updating it");
         }
@@ -57,6 +61,7 @@ public class NotificationManager {
             Log.d(TAG, "{removeJokes} No removed jokes, doing nothing");
             return;
         }
+        jokes = JokeMerger.merge(jokes);
         mDbManager.removeJokes(jokes);
         if (isNotificationDisplayed()) {
             Log.d(TAG, "{removeJokes} " + jokes.size() + " jokes to remove arrived, updating notification");
@@ -76,7 +81,7 @@ public class NotificationManager {
     }
 
     public void clear() {
-        Log.i(TAG, "clear");
+        Log.d(TAG, "{clear}");
         setNotificationDisplayed(false);
         NewJokeNotification.cancel(mContext);
         mDbManager.removeAllJokes();
@@ -87,7 +92,7 @@ public class NotificationManager {
         Log.d(TAG, "display() called with " + "jokes = [" + jokes + "], onlyAlertOnce = [" + onlyAlertOnce + "]");
 
         setNotificationDisplayed(true);
-        Collections.sort(jokes);
+        Collections.sort(jokes, Collections.reverseOrder(new JokeComparator()));
         String first = jokes.get(0).getBody();
         NewJokeNotification.notify(mContext, first, jokes.size(), onlyAlertOnce);
     }
