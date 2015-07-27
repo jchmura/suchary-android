@@ -17,8 +17,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 14
-        versionName "0.4.6-alpha"
+        versionCode 15
+        versionName "0.4.6"
     }
 
     compileOptions {
@@ -63,7 +63,7 @@ android {
         }
         admin {
             applicationId "pl.jakubchmura.suchary.android"
-            versionName "0.4.5-admin"
+            versionName "0.4.6-admin"
         }
     }
 }
