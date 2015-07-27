@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.MainActivity;
-import pl.jakubchmura.suchary.android.gcm.NewJokeNotification;
+import pl.jakubchmura.suchary.android.gcm.notification.NotificationManager;
 import pl.jakubchmura.suchary.android.joke.Joke;
 import pl.jakubchmura.suchary.android.settings.SettingsFragment;
 import pl.jakubchmura.suchary.android.sql.JokeDbHelper;
@@ -56,6 +56,10 @@ public class ChangeHandler {
             if (notify) {
                 notifyAbout(MainActivity.ACTION_DELETE_JOKE);
                 addJokesToPrefs(keys, DELETE_JOKE);
+                NotificationManager notificationManager = getNotificationManager();
+                if (notificationManager != null) {
+                    notificationManager.removeJokes(jokes);
+                }
             }
             Log.d(TAG, "Deletion completed");
         }
@@ -71,6 +75,10 @@ public class ChangeHandler {
             if (notify) {
                 notifyAbout(MainActivity.ACTION_EDIT_JOKE);
                 addJokesToPrefs(keys, EDIT_JOKE);
+                NotificationManager notificationManager = getNotificationManager();
+                if (notificationManager != null) {
+                    notificationManager.editJokes(jokes);
+                }
             }
             Log.d(TAG, "Edit completed");
         }
@@ -81,14 +89,12 @@ public class ChangeHandler {
             Log.d(TAG, "There are no jokes to add");
         } else {
             Log.i(TAG, "About to handle addition of " + jokes.size() + " jokes with" + (notify? " ": "out ") + "notifying");
-            Joke last = jokes.get(0);
             addJokesToDatabase(jokes);
             if (notify) {
                 notifyAbout(MainActivity.ACTION_NEW_JOKE);
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
-                if (notification) {
-                    NewJokeNotification.notify(mContext, last.getBody(), jokes.size());
+                NotificationManager notificationManager = getNotificationManager();
+                if (notificationManager != null) {
+                    notificationManager.newJokes(jokes);
                 }
             }
             Log.d(TAG, "Addition completed");
@@ -140,5 +146,15 @@ public class ChangeHandler {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(preference, deleted);
         editor.apply();
+    }
+
+    private NotificationManager getNotificationManager() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean notification = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIF, false);
+        if (notification) {
+            return new NotificationManager(mContext);
+        } else {
+            return null;
+        }
     }
 }

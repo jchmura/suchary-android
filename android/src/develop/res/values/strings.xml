@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="api_url">http://suchary-dev.jakubchmura.pl/api/obcy</string>
-    <string name="site_url">http://suchary-dev.jakubchmura.pl/</string>
-</resources>

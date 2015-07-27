@@ -66,7 +66,7 @@ public class GcmIntentService extends IntentService {
                 case GoogleCloudMessaging.MESSAGE_TYPE_DELETED:
                     break;
                 case GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE:
-                    String type = extras.getString("type");
+                    String type = extras.getString("type", "");
                     Log.i(TAG, "Received GCM message: " + type);
                     switch (type) {
                         case "change":

@@ -17,8 +17,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 14
-        versionName "0.4.5"
+        versionCode 15
+        versionName "0.4.6"
     }
 
     compileOptions {
@@ -58,13 +58,12 @@ android {
     }
 
     productFlavors {
-        develop {
-            targetSdkVersion 22
-            compileSdkVersion 22
-            versionName 'develop'
-        }
         prod {
-
+            applicationId "pl.jakubchmura.suchary.android"
+        }
+        admin {
+            applicationId "pl.jakubchmura.suchary.android"
+            versionName "0.4.6-admin"
         }
     }
 }
@@ -74,10 +73,10 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-gcm:7.3.0'
-    compile 'com.google.android.gms:play-services-analytics:7.3.0'
-    compile 'com.android.support:support-v4:22.1.1'
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.google.android.gms:play-services-analytics:7.5.0'
+    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
         exclude group: 'com.google.android', module: 'support-v4'
     }
@@ -87,7 +86,7 @@ dependencies {
     compile 'com.intellij:annotations:12.0@jar'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':colorpicker')
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;
     }
     compile 'com.heinrichreimersoftware.materialdrawer:library:2.1'
