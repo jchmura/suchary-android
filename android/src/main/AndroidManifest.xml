@@ -49,6 +49,15 @@
         </activity>
 
         <receiver
+            android:name=".gcm.notification.broadcast.NotificationBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="notification_cancelled"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".gcm.GcmBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
