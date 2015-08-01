@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -87,6 +88,11 @@ public class TestNotification extends BroadcastReceiver {
 
         // Automatically dismiss the notification when it is touched.
         builder.setAutoCancel(true);
+
+        // Wearable features
+        NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
+                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.wear_background));
+        builder.extend(wearableExtender);
 
         return builder.build();
     }
