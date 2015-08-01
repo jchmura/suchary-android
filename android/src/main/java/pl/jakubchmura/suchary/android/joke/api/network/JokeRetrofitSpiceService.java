@@ -1,6 +1,8 @@
 package pl.jakubchmura.suchary.android.joke.api.network;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.octo.android.robospice.persistence.CacheManager;
 import com.octo.android.robospice.persistence.exception.CacheCreationException;
@@ -20,7 +22,12 @@ public class JokeRetrofitSpiceService extends RetrofitSpiceService {
 
     @Override
     protected String getServerUrl() {
-        return getApplicationContext().getString(R.string.api_url);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (sharedPref.getBoolean("pref_admin_dev", false)) {
+            return getApplicationContext().getString(R.string.api_url_dev);
+        } else {
+            return getApplicationContext().getString(R.string.api_url);
+        }
     }
 
     @Override

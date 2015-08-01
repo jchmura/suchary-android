@@ -6,4 +6,18 @@
     <string name="manage_joke">Zarządzaj sucharem</string>
     <string name="edit_joke">Edytuj</string>
     <string name="delete_joke">Usuń</string>
+
+    <!-- Preferences -->
+    <string name="pref_admin">Administrator</string>
+    <string name="pref_admin_login_title">Zaloguj się</string>
+    <string name="pref_admin_logout_title">Wyloguj się</string>
+    <string name="pref_admin_dev_title">Serwer deweloperski</string>
+    <string name="pref_admin_dev_summ">Łącz się z serwerem deweloperskim</string>
+    <string name="username">Login</string>
+    <string name="password">Hasło</string>
+
+    <!-- Global-->
+    <string name="api_url_dev">http://192.168.1.104:8000/api/</string>
+    <string name="site_url_dev">http://192.168.1.104:8000/</string>
+    <string name="login">Zaloguj</string>
 </resources>
