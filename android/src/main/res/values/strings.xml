@@ -110,8 +110,10 @@
     <string name="about_libraries">&#8226; <a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a>\n&#8226; <a href="https://github.com/keyboardsurfer/Crouton">Crouton</a>\n&#8226; <a href="https://github.com/HeinrichReimer/material-drawer">material-drawer</a></string>
 
     <!-- Global -->
-    <string name="api_url">http://suchary.jakubchmura.pl/api/obcy/</string>
+    <string name="api_url">http://suchary.jakubchmura.pl/api/</string>
+    <string name="api_url_dev">http://suchary.jakubchmura.pl/api/</string>
     <string name="site_url">http://suchary.jakubchmura.pl/</string>
+    <string name="site_url_dev">http://suchary.jakubchmura.pl/</string>
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
 

@@ -12,10 +12,13 @@ import android.widget.Toast;
 
 import pl.jakubchmura.suchary.android.R;
 import pl.jakubchmura.suchary.android.joke.Joke;
-import pl.jakubchmura.suchary.android.joke.api.network.AdminService;
-import retrofit.RestAdapter;
+import pl.jakubchmura.suchary.android.joke.api.network.AdminJokeService;
+import pl.jakubchmura.suchary.android.joke.api.network.RestAdminHelper;
+import retrofit.RetrofitError;
 
 public class JokeAdmin{
+
+    private static final String TAG = "JokeAdmin";
 
     private final Context mContext;
     private final Joke mJoke;
@@ -42,20 +45,24 @@ public class JokeAdmin{
                 Log.i("JokeEditor", "Sending for joke with key " + mJoke.getKey() + ". New body:\n" + body);
 
                 new AsyncTask<Void, Void, Void>() {
+                    private boolean success = false;
                     @Override
                     protected Void doInBackground(Void... params) {
-                        RestAdapter restAdapter = new RestAdapter.Builder()
-                                .setEndpoint(mContext.getString(R.string.site_url))
-                                .build();
-
-                        AdminService service = restAdapter.create(AdminService.class);
-                        service.editJoke(mJoke.getKey(), body);
+                        AdminJokeService service = RestAdminHelper.getService(mContext, AdminJokeService.class);
+                        try {
+                            service.edit(mJoke.getKey(), body);
+                            success = true;
+                        } catch (RetrofitError e) {
+                            Log.e(TAG, "{editJoke}", e);
+                        }
                         return null;
                     }
 
                     @Override
                     protected void onPostExecute(Void aVoid) {
-                        Toast.makeText(mContext, "Joke edited", Toast.LENGTH_SHORT).show();
+                        if (success) {
+                            Toast.makeText(mContext, "Joke edited", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }.execute((Void) null);
             }
@@ -72,21 +79,26 @@ public class JokeAdmin{
 
     public void delete() {
         new AsyncTask<Void, Void, Void>() {
+            private boolean success = false;
             @Override
             protected Void doInBackground(Void... params) {
-                RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint(mContext.getString(R.string.site_url))
-                        .build();
-
-                AdminService service = restAdapter.create(AdminService.class);
-                service.deleteJoke(mJoke.getKey());
+                AdminJokeService service = RestAdminHelper.getService(mContext, AdminJokeService.class);
+                try {
+                    service.delete(mJoke.getKey());
+                    success = true;
+                } catch (RetrofitError e) {
+                    Log.e(TAG, "{deleteJoke}", e);
+                }
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                Toast.makeText(mContext, "Joke removed", Toast.LENGTH_SHORT).show();
+                if (success) {
+                    Toast.makeText(mContext, "Joke removed", Toast.LENGTH_SHORT).show();
+                }
             }
         }.execute((Void) null);
     }
+
 }

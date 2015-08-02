@@ -9,6 +9,7 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'idea'
 
 android {
     compileSdkVersion 22
@@ -17,8 +18,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 15
-        versionName "0.4.6"
+        versionCode 16
+        versionName "0.4.7"
     }
 
     compileOptions {
@@ -63,8 +64,14 @@ android {
         }
         admin {
             applicationId "pl.jakubchmura.suchary.android"
-            versionName "0.4.6-admin"
+            versionName "0.4.7-admin"
         }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
     }
 }
 

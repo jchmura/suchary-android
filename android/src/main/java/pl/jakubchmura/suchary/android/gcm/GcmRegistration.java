@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -144,7 +145,7 @@ public class GcmRegistration {
                 HttpURLConnection connection = null;
                 DataOutputStream wr = null;
                 try {
-                    URL url = new URL(mContext.getString(R.string.site_url) + action + "/");
+                    URL url = new URL(getSiteUrl() + action + "/");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setDoOutput(true);
                     connection.setDoInput(true);
@@ -218,6 +219,15 @@ public class GcmRegistration {
             throw new RuntimeException("Could not get package name: " + e);
         } catch (NullPointerException e) {
             return null;
+        }
+    }
+
+    private String getSiteUrl() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (sharedPref.getBoolean("pref_admin_dev", false)) {
+            return mContext.getString(R.string.site_url_dev);
+        } else {
+            return mContext.getString(R.string.site_url);
         }
     }
 

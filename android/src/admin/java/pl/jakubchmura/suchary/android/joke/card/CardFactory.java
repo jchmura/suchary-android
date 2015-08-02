@@ -42,7 +42,7 @@ public class CardFactory {
         card.setOnLongClickListener(new Card.OnLongCardClickListener() {
             @Override
             public boolean onLongClick(Card card, View view) {
-                createEditJokeDialog(joke).show();
+                createEditJokeDialog(((JokeCard) card).getJoke()).show();
                 return true;
             }
         });

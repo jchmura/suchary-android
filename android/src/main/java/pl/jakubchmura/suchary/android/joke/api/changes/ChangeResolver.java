@@ -101,6 +101,6 @@ public class ChangeResolver {
     }
 
     private boolean isEdited(APIJoke apiJoke) {
-        return !isAdded(apiJoke);
+        return !isAdded(apiJoke) && !isDeleted(apiJoke);
     }
 }
