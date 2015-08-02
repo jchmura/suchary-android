@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -349,8 +350,21 @@ public class JokeDbHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
-            db.delete(TABLE_NAME, COLUMN_NAME_KEY + " IN (" + new String(new char[keys.length - 1]).replace("\0", "?,") + "?)", keys);
-            db.close();
+            db.beginTransaction();
+            try {
+                for (int i = 0; i < keys.length; i += 20) {
+                    int end = i + 20;
+                    if (end > keys.length) {
+                        end = keys.length;
+                    }
+                    String[] transaction = Arrays.copyOfRange(keys, i, end);
+                    db.delete(TABLE_NAME, COLUMN_NAME_KEY + " IN (" + new String(new char[transaction.length - 1]).replace("\0", "?,") + "?)", transaction);
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                db.close();
+            }
             notifyCount();
         }
     }
