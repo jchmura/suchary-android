@@ -14,6 +14,7 @@ import com.crashlytics.android.Crashlytics;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import pl.jakubchmura.suchary.android.joke.Joke;
@@ -102,22 +103,6 @@ public class NotificationDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean exists(@NotNull String key) {
-        SQLiteDatabase db = getReadableDatabase();
-
-        if (db != null) {
-            Cursor cursor = db.query(TABLE_NAME, COLUMN_ALL, COLUMN_NAME_JOKE + "=?", new String[]{key}, null, null, null);
-
-            if (cursor.getCount() <= 0) {
-                cursor.close();
-                return false;
-            }
-            cursor.close();
-            return true;
-        }
-        return false;
-    }
-
     public void removeJokes(List<Joke> jokes) {
         int size = jokes.size();
         if (size == 0) {
@@ -131,8 +116,22 @@ public class NotificationDbHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
-            db.delete(TABLE_NAME, COLUMN_NAME_JOKE + " IN (" + new String(new char[keys.length - 1]).replace("\0", "?,") + "?)", keys);
-            db.close();
+            db.beginTransaction();
+            try {
+                for (int i = 0; i < keys.length; i += 20) {
+                    int end = i + 20;
+                    if (end > keys.length) {
+                        end = keys.length;
+                    }
+                    String[] transaction = Arrays.copyOfRange(keys, i, end);
+                    db.delete(TABLE_NAME, COLUMN_NAME_JOKE + " IN (" + new String(new char[transaction.length - 1]).replace("\0", "?,") + "?)", transaction);
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                db.close();
+            }
+
         }
     }
 
